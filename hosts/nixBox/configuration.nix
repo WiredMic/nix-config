@@ -144,6 +144,7 @@
     firefox
     xclip
     tree
+    home-manager
   ];
 
 
@@ -168,6 +169,8 @@
       extraGroups = ["networkmanager" "wheel"];
     };
   };
+
+  programs.ssh.startAgent = true;
   
   fonts.fonts = with pkgs; [
     (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" "JetBrainsMono" ]; })

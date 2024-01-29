@@ -60,6 +60,13 @@
   programs.home-manager.enable = true;
   programs.git.enable = true;
 
+  programs.ssh = {
+    enable = true;
+    compression = true;
+    forwardAgent = true;
+    extraConfig = "AddKeysToAgent yes";
+  };
+
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
 
