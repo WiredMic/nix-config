@@ -71,7 +71,10 @@
     auto-optimise-store = true;
   };
 
-  # FIXME: Add the rest of your current configuration
+  nix.optimise = {
+    automatic = true;
+    dates = [ "03:45" ];
+  };
   
   networking = {
     # Enable networking
@@ -165,7 +168,11 @@
       extraGroups = ["networkmanager" "wheel"];
     };
   };
-
+  
+  fonts.fonts = with pkgs; [
+    (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" "JetBrainsMono" ]; })
+  ];
+  
   # This setups a SSH server. Very important if you're setting up a headless system.
   # Feel free to remove if you don't need it.
   services.openssh = {
