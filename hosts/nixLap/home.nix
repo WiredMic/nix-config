@@ -18,6 +18,7 @@
 
     # You can also split up your configuration and import pieces of it here:
     # ./nvim.nix
+    ../../modules/programs/zsh/zsh.nix
   ];
 
   nixpkgs = {
@@ -51,6 +52,13 @@
     username = "rasmus";
     homeDirectory = "/home/rasmus";
   };
+    
+  home.packages = with pkgs; [
+    stow
+    exa
+  ];
+
+  xdg.enable = true;
 
   # Add stuff for your user as you see fit:
   programs.neovim.enable = true;
@@ -58,7 +66,11 @@
 
   # Enable home-manager and git
   programs.home-manager.enable = true;
-  programs.git.enable = true;
+  programs.git = {
+    enable = true;
+    userEmail = "rasmus@enev.dk";
+    userName = "Rasmus Enevoldsen";
+  };
 
   programs.ssh = {
     enable = true;

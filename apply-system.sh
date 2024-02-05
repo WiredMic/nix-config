@@ -1,2 +1,2 @@
 #!/bin/sh
-sudo nixos-rebuild switch --flake .#nixLap
+sudo nixos-rebuild switch --flake .#$(hostname)

@@ -83,7 +83,11 @@
     # hostname
     hostName = "nixLap";
   };
-
+  
+  hardware.bluetooth = {
+    enable = true; # enables support for Bluetooth
+    powerOnBoot = true; # powers up the default Bluetooth controller on boot
+  };
 
   # Set your time zone.
   time.timeZone = "Europe/Copenhagen";
@@ -135,6 +139,7 @@
   # KDE
   services.xserver.displayManager.sddm.enable = true;
   services.xserver.desktopManager.plasma5.enable = true;
+  services.xserver.displayManager.defaultSession = "plasmawayland";
 
   # Software
 
@@ -145,6 +150,7 @@
     xclip
     tree
     home-manager
+    gcc
   ];
 
 
@@ -188,8 +194,12 @@
     };
   };
 
+  programs.zsh.enable = true;
+  users.defaultUserShell = pkgs.zsh;
+  # users.users.rasmus.shell = pkgs.zsh;
+
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = "23.05";
+  system.stateVersion = "23.11";
 }
 
 
