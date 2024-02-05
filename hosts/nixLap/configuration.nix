@@ -22,6 +22,10 @@
 
     # Import your generated (nixos-generate-config) hardware configuration
     ./hardware-configuration.nix
+
+    # Desktop Environment
+    ../../modules/de/kde/kde.nix
+    # ../../modules/de/gnome/gnome.nix
   ];
 
   nixpkgs = {
@@ -82,6 +86,16 @@
 
     # hostname
     hostName = "nixLap";
+
+    firewall = { 
+      enable = true;
+      # allowedTCPPortRanges = [ 
+      #   { from = 1714; to = 1764; } # KDE Connect
+      # ];  
+      # allowedUDPPortRanges = [ 
+      #   { from = 1714; to = 1764; } # KDE Connect
+      # ];  
+    }; 
   };
   
   hardware.bluetooth = {
@@ -136,10 +150,6 @@
     xkbVariant = "";
   };
 
-  # KDE
-  services.xserver.displayManager.sddm.enable = true;
-  services.xserver.desktopManager.plasma5.enable = true;
-  services.xserver.displayManager.defaultSession = "plasmawayland";
 
   # Software
 
@@ -151,7 +161,11 @@
     tree
     home-manager
     gcc
+    libsForQt5.kdeconnect-kde
   ];
+
+  # https://github.com/gmodena/nix-flatpak
+  services.flatpak.enable = true;
 
 
   # TODO: This is just an example, be sure to use whatever bootloader you prefer
@@ -197,6 +211,8 @@
   programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
   # users.users.rasmus.shell = pkgs.zsh;
+
+  programs.kdeconnect.enable = true;
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "23.11";

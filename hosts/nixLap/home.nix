@@ -18,7 +18,12 @@
 
     # You can also split up your configuration and import pieces of it here:
     # ./nvim.nix
+
+    # zsh
     ../../modules/programs/zsh/zsh.nix
+
+    # Color scheme
+    ../../modules/util/nixcolor/nixcolor.nix
   ];
 
   nixpkgs = {
@@ -56,6 +61,10 @@
   home.packages = with pkgs; [
     stow
     exa
+    flatpak
+    vlc
+    gnome.gnome-software
+    neofetch
   ];
 
   xdg.enable = true;

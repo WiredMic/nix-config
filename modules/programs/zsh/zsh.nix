@@ -88,10 +88,10 @@
   ];
 
   # Scripts
-  home.file.".config/zsh/scripts".source = ./files/scripts;
-  home.file.".config/zsh/scripts".recursive = true;
+  xdg.configFile."./zsh/scripts".source = ./files/scripts;
+  xdg.configFile."./zsh/scripts".recursive = true;
 
   # Cows
-  home.file.".local/share/cowsay".source = ./files/cows;
-  home.file.".local/share/cowsay".recursive = true;
+  xdg.dataFile."./cowsay".source = ./files/cows;
+  xdg.dataFile."./cowsay".recursive = true;
 }
