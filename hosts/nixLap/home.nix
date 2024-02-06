@@ -25,8 +25,11 @@
     # Color scheme
     ../../modules/util/nixcolor/nixcolor.nix
 
-    # gnupg
+    # GnuPG
     ../../modules/programs/gnupg/gnupg.nix
+
+    # Neovim
+    ../../modules/programs/neovim/neovim.nix
   ];
 
   nixpkgs = {
@@ -69,13 +72,11 @@
     gnome.gnome-software
     neofetch
     pass
+    nurl
+    # fetchFromGithub
   ];
 
   xdg.enable = true;
-
-  # Add stuff for your user as you see fit:
-  programs.neovim.enable = true;
-  # home.packages = with pkgs; [ steam ];
 
   # Enable home-manager and git
   programs.home-manager.enable = true;
