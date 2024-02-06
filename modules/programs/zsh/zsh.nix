@@ -2,6 +2,7 @@
 {
   imports = [
     ./zshenv.nix
+    ./zprofile.nix
   ];
   
   programs.zsh = {

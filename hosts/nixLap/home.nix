@@ -24,6 +24,9 @@
 
     # Color scheme
     ../../modules/util/nixcolor/nixcolor.nix
+
+    # gnupg
+    ../../modules/programs/gnupg/gnupg.nix
   ];
 
   nixpkgs = {
@@ -65,6 +68,7 @@
     vlc
     gnome.gnome-software
     neofetch
+    pass
   ];
 
   xdg.enable = true;
@@ -85,7 +89,9 @@
     enable = true;
     compression = true;
     forwardAgent = true;
-    extraConfig = "AddKeysToAgent yes";
+    extraConfig = ''
+    AddKeysToAgent yes
+    '';
   };
 
   # Nicely reload system units when changing configs
