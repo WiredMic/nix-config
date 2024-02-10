@@ -22,6 +22,7 @@
   outputs = {
     self,
     nixpkgs,
+    nixpkgs-unstable,
     home-manager,
     ...
   } @ inputs: let
@@ -31,6 +32,10 @@
       "aarch64-linux"
       "x86_64-linux"
     ];
+    
+    pkgs = nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
+    pkgs-unstable = nixpkgs-unstable.legacyPackages.x86_64-linux;
+
     # This is a function that generates an attribute by calling a function you
     # pass to it, with each system as an argument
     forAllSystems = nixpkgs.lib.genAttrs systems;
@@ -67,8 +72,11 @@
     # Available through 'home-manager --flake .#your-username@your-hostname'
     homeConfigurations = {
       "rasmus@nixLap" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
-        extraSpecialArgs = {inherit inputs outputs;};
+        inherit pkgs;
+        extraSpecialArgs = {
+          inherit inputs outputs;
+          inherit pkgs-unstable;
+        };
         modules = [
           # > Our main home-manager configuration file <
           ./hosts/nixLap/home.nix

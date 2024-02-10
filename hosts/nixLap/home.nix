@@ -6,8 +6,10 @@
   lib,
   config,
   pkgs,
+  pkgs-unstable,
   ...
-}: {
+}: 
+{
   # You can import other home-manager modules here
   imports = [
     # If you want to use modules your own flake exports (from modules/home-manager):
@@ -30,6 +32,12 @@
 
     # Neovim
     ../../modules/programs/neovim/neovim.nix
+
+    # SDDM avatar
+    ../../modules/programs/sddm/sddm-icon.nix
+    
+    # System Theme QT and GTK
+    ../../modules/util/theme/theme.nix
   ];
 
   nixpkgs = {
@@ -64,17 +72,34 @@
     homeDirectory = "/home/rasmus";
   };
     
-  home.packages = with pkgs; [
+  home.packages = (with pkgs; [
     stow
-    exa
     flatpak
     vlc
     gnome.gnome-software
     neofetch
     pass
     nurl
+    rustup
+    unzip
+    gimp
+    gnome.gnome-calculator
+
     # fetchFromGithub
-  ];
+
+    # Libra office and spell check
+    libreoffice-qt
+    hunspell
+    hunspellDicts.da_DK
+
+    # LaTeX
+    texlive.combined.scheme-full
+  ])
+  ++
+  (with pkgs-unstable; [
+    # eza
+  ]);
+
 
   xdg.enable = true;
 
@@ -84,6 +109,11 @@
     enable = true;
     userEmail = "rasmus@enev.dk";
     userName = "Rasmus Enevoldsen";
+    # git config --global init.defaultBranch
+    extraConfig = ''
+    [init]
+    defaultBranch = main
+    '';
   };
 
   programs.ssh = {

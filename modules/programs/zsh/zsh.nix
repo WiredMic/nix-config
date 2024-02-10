@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ...}:
+{ config, lib, pkgs, pkgs-unstable, ...}:
 {
   imports = [
     ./zshenv.nix
@@ -12,11 +12,11 @@
     enableCompletion = true;
 
     shellAliases = {
-      ls = "exa -a --icons --group-directories-first";
+      ls = "eza -a --icons --group-directories-first";
       rm = "rm -I";
       vim = "nvim";
       update = "sh -c 'sudo nixos-rebuild switch --flake .#nixLap'";
-      update-user = "sh -c 'home-manager switch --flake .#rasmus@nixLap'";
+      update-user = "bash -c 'home-manager switch -b backup --flake .#rasmus@nixLap'";
     };
     
 
@@ -82,11 +82,15 @@
     };
   };
   
-  home.packages = with pkgs; [
+  home.packages = (with pkgs; [
     lolcat
     cowsay
-    exa
-  ];
+    # exa
+  ])
+  ++
+  (with pkgs-unstable;[
+    eza
+  ]);
 
   # Scripts
   xdg.configFile."./zsh/scripts".source = ./files/scripts;

@@ -10,7 +10,7 @@
     
     settings = {
         font_family = "JetBrainsMono";
-        font_size = "14";
+        font_size = "12";
         bold_font = "auto";
         italic_font = "auto";
         bold_italic_font = "auto";

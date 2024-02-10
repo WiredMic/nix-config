@@ -26,6 +26,10 @@
     # Desktop Environment
     ../../modules/de/kde/kde.nix
     # ../../modules/de/gnome/gnome.nix
+
+    # Grub
+    ../../modules/programs/grub/grub.nix
+
   ];
 
   nixpkgs = {
@@ -101,6 +105,16 @@
   hardware.bluetooth = {
     enable = true; # enables support for Bluetooth
     powerOnBoot = true; # powers up the default Bluetooth controller on boot
+    settings = {
+      General = {
+        ControllerMode = "dual";
+        FastConnectable = "true";
+        Experimental = "true";
+      };
+      Policy = {
+        AutoEnable = "true";
+      };
+    };
   };
 
   # Set your time zone.
@@ -162,17 +176,15 @@
     home-manager
     gcc
     libsForQt5.kdeconnect-kde
+ 
   ];
+  
+  # theme gtk
+  programs.dconf.enable = true;
 
+  
   # https://github.com/gmodena/nix-flatpak
   services.flatpak.enable = true;
-
-
-  # TODO: This is just an example, be sure to use whatever bootloader you prefer
-  boot = {
-    loader.systemd-boot.enable = true;
-    loader.efi.canTouchEfiVariables = true;
-  };
 
   # TODO: Configure your system-wide user settings (groups, etc), add more users as needed.
   users.users = {
@@ -215,7 +227,7 @@
   programs.kdeconnect.enable = true;
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = "23.11";
+  system.stateVersion = "23.05";
 }
 
 
