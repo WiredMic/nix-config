@@ -7,7 +7,7 @@
   
   ];
   boot.loader = {
-    efi = {
+     efi = {
       canTouchEfiVariables = true;
     };
     grub = {
@@ -15,7 +15,13 @@
       efiSupport = true;
       device = "nodev";
       useOSProber = true;
-      theme = pkgs.nixos-grub2-theme;  
+    };
+    grub2-theme = {
+      enable = true;
+      theme = "stylish";
+      icon = "color";
+      screen = "1080p";
+      footer = true;
     };
   };
 }

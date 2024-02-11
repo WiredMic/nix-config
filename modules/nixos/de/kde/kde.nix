@@ -6,7 +6,6 @@
 }:
 {
   imports = [
-    ../../../programs/sddm/sddm.nix
   ];
 
   # KDE

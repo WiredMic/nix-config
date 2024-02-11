@@ -17,6 +17,11 @@
     # hardware.url = "github:nixos/nixos-hardware";
 
     nix-colors.url = "github:misterio77/nix-colors";
+
+    grub2-themes.url = "github:vinceliuice/grub2-themes";
+
+    hyprland.url = "github:hyprwm/Hyprland";
+
   };
 
   outputs = {
@@ -24,6 +29,8 @@
     nixpkgs,
     nixpkgs-unstable,
     home-manager,
+    grub2-themes,
+    hyprland,
     ...
   } @ inputs: let
     inherit (self) outputs;
@@ -64,6 +71,7 @@
         modules = [
           # > Our main nixos configuration file <
           ./hosts/nixLap/configuration.nix
+          grub2-themes.nixosModules.default
         ];
       };
     };

@@ -1,11 +1,16 @@
 {pkgs, ...}:
 {
   imports = [];
+ 
   
+  environment.systemPackages = with pkgs; [
+    libsForQt5.qt5.qtgraphicaleffects   
+  ];
+
   services.xserver.displayManager.sddm = {
     enable = true;
     autoNumlock = true;
-    # theme
+    theme = "${import ./sddm-suger-dark.nix {inherit pkgs;}}";
   };
 
   # Set Icon Avatar
