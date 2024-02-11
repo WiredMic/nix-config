@@ -24,11 +24,11 @@
     ./hardware-configuration.nix
 
     # Desktop Environment
-    ../../modules/de/kde/kde.nix
+    ../../modules/nixos/de/kde/kde.nix
     # ../../modules/de/gnome/gnome.nix
 
     # Grub
-    ../../modules/programs/grub/grub.nix
+    ../../modules/nixos/grub/grub.nix
 
   ];
 

@@ -18,26 +18,24 @@
     # Or modules exported from other flakes (such as nix-colors):
     # inputs.nix-colors.homeManagerModules.default
 
-    # You can also split up your configuration and import pieces of it here:
-    # ./nvim.nix
 
     # zsh
-    ../../modules/programs/zsh/zsh.nix
-
+    ../../modules/home-manager/zsh/zsh.nix
+    
     # Color scheme
-    ../../modules/util/nixcolor/nixcolor.nix
-
+    ../../modules/home-manager/util/nixcolor/nixcolor.nix
+    
     # GnuPG
-    ../../modules/programs/gnupg/gnupg.nix
-
+    ../../modules/home-manager/gnupg/gnupg.nix
+    
     # Neovim
-    ../../modules/programs/neovim/neovim.nix
-
+    ../../modules/home-manager/neovim/neovim.nix
+    
     # SDDM avatar
     ../../modules/programs/sddm/sddm-icon.nix
-    
+     
     # System Theme QT and GTK
-    ../../modules/util/theme/theme.nix
+    ../../modules/home-manager/util/theme/theme.nix
   ];
 
   nixpkgs = {
@@ -110,10 +108,9 @@
     userEmail = "rasmus@enev.dk";
     userName = "Rasmus Enevoldsen";
     # git config --global init.defaultBranch
-    extraConfig = ''
-    [init]
-    defaultBranch = main
-    '';
+    extraConfig = {
+      init.defaultBranch = "main";
+    };
   };
 
   programs.ssh = {
