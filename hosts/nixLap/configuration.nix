@@ -26,6 +26,10 @@
     # Desktop Environment
     ../../modules/nixos/de/kde/kde.nix
     # ../../modules/de/gnome/gnome.nix
+    # ../../modules/nixos/de/hyprland/hyprland.nix
+
+    # sddm
+    ../../modules/programs/sddm/sddm.nix
 
     # Grub
     ../../modules/nixos/grub/grub.nix

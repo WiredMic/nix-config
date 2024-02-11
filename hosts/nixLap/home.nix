@@ -82,6 +82,7 @@
     unzip
     gimp
     gnome.gnome-calculator
+    gnome-multi-writer
 
     # fetchFromGithub
 
