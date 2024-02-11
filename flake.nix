@@ -56,6 +56,32 @@
     # These are usually stuff you would upstream into home-manager
     homeManagerModules = import ./modules/home-manager;
 
+   nixosConfigurations = {
+      nixDesk = nixpkgs.lib.nixosSystem {
+        specialArgs = {inherit inputs outputs;};
+        modules = [
+          # > Our main nixos configuration file <
+          ./hosts/nixDesk/configuration.nix
+        ];
+      };
+    };
+    
+
+    homeConfigurations = {
+      "rasmus@nixDesk" = home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        extraSpecialArgs = {
+          inherit inputs outputs;
+          inherit pkgs-unstable;
+        };
+        modules = [
+          # > Our main home-manager configuration file <
+          ./hosts/nixDesk/home.nix
+        ];
+      };
+    };
+
+
     # NixOS configuration entrypoint
     # Available through 'nixos-rebuild --flake .#your-hostname'
     nixosConfigurations = {
