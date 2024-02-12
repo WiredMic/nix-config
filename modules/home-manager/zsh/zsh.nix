@@ -15,8 +15,8 @@
       ls = "eza -a --icons --group-directories-first";
       rm = "rm -I";
       vim = "nvim";
-      update = "sh -c 'sudo nixos-rebuild switch --flake .#nixLap'";
-      update-user = "bash -c 'home-manager switch -b backup --flake .#rasmus@nixLap'";
+      update = "sh -c 'sudo nixos-rebuild switch --flake .#$(hostname)'";
+      update-user = "bash -c 'home-manager switch -b backup --flake .#$(whoami)@$(hostname)'";
     };
     
 
