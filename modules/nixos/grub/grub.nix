@@ -15,6 +15,20 @@
       efiSupport = true;
       device = "nodev";
       useOSProber = true;
+      entryOptions = {
+
+      }
+      extraEntries = ''
+        menuentry "Reboot" {
+          reboot
+        }
+        menuentry "Poweroff" {
+          halt
+        }
+        menuentry "uefi-firmware" {
+          fwsetup
+        }
+      '';
     };
     grub2-theme = {
       enable = true;
