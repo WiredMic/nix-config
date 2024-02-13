@@ -16,7 +16,7 @@
       rm = "rm -I";
       vim = "nvim";
       update = "sh -c 'sudo nixos-rebuild switch --flake .#$(hostname)'";
-      update-user = "bash -c 'home-manager switch -b backup --flake .#$(whoami)@$(hostname)'";
+      update-user = "sh -c ' rm -rf ~/.config/gtk-2.0/ && home-manager switch --flake .#$(whoami)@$(hostname)'";
     };
     
 
