@@ -27,8 +27,11 @@
     ../../modules/nixos/de/kde/kde.nix
     # ../../modules/de/gnome/gnome.nix
 
+    # sddm
+    ../../modules/programs/sddm/sddm.nix
+
     # Grub
-    ../../modules/nixos/grub/grub.nix
+    # ../../modules/nixos/grub/grub.nix
 
   ];
 
@@ -84,12 +87,57 @@
     dates = [ "03:45" ];
   };
   
+  boot.loader = {
+    efi = {
+     canTouchEfiVariables = true;
+    };
+    grub = {
+      enable = true;
+      device = "nodev";
+      efiSupport = true;
+      # efiInstallAsRemovable = true;
+      useOSProber = true;
+      enableCryptodisk = true;
+      extraEntries = ''
+        menuentry "Reboot" {
+          reboot
+        }
+        menuentry "Poweroff" {
+          halt
+        }
+        menuentry 'UEFI Firmware Settings' --id 'uefi-firmware' {
+          fwsetup
+        }
+      '';
+    };
+    grub2-theme = {
+      enable = true;
+      theme = "stylish";
+      icon = "color";
+      screen = "1080p";
+      footer = true;
+    };
+  };
+
+  # Does not work
+  # ------------
+  # boot.initrd.secrets = {
+  #   "/etc/secrets/initrd" = ./keyfile.bin; # Add our LUKS key to the initrd
+  # };
+  #
+  # boot.initrd.luks.devices.decrypted-disk-name = {
+  #   # change the uuid to that of the encrypted drive: see ./hardware-configuration.nix
+  #   device = "/dev/disk/by-uuid/0c54d3fa-b23d-459b-b919-ce9637604c46";
+  #   keyFile = "/keyfile.bin";
+  # };
+  # -----------
+
   networking = {
     # Enable networking
     networkmanager.enable = true;
 
     # hostname
-    hostName = "nixLap";
+    hostName = "nixDesk";
 
     firewall = { 
       enable = true;
@@ -176,6 +224,14 @@
     home-manager
     gcc
     libsForQt5.kdeconnect-kde
+
+    os-prober
+    ntfs3g
+    gparted
+
+    wl-clipboard
+    wl-clipboard-x11
+    xclip
  
   ];
   

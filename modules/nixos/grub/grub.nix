@@ -22,7 +22,7 @@
         menuentry "Poweroff" {
           halt
         }
-        menuentry "uefi-firmware" {
+        menuentry 'UEFI Firmware Settings' --id 'uefi-firmware' {
           fwsetup
         }
       '';

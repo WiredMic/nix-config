@@ -19,18 +19,19 @@
       enable = true;
       efiSupport = true;
       device = "nodev";
-      extraEntries = ''
-        menuentry "Reboot" {
-          reboot
-        }
-        menuentry "Poweroff" {
-          halt
-        }
-        menuentry '$LABEL' \$menuentry_id_option 'uefi-firmware' {
-          fwsetup
-        }
-      '';
+      enableCryptodisk = true;
+
     };
+  };
+
+  boot.initrd.secrets = {
+    "/etc/secrets/initrd" = ./keyfile.bin; # Add our LUKS key to the initrd
+  };
+
+  boot.initrd.luks.devices.decrypted-disk-name = {
+    # change the uuid to that of the encrypted drive: lsblk
+    device = "/dev/mapper/enc";
+    keyFile = "/keyfile.bin";
   };
 
   networking.hostName = "nixos"; # Define your hostname.
@@ -116,6 +117,7 @@
   environment.systemPackages = with pkgs; [
     git
     neovim
+    firefox
   ];
 
   environment.sessionVariables = {

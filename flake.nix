@@ -1,3 +1,4 @@
+
 {
   description = "Your new nix config";
 
@@ -69,6 +70,7 @@
         modules = [
           # > Our main nixos configuration file <
           ./hosts/nixDesk/configuration.nix
+          grub2-themes.nixosModules.default
         ];
       };
     };
