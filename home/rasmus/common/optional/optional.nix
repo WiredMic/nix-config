@@ -13,7 +13,7 @@
     ./dev/dev-env.nix
   ];
   
-  my.sddm-icon.enable = lib.mkIf config.sddm.enable;
+  my.sddm-icon.enable = lib.mkDefault true;
 
   my.direnv.enable = lib.mkDefault false;
 }

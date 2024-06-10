@@ -183,6 +183,7 @@
     wev
     miru
     davinci-resolve
+    just
   ];
  
   # https://github.com/gmodena/nix-flatpak
@@ -196,6 +197,7 @@
   services.flatpak.packages = [
     { appId = "org.mozilla.Thunderbird"; origin = "flathub";  }
     { appId = "com.spotify.Client"; origin = "flathub";  }
+    { appId = "com.usebottles.bottles"; origin = "flathub";  }
   ];
 
   # Software from optional
