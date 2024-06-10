@@ -8,7 +8,7 @@
   programs.zsh = {
     enable = true;
     dotDir = ".config/zsh";
-    enableAutosuggestions = true;
+    autosuggestion.enable = true;
     enableCompletion = true;
 
     shellAliases = {
@@ -18,8 +18,7 @@
       update = "sh -c 'sudo nixos-rebuild switch --flake .#$(hostname)'";
       update-user = "sh -c ' rm -rf ~/.config/gtk-2.0/ && home-manager switch --flake .#$(whoami)@$(hostname)'";
     };
-    
-
+   
     # Manual lines in .zshrc file
     initExtra = ''
       [[ ! -f ${./files/p10k.zsh} ]] || source ${./files/p10k.zsh}

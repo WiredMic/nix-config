@@ -6,29 +6,26 @@
   lib,
   config,
   pkgs,
+  pkgs-unstable,
   ...
 }: {
   # You can import other NixOS modules here
   imports = [
-    # If you want to use modules your own flake exports (from modules/nixos):
-    # outputs.nixosModules.example
-
-    # Or modules from other flakes (such as nixos-hardware):
-    # inputs.hardware.nixosModules.common-cpu-amd
-    # inputs.hardware.nixosModules.common-ssd
-
-    # You can also split up your configuration and import pieces of it here:
-    # ./users.nix
 
     # Import your generated (nixos-generate-config) hardware configuration
     ./hardware-configuration.nix
+    
+    # Import users
+    ../common/users/users.nix
 
-    # Desktop Environment
-    ../../modules/nixos/de/kde/kde.nix
-    # ../../modules/de/gnome/gnome.nix
+    # Import core common configs
+    ../common/core/core.nix
 
-    # Grub
-    ../../modules/nixos/grub/grub.nix
+    # Import optional common configs
+    ../common/optional/optional.nix
+
+    # home-manager
+    
 
   ];
 
@@ -83,13 +80,18 @@
     automatic = true;
     dates = [ "03:45" ];
   };
-  
+ 
+
+  # Desktop environment
+  de.kde.enable = true;
+  my.sddm.enable = true;
+
   networking = {
     # Enable networking
     networkmanager.enable = true;
 
     # hostname
-    hostName = "nixLap";
+    hostName = "nixDesk";
 
     firewall = { 
       enable = true;
@@ -155,18 +157,19 @@
     #media-session.enable = true;
   };
 
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-
-  # Configure keymap in X11
   services.xserver = {
-    layout = "us";
-    xkbVariant = "";
+    # Enable the X11 windowing system.
+    enable = true;
+    
+    # Configure keymap in X11
+    xkb = {
+      layout = "us";
+      variant = "";
+    };
   };
 
-
   # Software
-
+  
   environment.systemPackages = with pkgs; [
     git
     neovim
@@ -175,32 +178,59 @@
     tree
     home-manager
     gcc
-    libsForQt5.kdeconnect-kde
- 
+    kdePackages.kdeconnect-kde
+    wtype # does not work on kde or gnome
+    wev
+    miru
+    davinci-resolve
   ];
-  
-  # theme gtk
-  programs.dconf.enable = true;
-
-  
+ 
   # https://github.com/gmodena/nix-flatpak
   services.flatpak.enable = true;
 
-  # TODO: Configure your system-wide user settings (groups, etc), add more users as needed.
-  users.users = {
-    # FIXME: Replace with your username
-    rasmus = {
-      # TODO: You can set an initial password for your user.
-      # If you do, you can skip setting a root password by passing '--no-root-passwd' to nixos-install.
-      # Be sure to change it (using passwd) after rebooting!
-      initialPassword = "passwd";
-      isNormalUser = true;
-      openssh.authorizedKeys.keys = [
-        # TODO: Add your SSH public key(s) here, if you plan on using SSH to connect
-      ];
-      extraGroups = ["networkmanager" "wheel"];
-    };
-  };
+  # services.flatpak.remotes = lib.mkOptionDefault [{
+  #   name = "flathub-beta";
+  #   location = "https://flathub.org/beta-repo/flathub-beta.flatpakrepo";
+  # }];
+
+  services.flatpak.packages = [
+    { appId = "org.mozilla.Thunderbird"; origin = "flathub";  }
+    { appId = "com.spotify.Client"; origin = "flathub";  }
+  ];
+
+  # Software from optional
+
+  my.games.enable = true;
+  my.emulation.enable = true;
+
+  # Help to use the PC
+  my.tts.enable = true; # TODO piper
+  programs.ydotool.enable = true; # TODO get it to work
+  # TODO Spellcheck
+
+
+
+  # theme gtk
+  programs.dconf.enable = true;
+
+  user.rasmus.enable = true;
+
+  # home-manager = {
+  #   inherit pkgs;
+  #
+  #   extraSpecialArgs = {
+  #      inherit inputs outputs;
+  #      # inherit pkgs;
+  #      inherit pkgs-unstable;
+  #   };
+  #   users = {
+  #     rasmus = import ../../home/rasmus/nixDesk/home.nix;
+  #   };
+  # };
+
+
+
+  
 
   programs.ssh.startAgent = true;
   
@@ -220,14 +250,10 @@
     };
   };
 
-  programs.zsh.enable = true;
-  users.defaultUserShell = pkgs.zsh;
-  # users.users.rasmus.shell = pkgs.zsh;
-
   programs.kdeconnect.enable = true;
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = "23.05";
+  system.stateVersion = "24.05";
 }
 
 
