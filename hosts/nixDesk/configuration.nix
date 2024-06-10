@@ -24,8 +24,8 @@
     # Import optional common configs
     ../common/optional/optional.nix
 
-    # home-manager
     
+
 
   ];
 
@@ -184,6 +184,9 @@
     miru
     davinci-resolve
     just
+
+    wl-clipboard
+    wl-clipboard-x11
   ];
  
   # https://github.com/gmodena/nix-flatpak
