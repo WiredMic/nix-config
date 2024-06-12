@@ -6,9 +6,6 @@
   ...
 }:
 {
-  # home.packages = with pkgs; [
-  #   emacs
-  # ];
 
   programs.emacs.enable = true;
 
@@ -24,9 +21,18 @@
   
   fonts.fontconfig.enable = true;
   home.packages = with pkgs; [
+    # fonts
     (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
     jetbrains-mono
     fira
+
+    # dependencies
+    ripgrep
+    fd
+    ispell
+    pandoc
+    graphviz
+    shellcheck
   ];
 
   systemd.user.sessionVariables = {

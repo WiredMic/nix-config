@@ -182,7 +182,6 @@
     firefox
     xclip
     tree
-    home-manager
     gcc
     kdePackages.kdeconnect-kde
     wtype # does not work on kde or gnome
