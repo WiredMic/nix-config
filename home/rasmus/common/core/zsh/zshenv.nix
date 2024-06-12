@@ -14,8 +14,6 @@
   # Environment Variables to always set at login
 
   home.sessionVariables = {
-    EDITOR = "nvim";
-
     # flatpak
     XDG_DATA_DIRS = "$XDG_DATA_DIRS:/usr/share:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share";
   };
@@ -26,4 +24,6 @@
       COWPATH = "$XDG_DATA_HOME/cowsay/";
     };
   };
+
+
 }

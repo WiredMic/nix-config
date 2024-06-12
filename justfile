@@ -49,3 +49,7 @@ check-sops:
 update-nix-secrets:
   (cd ../nix-secrets && git fetch && git rebase) || true
   nix flake lock --update-input nix-secrets
+
+update-doom:
+  just rebuild
+  ~/.config/emacs/bin/doom sync

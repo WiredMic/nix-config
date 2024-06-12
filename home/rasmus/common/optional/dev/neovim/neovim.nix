@@ -8,6 +8,11 @@
   # https://www.reddit.com/r/NixOS/comments/13uc87h/masonnvim_broke_on_nixos/
   programs.neovim.enable = true;
 
+
+  home.sessionVariables = {
+    EDITOR = "nvim";
+  };
+
   xdg.configFile."nvim".source = pkgs.stdenv.mkDerivation {
     name = "NvChad";
     src = pkgs.fetchFromGitHub {

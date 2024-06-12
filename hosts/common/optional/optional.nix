@@ -17,6 +17,7 @@
     # display manager
     ./sddm/sddm.nix
 
+    # Dislexia help
     ./tts.nix
 
     # gaming
@@ -25,6 +26,9 @@
 
     # cloud storage
     ./onedrive.nix
+
+    # ricing
+    ./stylix/stylix.nix
   ];
 
   # Because this is the optional dir not everything needs to be enabled by default
@@ -41,4 +45,6 @@
   my.emulation.enable = lib.mkDefault false;
 
   my.onedrive.enable = lib.mkDefault false;
+  
+  my.stylix.enable = lib.mkDefault false;
 }

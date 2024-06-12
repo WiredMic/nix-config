@@ -223,6 +223,10 @@
   # Cloud storage
   my.onedrive.enable = true;
 
+  # theming stylix
+  stylix.image = ./hong-kong-night.jpg;
+  my.stylix.enable = true;
+
   # theme gtk
   programs.dconf.enable = true;
 

@@ -1,18 +1,1 @@
 
-* Overall goal
-My overall goal is to make a flake structure that is easy to reason about and manage.
-I want to easily be able to switch desktop environment and keep the changes I have made. These changes should also be keeped from machine to machine. Plasma should be in dark mode right of the bat.
-I need these machine to do actuel and because of this I need an TTS and a STT. 
-
-
-** TTS
-
-** DOOM emacs and ChadVim
-
-** core and optional config
-[[https://www.youtube.com/watch?v=XQTe1WAtvXI][Anatomy of a NixOS Config]]
-[[https://www.youtube.com/watch?v=vYc6IzKvAJQ&t=3s][Modularize NixOS and Home Manager | Great Practices]]
-
-
-* URL's 
-

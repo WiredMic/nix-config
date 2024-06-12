@@ -21,6 +21,8 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak"; # unstable branch. Use github:gmodena/nix-flatpak/?ref=<tag> to pin releases.
 
+     stylix.url = "github:danth/stylix";
+
 };
 
 
@@ -32,6 +34,7 @@
     grub2-themes,
     hyprland,
     nix-flatpak,
+    stylix,
     ...
   } @ inputs: let
     inherit (self) outputs;
@@ -77,7 +80,8 @@
           ./hosts/nixDesk/configuration.nix
           grub2-themes.nixosModules.default
           nix-flatpak.nixosModules.nix-flatpak
-          home-manager.nixosModules.home-manager 
+          home-manager.nixosModules.home-manager
+          stylix.nixosModules.stylix
           {
             home-manager = {
               useGlobalPkgs = true;

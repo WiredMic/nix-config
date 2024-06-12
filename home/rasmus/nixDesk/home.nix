@@ -21,9 +21,6 @@
 
     # Optional
     ../common/optional/optional.nix
-
-    # Neovim
-    ../../../modules/home-manager/neovim/neovim.nix
   ];
 
   
