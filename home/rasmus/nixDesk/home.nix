@@ -22,23 +22,8 @@
     # Optional
     ../common/optional/optional.nix
 
-    # zsh
-    ../../../modules/home-manager/zsh/zsh.nix
-    
-    # Color scheme
-    # ../../../modules/home-manager/util/nixcolor/nixcolor.nix
-    
-    # GnuPG
-    ../../../modules/home-manager/gnupg/gnupg.nix
-    
     # Neovim
     ../../../modules/home-manager/neovim/neovim.nix
-    
-    # SDDM avatar
-    # ../../../modules/programs/sddm/sddm-icon.nix
-     
-    # System Theme QT and GTK
-    # ../../../modules/home-manager/util/theme/theme.nix
   ];
 
   
@@ -81,6 +66,11 @@
   # Devops
   my.direnv.enable = true; 
 
+  # ssh 
+  my.ssh.enable = true;
+  my.gpg.enable = true;
+
+
   xdg.enable = true;
 
   # Enable home-manager and git
@@ -94,15 +84,6 @@
     extraConfig = {
       init.defaultBranch = "main";
     };
-  };
-
-  programs.ssh = {
-    enable = true;
-    compression = true;
-    forwardAgent = true;
-    extraConfig = ''
-    AddKeysToAgent yes
-    '';
   };
 
   # Nicely reload system units when changing configs

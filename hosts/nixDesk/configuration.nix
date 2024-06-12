@@ -80,6 +80,12 @@
     automatic = true;
     dates = [ "03:45" ];
   };
+
+  nix.gc = {
+		automatic = true;
+		dates = "weekly";
+		options = "--delete-older-than 30d";
+	};
  
 
   # Desktop environment
@@ -184,6 +190,7 @@
     miru
     davinci-resolve
     just
+    fastfetch
 
     wl-clipboard
     wl-clipboard-x11
@@ -213,7 +220,8 @@
   programs.ydotool.enable = true; # TODO get it to work
   # TODO Spellcheck
 
-
+  # Cloud storage
+  my.onedrive.enable = true;
 
   # theme gtk
   programs.dconf.enable = true;

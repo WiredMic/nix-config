@@ -6,23 +6,25 @@
 }:
 {
   imports = [
-  # Here everything in the optional dir is imported.
-  
-  # DE
-  ./de/cosmic/cosmic.nix
-  ./de/gnome/gnome.nix
-  ./de/kde/kde.nix
-  ./de/hyprland/hyprland.nix
-  
-  # display manager
-  ./sddm/sddm.nix
+    # Here everything in the optional dir is imported.
+    
+    # DE
+    ./de/cosmic/cosmic.nix
+    ./de/gnome/gnome.nix
+    ./de/kde/kde.nix
+    ./de/hyprland/hyprland.nix
+    
+    # display manager
+    ./sddm/sddm.nix
 
-  ./tts.nix
+    ./tts.nix
 
-  # gaming
-  ./gaming/games.nix
-  ./gaming/emulation.nix
+    # gaming
+    ./gaming/games.nix
+    ./gaming/emulation.nix
 
+    # cloud storage
+    ./onedrive.nix
   ];
 
   # Because this is the optional dir not everything needs to be enabled by default
@@ -38,5 +40,5 @@
   my.games.enable = lib.mkDefault false;
   my.emulation.enable = lib.mkDefault false;
 
-
+  my.onedrive.enable = lib.mkDefault false;
 }
