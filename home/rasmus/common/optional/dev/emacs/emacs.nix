@@ -29,6 +29,7 @@
       pandoc
       graphviz
       shellcheck
+      python312Packages.editorconfig
     ];
 
     systemd.user.sessionVariables = {
