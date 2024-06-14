@@ -15,7 +15,7 @@
 
     nix-colors.url = "github:misterio77/nix-colors";
 
-    grub2-themes.url = "github:vinceliuice/grub2-themes";
+    # grub2-themes.url = "github:vinceliuice/grub2-themes";
 
     hyprland.url = "github:hyprwm/Hyprland";
 
@@ -78,7 +78,7 @@
         modules = [
           # > Our main nixos configuration file <
           ./hosts/nixDesk/configuration.nix
-          grub2-themes.nixosModules.default
+          # grub2-themes.nixosModules.default
           nix-flatpak.nixosModules.nix-flatpak
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
@@ -86,6 +86,7 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
+              backupFileExtension = "backup";
               users.rasmus = import ./home/rasmus/nixDesk/home.nix;
               extraSpecialArgs = {
                  inherit inputs outputs;

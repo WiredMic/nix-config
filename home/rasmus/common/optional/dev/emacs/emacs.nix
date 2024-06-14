@@ -2,47 +2,60 @@
   pkgs,
   lib,
   config,
-  xdg,
   ...
 }:
 {
-
-  programs.emacs.enable = true;
-
-  # if I install Doom Emacs with nix it cannot manage it self.
-  # Therefoe these commands should be run outside of nix.
-  # git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
-  # ~/.config/emacs/bin/doom install
-
-  # does not work
-  # home.sessionPath = [
-  #   "\${xdg.configHome}/emacs/bin/"
-  # ];
   
-  fonts.fontconfig.enable = true;
-  home.packages = with pkgs; [
-    # fonts
-    (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
-    jetbrains-mono
-    fira
 
-    # dependencies
-    ripgrep
-    fd
-    ispell
-    pandoc
-    graphviz
-    shellcheck
-  ];
-
-  systemd.user.sessionVariables = {
-    PATH = "\${xdg.configHome}/emacs/bin/:$PATH";
+  options = {
+    my.emacs.enable =
+      lib.mkEnableOption "enables emacs";
   };
 
-  xdg.configFile."doom" = {
-    enable = true;
-    source = ./doom-emacs;
-    recursive = true;
-    target = "doom";
+  config = lib.mkIf config.my.direnv.enable {
+    programs.emacs.enable = true;
+
+    fonts.fontconfig.enable = true;
+    home.packages = with pkgs; [
+      # fonts
+      (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
+      jetbrains-mono
+      fira
+
+      # dependencies
+      ripgrep
+      fd
+      ispell
+      pandoc
+      graphviz
+      shellcheck
+    ];
+
+    systemd.user.sessionVariables = {
+      PATH = "\${xdg.configHome}/emacs/bin/:$PATH";
+    };
+    
+
+    xdg.configFile."doom" = {
+      enable = true;
+      source = ./doom-emacs;
+      # onChange = "~/.config/emacs/bin/doom sync";
+      recursive = true;
+    };
+
+    # xdg.configFile."doom".source = pkgs.stdenv.mkDerivation {
+    #   name = "doom-emacs";
+    #   dontUnpack = true;
+    #   src = pkgs.fetchurl {
+    #     url = "https://raw.githubusercontent.com/doomemacs/doomemacs/screenshots/cacochan.png";
+    #     hash = "sha256-SNePEot4Pb7+Ci4clK8fFEVdzxSu0GGHvrFbEjVMrg4=";
+    #   };
+    #
+    #   installPhase = ''
+    #   mkdir -p $out
+    #   cp -r $src $out/
+    #   cp -r ${./doom-emacs}/* $out/
+    #   '';
+    # };
   };
 }

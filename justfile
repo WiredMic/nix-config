@@ -10,9 +10,14 @@ rebuild-pre: update-nix-secrets
 rebuild-post:
   just check-sops
 
+# This is if home-manager is standalone
+rebuild-user: rebuild-pre
+  scripts/user-flake-rebuild.sh
+
 # Add --option eval-cache false if you end up caching a failure you can't get around
 rebuild: rebuild-pre
   scripts/system-flake-rebuild.sh
+  # scripts/user-flake-rebuild.sh 
 
 # Requires sops to be running and you must have reboot after initial rebuild
 rebuild-full: rebuild-pre && rebuild-post

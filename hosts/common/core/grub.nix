@@ -35,13 +35,13 @@
           }
         '';
       };
-      grub2-theme = {
-        enable = true;
-        theme = "stylish";
-        icon = "color";
-        screen = "1080p";
-        footer = true;
-      };
+      # grub2-theme = {
+      #   enable = true;
+      #   theme =  lib.mkDefault "stylish";
+      #   icon = "color";
+      #   screen = "1080p";
+      #   footer = true;
+      # };
     };
   };
 }

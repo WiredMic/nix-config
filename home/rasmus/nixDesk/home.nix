@@ -33,15 +33,16 @@
     stow
     flatpak
     vlc
-    gnome.gnome-software
+    # gnome.gnome-software
     neofetch
     pass
     nurl
-    rustup
     unzip
     gimp
     gnome.gnome-calculator
     gnome-multi-writer
+    tldr
+    libation # audible libaretor
 
     # fetchFromGithub
 
@@ -59,13 +60,22 @@
   (with pkgs-unstable; [
     # eza
   ]);
+  
+  # DE 
+  my.hyprland.enable = true;
+
 
   # Devops
   my.direnv.enable = true; 
+  my.emacs.enable = true;
+  my.rust.enable = true;
 
   # ssh 
   my.ssh.enable = true;
   my.gpg.enable = true;
+
+  # password manager 
+  my.pass.enable = true;
 
 
   xdg.enable = true;
@@ -73,15 +83,6 @@
   # Enable home-manager and git
   programs.home-manager.enable = true;
   
-  programs.git = {
-    enable = true;
-    userEmail = "rasmus@enev.dk";
-    userName = "Rasmus Enevoldsen";
-    # git config --global init.defaultBranch
-    extraConfig = {
-      init.defaultBranch = "main";
-    };
-  };
 
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";

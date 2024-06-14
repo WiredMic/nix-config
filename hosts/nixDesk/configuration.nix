@@ -90,6 +90,7 @@
 
   # Desktop environment
   de.kde.enable = true;
+  de.hyprland.enable = true;
   my.sddm.enable = true;
 
   networking = {
@@ -101,12 +102,6 @@
 
     firewall = { 
       enable = true;
-      # allowedTCPPortRanges = [ 
-      #   { from = 1714; to = 1764; } # KDE Connect
-      # ];  
-      # allowedUDPPortRanges = [ 
-      #   { from = 1714; to = 1764; } # KDE Connect
-      # ];  
     }; 
   };
   
@@ -166,7 +161,7 @@
   services.xserver = {
     # Enable the X11 windowing system.
     enable = true;
-    
+    # 
     # Configure keymap in X11
     xkb = {
       layout = "us";
@@ -184,12 +179,22 @@
     tree
     gcc
     kdePackages.kdeconnect-kde
+    
+    # network share maybe 
+    kdePackages.kio
+    kdePackages.kio-extras
+    kdePackages.kio
+    kdePackages.kdenetwork-filesharing
+    samba
+    home-manager
+    
     wtype # does not work on kde or gnome
     wev
     miru
     davinci-resolve
     just
     fastfetch
+    nmap
 
     wl-clipboard
     wl-clipboard-x11
@@ -223,30 +228,14 @@
   my.onedrive.enable = true;
 
   # theming stylix
-  stylix.image = ./hong-kong-night.jpg;
+  # stylix.enable = true;
+  stylix.image = ../common/optional/stylix/hong-kong-night.jpg;
   my.stylix.enable = true;
 
   # theme gtk
   programs.dconf.enable = true;
 
   user.rasmus.enable = true;
-
-  # home-manager = {
-  #   inherit pkgs;
-  #
-  #   extraSpecialArgs = {
-  #      inherit inputs outputs;
-  #      # inherit pkgs;
-  #      inherit pkgs-unstable;
-  #   };
-  #   users = {
-  #     rasmus = import ../../home/rasmus/nixDesk/home.nix;
-  #   };
-  # };
-
-
-
-  
 
   programs.ssh.startAgent = true;
   

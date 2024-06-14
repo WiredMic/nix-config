@@ -29,6 +29,7 @@
 
     services.flatpak.packages = [
       { appId = "com.valvesoftware.Steam"; origin = "flathub";  }
+      { appId = "com.heroicgameslauncher.hgl"; origin = "flathub";  }
       # { appId = "net.lutris.Lutris"; origin = "flathub"; }
       # { appId = "net.davidotek.pupgui2"; origin = "flathub"; }
     ];
