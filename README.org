@@ -1,35 +1,56 @@
 
 * Overall goal
 My overall goal is to make a flake structure that is easy to reason about and manage.
-I want to easily be able to switch desktop environment and keep the changes I have made. These changes should also be keeped from machine to machine. Plasma should be in dark mode right of the bat.
-I need these machine to do actuel and because of this I need an TTS and a STT.
+I want to easily be able to switch desktop environment and keep the changes I have made. These changes should also be kept from machine to machine. Plasma should be in dark mode right of the bat.
+I need these machine to do actual and because of this I need an TTS and a STT.
+
+* TODO Diagram
+This is not a diagram of my config. It is a picture of how I would like my diagram to look.
+#+ATTR_HTML: :width 400px :align center
+[[./anatomy_v3.png]]
+
+* Notes for speciffic apps
+** Doom Emacs and NvChad
+In this configuration I use the distributions Doom Emacs and NvChad. These distributions need to be able to download and manage themselves. Therefore, they cannot be managed by home manager. They need to be download separately.
 
 
-** TTS
+* TODO list
+** TODO Firefox
+./home/core/optional/firefox
+Firefox can be configured with nix language.
 
-** DOOM emacs and ChadVim
+** TODO TTS
+Find a better TTS than =espeak=.
 
-** core and optional config
-[[https://www.youtube.com/watch?v=XQTe1WAtvXI][Anatomy of a NixOS Config]]
-[[https://www.youtube.com/watch?v=vYc6IzKvAJQ&t=3s][Modularize NixOS and Home Manager | Great Practices]]
-
-
-* URL's
-
-* TODO Firefox
-./home/core/optionalfirefox
-
-
-* Desktop Environments
+** Desktop Environments
 ./host/core/optional/de/**
 
-** Hyprland
+*** TODO Hyprland
 - add the already exsisting config file
 - rewrite it in the nix lanuage
 
-** KDE (Wayland)
+*** TODO KDE (Wayland)
 - find a way to save KDE's config and save the files.
 
-** Gnome (Wayland)
 
-** Cosmic
+* Inspirations
+** [[https://www.youtube.com/watch?v=vYc6IzKvAJQ][Modularize NixOS and Home Manager | Great Practices]]
+This video showed how to make options toggleable.
+
+** [[https://www.youtube.com/watch?v=YHm7e3f87iY][Anatomy of a NixOS Config]]
+This video gave the Anatomy of my NixOS configuration.
+
+** [[https://www.youtube.com/watch?v=wQCV0QgIbuk][Nix-Config Workflow Recipes Using Just]]
+This video showed how to use =just= with NixOS.
+
+** TODO [[https://www.youtube.com/watch?v=6EMNHDOY-wo][NixOS Secrets Management]]
+This video show how to manage secrets with sops-nix. This is done to programmatically inject secrets to options.
+
+** TODO [[https://www.youtube.com/watch?v=H_Qct7TVB6o&t=199s][Program a Modular Control Center for Your Config Using Special Args in NixOS Flakes]]
+This video shows how to make the flake.nix into a control center. This makes it possible to turn on or off toggleable options from one place.
+With this I do not need to go into =configuration.nix= and =home.nix= to toggle options.
+
+** TODO [[https://www.youtube.com/watch?v=Qull6TMQm4Q][Custom Options and If-else Statements in Your NixOS Config]]
+This video shows how to use options and if else statments.
+Options set in NixOS cannot be used in home manager.
+They need to be set in the flake, because that can reach both.

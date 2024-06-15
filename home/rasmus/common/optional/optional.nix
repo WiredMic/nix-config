@@ -1,17 +1,11 @@
-{
-  pkgs,
-  lib,
-  config,
-  ...
-}:
-{
+{ pkgs, lib, config, userSettings, ... }: {
   imports = [
     # de 
     ./de/hyprland/hyprland-home.nix
 
     # sddm
     ./sddm/sddm-icon.nix
-    
+
     # dev
     ./dev/dev-env.nix
     ./dev/neovim/neovim.nix
@@ -20,12 +14,9 @@
 
     ./pass.nix
 
-    # ../../../../hosts/common/optional/optional.nix
   ];
-  
-  # config = lib.mkIf de.hyprland.enable {
-    my.hyprland.enable = lib.mkDefault false;
-  # };
+
+  my.hyprland.enable = lib.mkForce userSettings.de.hyprland;
 
   my.sddm-icon.enable = lib.mkDefault true;
 

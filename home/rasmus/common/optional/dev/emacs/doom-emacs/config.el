@@ -20,10 +20,10 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-(setq doom-font (font-spec :family "JetBrains Mono" :size 16)
-      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 17)
-      doom-symbol-font (font-spec :family "Nerd Font" :size 17)
-      doom-serif-font (font-spec :family "JetBrains Mono" :size 16))
+(setq doom-font (font-spec :family "JetBrains Mono" :size 20)
+     doom-variable-pitch-font (font-spec :family "Fira Sans" :size 21)
+     doom-symbol-font (font-spec :family "Nerd Font" :size 21)
+     doom-serif-font (font-spec :family "JetBrains Mono" :size 20))
 
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -76,6 +76,12 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+
+(setq +format-on-save-enabled-modes
+      '(not emacs-lisp-mode  ; elisp's mechanisms are good enough
+	    sql-mode         ; sqlformat is currently broken
+	    tex-mode         ; latexindent is broken
+	    latex-mode))
 
 (setq org-directory "~/OneDrive/Org/"
       org-roam-directory "~/OneDrive/Org/Roam")

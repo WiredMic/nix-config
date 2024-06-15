@@ -44,7 +44,8 @@
     tldr
     libation # audible libaretor
 
-    # fetchFromGithub
+    kitty # terminal
+    btop # system monitor
 
     # Libra office and spell check
     libreoffice-qt
@@ -61,10 +62,6 @@
     # eza
   ]);
   
-  # DE 
-  my.hyprland.enable = true;
-
-
   # Devops
   my.direnv.enable = true; 
   my.emacs.enable = true;

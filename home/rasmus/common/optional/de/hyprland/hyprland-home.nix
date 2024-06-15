@@ -14,6 +14,11 @@
   };
 
   config = lib.mkIf config.my.hyprland.enable {
+    home.packages = with pkgs; [
+      wtype
+      
+    ];
+    
     xdg.configFile."hypr" = {
       enable = true;
       source = ./hyprland;

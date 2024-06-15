@@ -8,6 +8,7 @@
 - [[#name--email][Name & Email]]
 - [[#fonts][Fonts]]
 - [[#theme][Theme]]
+- [[#format][Format]]
 - [[#org-mode][Org-mode]]
   - [[#directories][Directories]]
   - [[#latex][LaTeX]]
@@ -50,10 +51,10 @@ To Tangle a document press =
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-(setq doom-font (font-spec :family "JetBrains Mono" :size 16)
-     doom-variable-pitch-font (font-spec :family "Fira Sans" :size 17)
-     doom-symbol-font (font-spec :family "Nerd Font" :size 17)
-     doom-serif-font (font-spec :family "JetBrains Mono" :size 16))
+(setq doom-font (font-spec :family "JetBrains Mono" :size 20)
+     doom-variable-pitch-font (font-spec :family "Fira Sans" :size 21)
+     doom-symbol-font (font-spec :family "Nerd Font" :size 21)
+     doom-serif-font (font-spec :family "JetBrains Mono" :size 20))
 
 #+end_src
 
@@ -114,14 +115,22 @@ To Tangle a document press =
 
 #+end_src
 
+* Format
+#+begin_src elisp :tangle yes
+(setq +format-on-save-enabled-modes
+      '(not emacs-lisp-mode  ; elisp's mechanisms are good enough
+	    sql-mode         ; sqlformat is currently broken
+	    tex-mode         ; latexindent is broken
+	    latex-mode))
+#+end_src
 * Org-mode
 https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Org-mode-unicorn.svg/1200px-Org-mode-unicorn.svg.png
 
 ** Directories
 
 #+begin_src elisp :tangle yes
-(setq org-directory "~/Documents/org/"
-      org-roam-directory "~/Documents/org/roam")
+(setq org-directory "~/OneDrive/Org/"
+      org-roam-directory "~/OneDrive/Org/Roam")
 #+end_src
 
 ** LaTeX

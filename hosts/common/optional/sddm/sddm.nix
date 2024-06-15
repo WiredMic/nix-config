@@ -1,29 +1,20 @@
-{
-  pkgs, 
-  lib,
-  config,
-  ...
-}:
-{
-  imports = [];
- 
-  options = {
-    my.sddm.enable = 
-      lib.mkEnableOption "enables sddm config";
-  };
+{ pkgs, lib, config, ... }: {
+  imports = [ ];
+
+  options = { my.sddm.enable = lib.mkEnableOption "enables sddm config"; };
 
   config = lib.mkIf config.my.sddm.enable {
     environment.systemPackages = with pkgs; [
-      libsForQt5.qt5.qtgraphicaleffects   
-      (callPackage ./sddm-suger-dark.nix {})
-      (callPackage ./where-is-my-sddm-theme-tree.nix {})
+      libsForQt5.qt5.qtgraphicaleffects
+      (callPackage ./sddm-suger-dark.nix { })
+      (callPackage ./where-is-my-sddm-theme-tree.nix { })
       where-is-my-sddm-theme
     ];
 
     services.displayManager.sddm = {
       enable = true;
       autoNumlock = true;
-      theme = "where-is-my-sddm-theme-tree";
+      theme = "sddm-suger-dark";
     };
 
     services.xserver.displayManager.setupCommands = ''

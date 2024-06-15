@@ -1,20 +1,13 @@
 # This is your system's configuration file.
 # Use this to configure your system environment (it replaces /etc/nixos/configuration.nix)
-{
-  inputs,
-  outputs,
-  lib,
-  config,
-  pkgs,
-  pkgs-unstable,
-  ...
-}: {
+{ inputs, outputs, systemSettings, userSettings, lib, config, pkgs
+, pkgs-unstable, ... }: {
   # You can import other NixOS modules here
   imports = [
 
     # Import your generated (nixos-generate-config) hardware configuration
     ./hardware-configuration.nix
-    
+
     # Import users
     ../common/users/users.nix
 
@@ -23,9 +16,6 @@
 
     # Import optional common configs
     ../common/optional/optional.nix
-
-    
-
 
   ];
 
@@ -56,18 +46,16 @@
 
   # This will add each flake input as a registry
   # To make nix3 commands consistent with your flake
-  nix.registry = (lib.mapAttrs (_: flake: {inherit flake;})) ((lib.filterAttrs (_: lib.isType "flake")) inputs);
+  nix.registry = (lib.mapAttrs (_: flake: { inherit flake; }))
+    ((lib.filterAttrs (_: lib.isType "flake")) inputs);
 
   # This will additionally add your inputs to the system's legacy channels
   # Making legacy nix commands consistent as well, awesome!
-  nix.nixPath = ["/etc/nix/path"];
-  environment.etc =
-    lib.mapAttrs'
-    (name: value: {
-      name = "nix/path/${name}";
-      value.source = value.flake;
-    })
-    config.nix.registry;
+  nix.nixPath = [ "/etc/nix/path" ];
+  environment.etc = lib.mapAttrs' (name: value: {
+    name = "nix/path/${name}";
+    value.source = value.flake;
+  }) config.nix.registry;
 
   nix.settings = {
     # Enable flakes and new 'nix' command
@@ -82,16 +70,10 @@
   };
 
   nix.gc = {
-		automatic = true;
-		dates = "weekly";
-		options = "--delete-older-than 30d";
-	};
- 
-
-  # Desktop environment
-  de.kde.enable = true;
-  de.hyprland.enable = true;
-  my.sddm.enable = true;
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
+  };
 
   networking = {
     # Enable networking
@@ -100,11 +82,9 @@
     # hostname
     hostName = "nixDesk";
 
-    firewall = { 
-      enable = true;
-    }; 
+    firewall = { enable = true; };
   };
-  
+
   hardware.bluetooth = {
     enable = true; # enables support for Bluetooth
     powerOnBoot = true; # powers up the default Bluetooth controller on boot
@@ -114,17 +94,15 @@
         FastConnectable = "true";
         Experimental = "true";
       };
-      Policy = {
-        AutoEnable = "true";
-      };
+      Policy = { AutoEnable = "true"; };
     };
   };
 
   # Set your time zone.
-  time.timeZone = "Europe/Copenhagen";
+  time.timeZone = systemSettings.timezone;
 
   # Select internationalisation properties.
-  i18n.defaultLocale = "en_DK.UTF-8";
+  i18n.defaultLocale = systemSettings.locale;
 
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "da_DK.UTF-8";
@@ -170,24 +148,25 @@
   };
 
   # Software
-  
+
   environment.systemPackages = with pkgs; [
     git
     neovim
     firefox
+    dolphin
     xclip
     tree
     gcc
     kdePackages.kdeconnect-kde
-    
-    # network share maybe 
+
+    # network share maybe
     kdePackages.kio
     kdePackages.kio-extras
     kdePackages.kio
     kdePackages.kdenetwork-filesharing
     samba
     home-manager
-    
+
     wtype # does not work on kde or gnome
     wev
     miru
@@ -196,10 +175,13 @@
     fastfetch
     nmap
 
+    # icons
+    papirus-icon-theme
+
     wl-clipboard
     wl-clipboard-x11
   ];
- 
+
   # https://github.com/gmodena/nix-flatpak
   services.flatpak.enable = true;
 
@@ -209,9 +191,18 @@
   # }];
 
   services.flatpak.packages = [
-    { appId = "org.mozilla.Thunderbird"; origin = "flathub";  }
-    { appId = "com.spotify.Client"; origin = "flathub";  }
-    { appId = "com.usebottles.bottles"; origin = "flathub";  }
+    {
+      appId = "org.mozilla.Thunderbird";
+      origin = "flathub";
+    }
+    {
+      appId = "com.spotify.Client";
+      origin = "flathub";
+    }
+    {
+      appId = "com.usebottles.bottles";
+      origin = "flathub";
+    }
   ];
 
   # Software from optional
@@ -227,22 +218,20 @@
   # Cloud storage
   my.onedrive.enable = true;
 
-  # theming stylix
-  # stylix.enable = true;
-  stylix.image = ../common/optional/stylix/hong-kong-night.jpg;
-  my.stylix.enable = true;
-
   # theme gtk
   programs.dconf.enable = true;
 
   user.rasmus.enable = true;
 
   programs.ssh.startAgent = true;
-  
-  fonts.packages = with pkgs; [
-    (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" "JetBrainsMono" ]; })
-  ];
-  
+
+  fonts.packages = with pkgs;
+    [
+      (nerdfonts.override {
+        fonts = [ "FiraCode" "DroidSansMono" "JetBrainsMono" ];
+      })
+    ];
+
   # This setups a SSH server. Very important if you're setting up a headless system.
   # Feel free to remove if you don't need it.
   services.openssh = {
@@ -260,11 +249,3 @@
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "24.05";
 }
-
-
-
-
-
-
-  
-

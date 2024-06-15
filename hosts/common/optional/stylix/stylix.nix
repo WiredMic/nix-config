@@ -1,13 +1,8 @@
-{ 
-  pkgs,
-  lib,
-  config,
-  ...
-}: 
+{ pkgs, lib, config, ... }:
 
 {
   options = {
-    my.stylix.enable = 
+    my.stylix.enable =
       lib.mkEnableOption "enables stylix to style tilling managers";
   };
 
@@ -15,22 +10,22 @@
     # Ricing Linux Has Never Been Easier | NixOS + Stylix
     # https://www.youtube.com/watch?v=ljHkWgBaQWU&t=9s
     environment.systemPackages = with pkgs; [
-   
-     base16-schemes
-     kitty
-     papirus-icon-theme
-   ];
+      base16-schemes
+      kitty
+      papirus-icon-theme
+    ];
 
-    stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-medium.yaml";
-    
+    stylix.enable = true;
 
     # Don't forget to apply wallpaper
-  
     stylix.image = lib.mkForce ./hong-kong-night.jpg;
-  
+
+    stylix.base16Scheme =
+      "${pkgs.base16-schemes}/share/themes/gruvbox-dark-medium.yaml";
+
     stylix.fonts = {
       monospace = {
-        package = pkgs.nerdfonts.override {fonts = ["JetBrainsMono"];};
+        package = pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; };
         name = "JetBrainsMono Nerd Font Mono";
       };
       sansSerif = {
@@ -49,16 +44,15 @@
       desktop = 10;
       popups = 10;
     };
-   
+
     stylix.opacity = {
       applications = 1.0;
       terminal = 1.0;
       desktop = 1.0;
       popups = 1.0;
     };
-    
+
     stylix.polarity = "dark"; # "light" or "either"
   };
-
 
 }
