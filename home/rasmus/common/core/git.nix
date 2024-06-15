@@ -11,7 +11,7 @@
   };
 
   config = lib.mkIf config.my.git.enable {
-
+    home.packages = with pkgs; [ lazygit ];
     programs.git = {
       enable = true;
       userEmail = "rasmus@enev.dk";
