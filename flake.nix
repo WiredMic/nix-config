@@ -16,18 +16,20 @@
 
     # grub2-themes.url = "github:vinceliuice/grub2-themes";
 
-    hyprland.url = "github:hyprwm/Hyprland";
+    hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
 
     nix-flatpak.url =
       "github:gmodena/nix-flatpak"; # unstable branch. Use github:gmodena/nix-flatpak/?ref=<tag> to pin releases.
 
     stylix.url = "github:danth/stylix";
 
+    ags.url = "github:Aylur/ags";
+
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager,
     # grub2-themes,
-    hyprland, nix-flatpak, stylix, ... }@inputs:
+    hyprland, nix-flatpak, stylix, ags, ... }@inputs:
     let
       inherit (self) outputs;
       # Supported systems for your flake packages, shell, etc.
@@ -55,7 +57,7 @@
         username = "rasmus";
         de = {
           hyprland = true;
-          kde = true;
+          kde = false;
           gnome = false;
           cosmic = false;
         };

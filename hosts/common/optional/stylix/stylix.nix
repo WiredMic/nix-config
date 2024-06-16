@@ -11,17 +11,18 @@
     # https://www.youtube.com/watch?v=ljHkWgBaQWU&t=9s
     environment.systemPackages = with pkgs; [
       base16-schemes
-      kitty
       papirus-icon-theme
     ];
 
-    stylix.enable = true;
+    stylix = {
+      enable = true;
+      autoEnable = true;
+    };
 
     # Don't forget to apply wallpaper
     stylix.image = lib.mkForce ./hong-kong-night.jpg;
 
-    stylix.base16Scheme =
-      "${pkgs.base16-schemes}/share/themes/gruvbox-dark-medium.yaml";
+    stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/dracula.yaml";
 
     stylix.fonts = {
       monospace = {
@@ -53,6 +54,8 @@
     };
 
     stylix.polarity = "dark"; # "light" or "either"
+
+    stylix.targets.grub.enable = true; # Change if another theme
   };
 
 }
