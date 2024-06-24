@@ -1,5 +1,5 @@
-{ pkgs, config, lib, ... }: {
-  imports = [ ];
+{ pkgs, config, lib, userSettings, inputs, ... }: {
+  imports = [ inputs.nix-colors.homeManagerModules.default ];
 
   options = {
     my.hyprland.enable = lib.mkEnableOption "enables my hyprland config";
@@ -33,6 +33,10 @@
       kdePackages.dolphin
       killall
 
+      kdePackages.qt6ct
+      # (callPackage ./base16-qt5ct.nix { })
+      adwaita-qt6
+      kdePackages.qtstyleplugin-kvantum
     ];
 
     programs = {
@@ -53,6 +57,106 @@
       source = ./wlogout;
     };
 
+    # Theming
+    qt = {
+      enable = true;
+      platformTheme.name = "qt5ct";
+      # style.name = "";
+
+    };
+    colorScheme = inputs.nix-colors.colorSchemes."${userSettings.style-color}";
+    # stylix.homeManagerIntegration.followSystem = true;
+    xdg.configFile = {
+      "qt6ct" = {
+        enable = true;
+        source = pkgs.stdenv.mkDerivation {
+          name = "base16-qt5ct";
+          # version = "1.2";
+          dontBuild = true;
+          src = pkgs.fetchFromGitHub {
+            owner = "mnussbaum";
+            repo = "base16-qt5ct";
+            rev = "a2ccf3fa3fb7e1c1c82f23e629e41aee0dc2bede";
+            hash = "sha256-/mfhvmUFemLmYO9wQfDUnr7w3czUbF69fwZqP4+umMs=";
+          };
+          buildInputs = [ pkgs.adwaita-qt6 ];
+          installPhase = ''
+            mkdir -p $out
+            cp -r $src/colors/. $out/colors
+            echo "${config.colorScheme.palette.base01}" | cat - > test.test
+            cat > $out/qt6ct.conf << EOF
+              [Appearance]
+              color_scheme_path=/home/rasmus/.config//qt6ct/colors/base16-${userSettings.style-color}.conf
+              custom_palette=true
+              standard_dialogs=default
+              style=kvantum-dark
+
+              [Fonts]
+              fixed="DejaVu Sans,12,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+              general="DejaVu Sans,12,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+
+              [Interface]
+              activate_item_on_single_click=1
+              buttonbox_layout=0
+              cursor_flash_time=1000
+              dialog_buttons_have_icons=1
+              double_click_interval=400
+              gui_effects=@Invalid()
+              keyboard_scheme=2
+              menus_have_icons=true
+              show_shortcuts_in_context_menus=true
+              stylesheets=@Invalid()
+              toolbutton_style=4
+              underline_shortcut=1
+              wheel_scroll_lines=3
+
+              [SettingsWindow]
+              geometry=@ByteArray(\x1\xd9\xd0\xcb\0\x3\0\0\0\0\0\0\0\0\0\0\0\0\x4\xe2\0\0\x5Q\0\0\0\0\0\0\0\0\0\0\x4\xff\0\0\x5}\0\0\0\0\x2\0\0\0\n\0\0\0\0\0\0\0\0\0\0\0\x4\xe2\0\0\x5Q)
+
+              [Troubleshooting]
+              force_raster_widgets=1
+              ignored_applications=@Invalid()
+            EOF
+          '';
+        };
+      };
+    };
+
+    # xdg.configFile."Kvantum/KvArcDark" = {
+    #   enable = true;
+    #   source = pkgs.stdenv.mkDerivation {
+    #     name = "KvArcDark";
+    #     # version = "1.2";
+    #     dontBuild = true;
+    #     src = ./KvArcDark;
+    #     installPhase = ''
+    #       mkdir -p $out
+    #       cp -r $src/. $out
+    #       cd $out
+    #       sed -i -E "s/^window.color=.*$/window.color=#${config.colorScheme.palette.base00}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^base.color=.*$/base.color=#${config.colorScheme.palette.base00}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^alt.base.color=.*$/alt.base.color=#${config.colorScheme.palette.base01}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^button.color=.*$/button.color=#${config.colorScheme.palette.base04}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^light.color=.*$/light.color=#${config.colorScheme.palette.base06}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^mid.light.color=.*$/mid.light.color=#${config.colorScheme.palette.base07}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^dark.color=.*$/dark.color=#${config.colorScheme.palette.base04}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^mid.color=.*$/mid.color=#${config.colorScheme.palette.base05}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^highlight.color=.*$/highlight.color=#${config.colorScheme.palette.base03}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^inactive.highlight.color=.*$/inactive.highlight.color=#${config.colorScheme.palette.base01}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^text.color=.*$/text.color=#${config.colorScheme.palette.base04}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^window.text.color=.*$/window.text.color=#${config.colorScheme.palette.base01}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^button.text.color=.*$/button.text.color=#${config.colorScheme.palette.base01}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^disabled.text.color=.*$/disabled.text.color=#${config.colorScheme.palette.base01}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^tooltip.text.color=.*$/tooltip.text.color=#${config.colorScheme.palette.base04}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^highlight.text.color=.*$/highlight.text.color=#${config.colorScheme.palette.base05}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^link.color=.*$/link.color=#${config.colorScheme.palette.base0D}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^link.visited.color=.*$/link.visited.color=#${config.colorScheme.palette.base0E}/g" KvArcDark.kvconfig
+    #       sed -i -E "s/^progress.indicator.text.color=.*$/progress.indicator.text.color=#${config.colorScheme.palette.base07}/g" KvArcDark.kvconfig
+    #     '';
+    #   };
+    # };
+    # # environment.variables.QT_QPA_PLATFORMTHEME = "qt5ct";
+
     wayland.windowManager.hyprland = {
       # https://github.com/hyprland-community/awesome-hyprland
       enable = true;
@@ -61,7 +165,6 @@
         variables = [ "--all" ];
       };
       settings = {
-
         # Setup monitors
         # See https://wiki.hyprland.org/Configuring/Monitors/
         monitor = [
@@ -74,19 +177,23 @@
           # "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
           "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
           # "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
-          # exec-once = $HOME/.dotfiles/waybar/launch.sh
           "swww init"
           "ags -c ${config.xdg.configHome}/ags/simple-bar/config.js -b bar &"
           "ags -c ${config.xdg.configHome}/ags/applauncher/config.js -b app &"
 
-          # "ags &"
-          # "ags -c ${config.xdg.configHome}/simple-bar/config.js &"
-          # exec = swww img $XDG_CACHE_HOME/current_wallpaper.jpg --transition-step 20 --transition-fps=20
+          # "swww img ${
+          #   ../../../../../../wallpapers
+          # }/chill-forrest.jpg --transition-step 20 --transition-fps=20"
           # exec-once = festival --server
-          # exec-once = /usr/bin/emacs --daemon
           # exec-once = rclone --vfs-cache-mode writes mount OneDrive: ~/Documents/OneDrive & notify-send "OneDrive connected" "Microsoft OneDrive successfully mounted."  # establish connection to onedrive
 
         ];
+        exec = [
+          "swww img ${
+            ../../../../../../wallpapers
+          }/chill-forrest.jpg --transition-step 20 --transition-fps=20"
+        ];
+
         debug.disable_logs = false;
 
         input = {
@@ -201,7 +308,7 @@
           "$mainMod, down, movefocus, d"
 
           # Mouse shortcuts
-          # ", mouse_left, exec, wtype -M ctrl -M shift -P Tab -m ctrl -m shift"
+          ", mouse_left, exec, wtype -M ctrl -M shift -P Tab -m ctrl -m shift"
           ", mouse_right, exec, wtype -M ctrl -P Tab -m ctrl"
 
         ];
@@ -220,10 +327,6 @@
 
 
         # See https://wiki.hyprland.org/Configuring/Keywords/ for more
-
-        # -----------------------------------------------------------------
-        # Autostart
-        # -----------------------------------------------------------------
 
         # For all categories, see https://wiki.hyprland.org/Configuring/Variables/
 

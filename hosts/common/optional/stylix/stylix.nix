@@ -1,6 +1,4 @@
-{ pkgs, lib, config, ... }:
-
-{
+{ pkgs, lib, config, userSettings, ... }: {
   options = {
     my.stylix.enable =
       lib.mkEnableOption "enables stylix to style tilling managers";
@@ -22,7 +20,8 @@
     # Don't forget to apply wallpaper
     stylix.image = lib.mkForce ./hong-kong-night.jpg;
 
-    stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/dracula.yaml";
+    stylix.base16Scheme =
+      "${pkgs.base16-schemes}/share/themes/${userSettings.style-color}.yaml";
 
     stylix.fonts = {
       monospace = {

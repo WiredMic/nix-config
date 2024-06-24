@@ -85,6 +85,35 @@
     firewall = { enable = true; };
   };
 
+  # Amd GPU
+  # https://nixos.wiki/wiki/AMD_GPU
+  boot.initrd.kernelModules = [ "amdgpu" ];
+  services.xserver.videoDrivers = [ "amdgpu" ];
+
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+    extraPackages = with pkgs;
+      [
+        rocmPackages.clr.icd # OpenCL
+      ];
+  };
+
+  hardware.amdgpu = {
+    opencl.enable = true;
+    amdvlk = {
+      enable = true;
+      # package = [ pkgs.amdvlk ];
+    };
+    # support32Bit = {
+    #   enable = true;
+    #   package = with pkgs; [ driversi686Linux.amdvlk ];
+    # };
+  };
+
+  # AMD CPU
+  hardware.cpu.amd.updateMicrocode = true;
+
   hardware.bluetooth = {
     enable = true; # enables support for Bluetooth
     powerOnBoot = true; # powers up the default Bluetooth controller on boot
@@ -174,6 +203,7 @@
     just
     fastfetch
     nmap
+    gnome.gnome-system-monitor
 
     # icons
     papirus-icon-theme

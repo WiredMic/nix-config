@@ -3,12 +3,12 @@
 
   inputs = {
     # Nixpkgs
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     # Home manager
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.05";
+      url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -29,7 +29,7 @@
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager,
     # grub2-themes,
-    hyprland, nix-flatpak, stylix, ags, ... }@inputs:
+    hyprland, nix-flatpak, stylix, nix-colors, ags, ... }@inputs:
     let
       inherit (self) outputs;
       # Supported systems for your flake packages, shell, etc.
@@ -63,6 +63,7 @@
         };
         deType = "wayland"; # x11 vs wayland
         editor = "emacsclient";
+        style-color = "dracula";
       };
 
     in {

@@ -14,7 +14,7 @@
     services.displayManager.sddm = {
       enable = true;
       autoNumlock = true;
-      theme = "sddm-suger-dark";
+      theme = "where-is-my-sddm-theme-tree";
     };
 
     services.xserver.displayManager.setupCommands = ''
