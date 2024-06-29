@@ -16,7 +16,12 @@
 
     # grub2-themes.url = "github:vinceliuice/grub2-themes";
 
-    hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
+    hyprland = { url = "git+https://github.com/hyprwm/Hyprland?submodules=1"; };
+    split-monitor-workspaces = {
+      url = "github:Duckonaut/split-monitor-workspaces";
+      inputs.hyprland.follows =
+        "hyprland"; # <- make sure this line is present for the plugin to work as intended
+    };
 
     nix-flatpak.url =
       "github:gmodena/nix-flatpak"; # unstable branch. Use github:gmodena/nix-flatpak/?ref=<tag> to pin releases.
@@ -29,7 +34,8 @@
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager,
     # grub2-themes,
-    hyprland, nix-flatpak, stylix, nix-colors, ags, ... }@inputs:
+    hyprland, split-monitor-workspaces, nix-flatpak, stylix, nix-colors, ags
+    , ... }@inputs:
     let
       inherit (self) outputs;
       # Supported systems for your flake packages, shell, etc.

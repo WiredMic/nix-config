@@ -102,7 +102,7 @@
   hardware.amdgpu = {
     opencl.enable = true;
     amdvlk = {
-      enable = true;
+      # enable = true; # does not work with gamescope
       # package = [ pkgs.amdvlk ];
     };
     # support32Bit = {
@@ -231,6 +231,10 @@
     }
     {
       appId = "com.usebottles.bottles";
+      origin = "flathub";
+    }
+    {
+      appId = "com.github.tchx84.Flatseal";
       origin = "flathub";
     }
   ];

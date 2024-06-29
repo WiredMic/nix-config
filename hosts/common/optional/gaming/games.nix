@@ -11,7 +11,19 @@
 
     programs.steam = {
       enable = true;
-      gamescopeSession.enable = true;
+      remotePlay.openFirewall =
+        true; # Open ports in the firewall for Steam Remote Play
+      dedicatedServer.openFirewall =
+        true; # Open ports in the firewall for Source Dedicated Server
+      localNetworkGameTransfers.openFirewall =
+        true; # Open ports in the firewall for Steam Local Network Game Transfers
+
+      gamescopeSession = {
+        enable = true;
+        env = { }; # enviromental variables
+        args =
+          [ ]; # arguments https://github.com/ValveSoftware/gamescope?tab=readme-ov-file#options
+      };
     };
 
     programs.gamemode.enable = true;
