@@ -1,5 +1,8 @@
 { pkgs, config, lib, userSettings, inputs, ... }: {
-  imports = [ inputs.nix-colors.homeManagerModules.default ];
+  imports = [
+    inputs.nix-colors.homeManagerModules.default
+    # inputs.split-monitor-workspaces.homeManagerModules.default
+  ];
 
   options = {
     my.hyprland.enable = lib.mkEnableOption "enables my hyprland config";
@@ -60,67 +63,68 @@
     # Theming
     qt = {
       enable = true;
-      platformTheme.name = "qt5ct";
+      # platformTheme.name = "qt5ct";
       # style.name = "";
 
     };
-    colorScheme = inputs.nix-colors.colorSchemes."${userSettings.style-color}";
-    # stylix.homeManagerIntegration.followSystem = true;
-    xdg.configFile = {
-      "qt6ct" = {
-        enable = true;
-        source = pkgs.stdenv.mkDerivation {
-          name = "base16-qt5ct";
-          # version = "1.2";
-          dontBuild = true;
-          src = pkgs.fetchFromGitHub {
-            owner = "mnussbaum";
-            repo = "base16-qt5ct";
-            rev = "a2ccf3fa3fb7e1c1c82f23e629e41aee0dc2bede";
-            hash = "sha256-/mfhvmUFemLmYO9wQfDUnr7w3czUbF69fwZqP4+umMs=";
-          };
-          buildInputs = [ pkgs.adwaita-qt6 ];
-          installPhase = ''
-            mkdir -p $out
-            cp -r $src/colors/. $out/colors
-            echo "${config.colorScheme.palette.base01}" | cat - > test.test
-            cat > $out/qt6ct.conf << EOF
-              [Appearance]
-              color_scheme_path=/home/rasmus/.config//qt6ct/colors/base16-${userSettings.style-color}.conf
-              custom_palette=true
-              standard_dialogs=default
-              style=kvantum-dark
 
-              [Fonts]
-              fixed="DejaVu Sans,12,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
-              general="DejaVu Sans,12,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+    # colorScheme = inputs.nix-colors.colorSchemes."${userSettings.style-color}";
+    # # stylix.homeManagerIntegration.followSystem = true;
+    # xdg.configFile = {
+    #   "qt6ct" = {
+    #     enable = true;
+    #     source = pkgs.stdenv.mkDerivation {
+    #       name = "base16-qt5ct";
+    #       # version = "1.2";
+    #       dontBuild = true;
+    #       src = pkgs.fetchFromGitHub {
+    #         owner = "mnussbaum";
+    #         repo = "base16-qt5ct";
+    #         rev = "a2ccf3fa3fb7e1c1c82f23e629e41aee0dc2bede";
+    #         hash = "sha256-/mfhvmUFemLmYO9wQfDUnr7w3czUbF69fwZqP4+umMs=";
+    #       };
+    #       buildInputs = [ pkgs.adwaita-qt6 ];
+    #       installPhase = ''
+    #         mkdir -p $out
+    #         cp -r $src/colors/. $out/colors
+    #         echo "${config.colorScheme.palette.base01}" | cat - > test.test
+    #         cat > $out/qt6ct.conf << EOF
+    #           [Appearance]
+    #           color_scheme_path=/home/rasmus/.config//qt6ct/colors/base16-${userSettings.style-color}.conf
+    #           custom_palette=true
+    #           standard_dialogs=default
+    #           style=kvantum-dark
 
-              [Interface]
-              activate_item_on_single_click=1
-              buttonbox_layout=0
-              cursor_flash_time=1000
-              dialog_buttons_have_icons=1
-              double_click_interval=400
-              gui_effects=@Invalid()
-              keyboard_scheme=2
-              menus_have_icons=true
-              show_shortcuts_in_context_menus=true
-              stylesheets=@Invalid()
-              toolbutton_style=4
-              underline_shortcut=1
-              wheel_scroll_lines=3
+    #           [Fonts]
+    #           fixed="DejaVu Sans,12,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+    #           general="DejaVu Sans,12,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
 
-              [SettingsWindow]
-              geometry=@ByteArray(\x1\xd9\xd0\xcb\0\x3\0\0\0\0\0\0\0\0\0\0\0\0\x4\xe2\0\0\x5Q\0\0\0\0\0\0\0\0\0\0\x4\xff\0\0\x5}\0\0\0\0\x2\0\0\0\n\0\0\0\0\0\0\0\0\0\0\0\x4\xe2\0\0\x5Q)
+    #           [Interface]
+    #           activate_item_on_single_click=1
+    #           buttonbox_layout=0
+    #           cursor_flash_time=1000
+    #           dialog_buttons_have_icons=1
+    #           double_click_interval=400
+    #           gui_effects=@Invalid()
+    #           keyboard_scheme=2
+    #           menus_have_icons=true
+    #           show_shortcuts_in_context_menus=true
+    #           stylesheets=@Invalid()
+    #           toolbutton_style=4
+    #           underline_shortcut=1
+    #           wheel_scroll_lines=3
 
-              [Troubleshooting]
-              force_raster_widgets=1
-              ignored_applications=@Invalid()
-            EOF
-          '';
-        };
-      };
-    };
+    #           [SettingsWindow]
+    #           geometry=@ByteArray(\x1\xd9\xd0\xcb\0\x3\0\0\0\0\0\0\0\0\0\0\0\0\x4\xe2\0\0\x5Q\0\0\0\0\0\0\0\0\0\0\x4\xff\0\0\x5}\0\0\0\0\x2\0\0\0\n\0\0\0\0\0\0\0\0\0\0\0\x4\xe2\0\0\x5Q)
+
+    #           [Troubleshooting]
+    #           force_raster_widgets=1
+    #           ignored_applications=@Invalid()
+    #         EOF
+    #       '';
+    #     };
+    #   };
+    # };
 
     # xdg.configFile."Kvantum/KvArcDark" = {
     #   enable = true;
@@ -177,22 +181,24 @@
           # "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
           "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
           # "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
-          "swww init"
+          # "swww init"
           "ags -c ${config.xdg.configHome}/ags/simple-bar/config.js -b bar &"
           "ags -c ${config.xdg.configHome}/ags/applauncher/config.js -b app &"
 
-          # "swww img ${
-          #   ../../../../../../wallpapers
-          # }/chill-forrest.jpg --transition-step 20 --transition-fps=20"
           # exec-once = festival --server
           # exec-once = rclone --vfs-cache-mode writes mount OneDrive: ~/Documents/OneDrive & notify-send "OneDrive connected" "Microsoft OneDrive successfully mounted."  # establish connection to onedrive
 
         ];
-        exec = [
-          "swww img ${
-            ../../../../../../wallpapers
-          }/chill-forrest.jpg --transition-step 20 --transition-fps=20"
-        ];
+        # exec = [
+        #   "swww img ${
+        #     ../../../../../../wallpapers
+        #   }/chill-forrest.jpg --transition-step 20 --transition-fps=20"
+        # ];
+
+        # package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+        # plugins = [
+        #   inputs.split-monitor-workspaces.packages.${pkgs.system}.split-monitor-workspaces
+        # ];
 
         debug.disable_logs = false;
 

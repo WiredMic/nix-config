@@ -149,6 +149,8 @@ org-ellipsis "…"
 
 (add-hook 'org-mode-hook #'my-org-faces)
 
+;; (add-hook 'centaur-tabs-mode)
+
 ;; (use-package anki-editor
 ;;   :after org-noter
 ;;   :config

@@ -13,6 +13,7 @@
   - [[#directories][Directories]]
   - [[#latex][LaTeX]]
   - [[#org-modern][Org-modern]]
+  - [[#centaur-tab][Centaur Tab]]
   - [[#anki][Anki]]
   - [[#org-roam][Org-roam]]
   - [[#org-auto-tangle][Org-auto-tangle]]
@@ -203,6 +204,10 @@ org-ellipsis "…"
 
 #+end_src
 
+** Centaur Tab
+#+begin_src elisp :tangle yes
+;; (add-hook 'centaur-tabs-mode)
+#+end_src
 ** Anki
 https://rgoswami.me/posts/anki-decks-orgmode/
 #+begin_src elisp :tangle yes

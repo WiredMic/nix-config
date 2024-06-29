@@ -15,6 +15,7 @@
     ./dev/neovim/neovim.nix
     ./dev/emacs/emacs.nix
     ./dev/rust.nix
+    ./dev/latex.nix
 
     ./pass.nix
 
@@ -30,6 +31,7 @@
   my.direnv.enable = lib.mkDefault false;
   my.emacs.enable = lib.mkDefault false;
   my.rust.enable = lib.mkDefault false;
+  my.latex.enable = lib.mkDefault false;
 
   my.pass.enable = lib.mkDefault false;
 }
