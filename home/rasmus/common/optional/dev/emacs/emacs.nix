@@ -39,6 +39,7 @@
       dockfmt # Dockerfile
       # lsp
       nil # nix
+      shfmt # sh
       
       
     ];
