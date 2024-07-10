@@ -30,11 +30,14 @@
 
     ags.url = "github:Aylur/ags";
 
+
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager,
     # grub2-themes,
-    hyprland, split-monitor-workspaces, nix-flatpak, stylix, nix-colors, ags
+    hyprland, split-monitor-workspaces, nix-flatpak, stylix, nix-colors, ags, nixos-hardware
     , ... }@inputs:
     let
       inherit (self) outputs;
@@ -54,7 +57,7 @@
 
       systemSettings = {
         system = "x86_64-linux";
-        host = "nixDesk";
+        host = "nixLap";
         timezone = "Europe/Copenhagen";
         locale = "en_DK.UTF-8";
       };
@@ -62,8 +65,8 @@
       userSettings = {
         username = "rasmus";
         de = {
-          hyprland = true;
-          kde = false;
+          hyprland = false;
+          kde = true;
           gnome = false;
           cosmic = false;
         };
@@ -103,6 +106,7 @@
             nix-flatpak.nixosModules.nix-flatpak
             home-manager.nixosModules.home-manager
             stylix.nixosModules.stylix
+            # nixos-hardware.nixosModules.lenovo-legion-15ich
             {
               home-manager = {
                 useGlobalPkgs = true;
@@ -122,6 +126,8 @@
         };
       };
 
+    };
+
       # homeConfigurations = {
       #   "rasmus@nixDesk" = home-manager.lib.homeManagerConfiguration {
       #     inherit pkgs;
@@ -135,34 +141,4 @@
       #     ];
       #   };
       # };
-
-      # NixOS configuration entrypoint
-      # Available through 'nixos-rebuild --flake .#your-hostname'
-      nixosConfigurations = {
-        nixLap = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs outputs; };
-          modules = [
-            # > Our main nixos configuration file <
-            ./hosts/nixLap/configuration.nix
-            # grub2-themes.nixosModules.default
-          ];
-        };
-      };
-
-      # Standalone home-manager configuration entrypoint
-      # Available through 'home-manager --flake .#your-username@your-hostname'
-      homeConfigurations = {
-        "rasmus@nixLap" = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          extraSpecialArgs = {
-            inherit inputs outputs;
-            inherit pkgs-unstable;
-          };
-          modules = [
-            # > Our main home-manager configuration file <
-            ./hosts/nixLap/home.nix
-          ];
-        };
-      };
-    };
 }

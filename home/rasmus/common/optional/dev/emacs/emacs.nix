@@ -1,16 +1,6 @@
-{
-  pkgs,
-  lib,
-  config,
-  ...
-}:
-{
-  
+{ pkgs, lib, config, ... }: {
 
-  options = {
-    my.emacs.enable =
-      lib.mkEnableOption "enables emacs";
-  };
+  options = { my.emacs.enable = lib.mkEnableOption "enables emacs"; };
 
   config = lib.mkIf config.my.direnv.enable {
     programs.emacs.enable = true;
@@ -40,14 +30,12 @@
       # lsp
       nil # nix
       shfmt # sh
-      
-      
+
     ];
 
     systemd.user.sessionVariables = {
       PATH = "\${xdg.configHome}/emacs/bin/:$PATH";
     };
-    
 
     xdg.configFile."doom" = {
       enable = true;

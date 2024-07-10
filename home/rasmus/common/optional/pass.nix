@@ -2,7 +2,6 @@
   pkgs,
   lib,
   config,
-  xdg,
   ...
 }:
 {
@@ -16,6 +15,9 @@
       enable = true;
       settings = { PASSWORD_STORE_DIR = "${config.xdg.dataHome}/password-store"; };
     };
+    home.packages = with pkgs; [
+      passff-host
+    ];
 
   };
 }

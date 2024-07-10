@@ -20,6 +20,7 @@
   };
 
   home.sessionVariables = {
+    CUDA_CACHE_PATH = "${config.xdg.cacheHome}/nv"; # Nvidia path
     HISTFILE = "${config.xdg.stateHome}/bash/history";
 
     # XORG
@@ -33,6 +34,8 @@
 
   home.packages = (with pkgs; [
     stow
+    xdg-ninja
+
     flatpak
     vlc
     # gnome.gnome-software
