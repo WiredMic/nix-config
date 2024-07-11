@@ -1,2 +1,6 @@
  https://editorconfig.org/
  tmux
+
+* Editors
+ zed 
+ vscode

@@ -33,9 +33,9 @@
 
     ];
 
-    systemd.user.sessionVariables = {
-      PATH = "\${xdg.configHome}/emacs/bin/:$PATH";
-    };
+    home.sessionPath = [
+      "${config.xdg.configHome}/emacs/bin"
+    ];
 
     xdg.configFile."doom" = {
       enable = true;
@@ -44,19 +44,5 @@
       recursive = true;
     };
 
-    # xdg.configFile."doom".source = pkgs.stdenv.mkDerivation {
-    #   name = "doom-emacs";
-    #   dontUnpack = true;
-    #   src = pkgs.fetchurl {
-    #     url = "https://raw.githubusercontent.com/doomemacs/doomemacs/screenshots/cacochan.png";
-    #     hash = "sha256-SNePEot4Pb7+Ci4clK8fFEVdzxSu0GGHvrFbEjVMrg4=";
-    #   };
-    #
-    #   installPhase = ''
-    #   mkdir -p $out
-    #   cp -r $src $out/
-    #   cp -r ${./doom-emacs}/* $out/
-    #   '';
-    # };
   };
 }
