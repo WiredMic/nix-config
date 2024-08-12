@@ -19,6 +19,8 @@
     homeDirectory = "/home/rasmus";
   };
 
+  # backupFileExtension = "backup";
+
   home.sessionVariables = {
     HISTFILE = "${config.xdg.stateHome}/bash/history";
 
@@ -26,7 +28,7 @@
     ERRFILE = "${config.xdg.cacheHome}/X11/xsession-errors";
     XCOMPOSECACHE = "${config.xdg.cacheHome}/X11/xcompose";
 
-    GTK2_RC_FILES = "${config.xdg.configHome}/gtk-2.0/gtkrc";
+    GTK2_RC_FILES = lib.mkForce "${config.xdg.configHome}/gtk-2.0/gtkrc";
   };
 
   nix.settings.use-xdg-base-directories = true; # moves .nix-* out of HOME

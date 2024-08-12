@@ -1,17 +1,6 @@
-{
-  pkgs,
-  config,
-  fetchFromGitHub,
-  ...
-}:
-{
+{ pkgs, config, fetchFromGitHub, ... }: {
   # https://www.reddit.com/r/NixOS/comments/13uc87h/masonnvim_broke_on_nixos/
   programs.neovim.enable = true;
-
-
-  home.sessionVariables = {
-    EDITOR = "nvim";
-  };
 
   xdg.configFile."nvim".source = pkgs.stdenv.mkDerivation {
     name = "NvChad";
@@ -22,10 +11,10 @@
       hash = "sha256-P5TRjg603/7kOVNFC8nXfyciNRLsIeFvKsoRCIwFP3I=";
     };
     installPhase = ''
-    mkdir -p $out
-    cp -r ./* $out/
-    cd $out/
-    cp -r ${./my_nvchad_config} $out/lua/custom
+      mkdir -p $out
+      cp -r ./* $out/
+      cd $out/
+      cp -r ${./my_nvchad_config} $out/lua/custom
     '';
   };
 

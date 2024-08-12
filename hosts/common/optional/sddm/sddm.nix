@@ -13,6 +13,7 @@
 
     services.displayManager.sddm = {
       enable = true;
+      wayland.enable = true;
       autoNumlock = true;
       theme = "where-is-my-sddm-theme-tree";
     };

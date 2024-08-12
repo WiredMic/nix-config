@@ -23,6 +23,11 @@
         "hyprland"; # <- make sure this line is present for the plugin to work as intended
     };
 
+    nixos-cosmic = {
+      url = "github:lilyinstarlight/nixos-cosmic";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-flatpak.url =
       "github:gmodena/nix-flatpak"; # unstable branch. Use github:gmodena/nix-flatpak/?ref=<tag> to pin releases.
 
@@ -30,15 +35,14 @@
 
     ags.url = "github:Aylur/ags";
 
-
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager,
     # grub2-themes,
-    hyprland, split-monitor-workspaces, nix-flatpak, stylix, nix-colors, ags, nixos-hardware
-    , ... }@inputs:
+    hyprland, nixos-cosmic, split-monitor-workspaces, nix-flatpak, stylix
+    , nix-colors, ags, nixos-hardware, ... }@inputs:
     let
       inherit (self) outputs;
       # Supported systems for your flake packages, shell, etc.
@@ -57,7 +61,7 @@
 
       systemSettings = {
         system = "x86_64-linux";
-        host = "nixLap";
+        # host = "nixLap";
         timezone = "Europe/Copenhagen";
         locale = "en_DK.UTF-8";
       };
@@ -65,13 +69,13 @@
       userSettings = {
         username = "rasmus";
         de = {
-          hyprland = false;
-          kde = true;
+          hyprland = true;
+          kde = false;
           gnome = false;
           cosmic = false;
         };
-        deType = "wayland"; # x11 vs wayland
-        editor = "emacsclient";
+        # deType = "wayland"; # x11 vs wayland
+        editor = "emacsclient -c -a ''";
         style-color = "dracula";
       };
 
@@ -92,7 +96,7 @@
       homeManagerModules = import ./modules/home-manager;
 
       nixosConfigurations = {
-        ${systemSettings.host} = nixpkgs.lib.nixosSystem {
+        nixDesk = nixpkgs.lib.nixosSystem {
           specialArgs = {
             inherit inputs outputs;
             inherit pkgs-unstable;
@@ -101,19 +105,20 @@
           };
           modules = [
             # > Our main nixos configuration file <
-            ./hosts/${systemSettings.host}/configuration.nix
+            ./hosts/nixDesk/configuration.nix
             # grub2-themes.nixosModules.default
             nix-flatpak.nixosModules.nix-flatpak
             home-manager.nixosModules.home-manager
             stylix.nixosModules.stylix
+            nixos-cosmic.nixosModules.default
             # nixos-hardware.nixosModules.lenovo-legion-15ich
             {
               home-manager = {
                 useGlobalPkgs = true;
                 useUserPackages = true;
-                backupFileExtension = "backup";
-                users.${userSettings.username} = import
-                  ./home/${userSettings.username}/${systemSettings.host}/home.nix;
+                backupFileExtension = "bkp";
+                users.${userSettings.username} =
+                  import ./home/${userSettings.username}/nixDesk/home.nix;
                 extraSpecialArgs = {
                   inherit inputs outputs;
                   inherit pkgs-unstable;
@@ -126,19 +131,76 @@
         };
       };
 
-    };
+      nixosConfigurations = {
+        nixLap = nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit inputs outputs;
+            inherit pkgs-unstable;
+            inherit systemSettings;
+            inherit userSettings;
+          };
+          modules = [
+            # > Our main nixos configuration file <
+            ./hosts/nixLap/configuration.nix
+            # grub2-themes.nixosModules.default
+            nix-flatpak.nixosModules.nix-flatpak
+            home-manager.nixosModules.home-manager
+            stylix.nixosModules.stylix
+            nixos-cosmic.nixosModules.default
+            # nixos-hardware.nixosModules.lenovo-legion-15ich
+            {
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                backupFileExtension = "bkp";
+                users.${userSettings.username} =
+                  import ./home/${userSettings.username}/nixLap/home.nix;
+                extraSpecialArgs = {
+                  inherit inputs outputs;
+                  inherit pkgs-unstable;
+                  inherit systemSettings;
+                  inherit userSettings;
+                };
+              };
+            }
+          ];
+        };
+      };
 
-      # homeConfigurations = {
-      #   "rasmus@nixDesk" = home-manager.lib.homeManagerConfiguration {
-      #     inherit pkgs;
-      #     extraSpecialArgs = {
-      #       inherit inputs outputs;
-      #       inherit pkgs-unstable;
-      #     };
-      #     modules = [
-      #       # > Our main home-manager configuration file <
-      #       ./home/rasmus/nixDesk/home.nix
-      #     ];
-      #   };
-      # };
+      nixosConfigurations = {
+        nixServer = nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit inputs outputs;
+            inherit pkgs-unstable;
+            inherit systemSettings;
+            inherit userSettings;
+          };
+          modules = [
+            # > Our main nixos configuration file <
+            ./hosts/nixServer/configuration.nix
+            # grub2-themes.nixosModules.default
+            nix-flatpak.nixosModules.nix-flatpak
+            home-manager.nixosModules.home-manager
+            stylix.nixosModules.stylix
+            nixos-cosmic.nixosModules.default
+            # nixos-hardware.nixosModules.lenovo-legion-15ich
+            # {
+            # home-manager = {
+            #   useGlobalPkgs = true;
+            #   useUserPackages = true;
+            #   backupFileExtension = "backup";
+            #   users.${userSettings.username} =
+            #     import ./home/${userSettings.username}/nixServer/home.nix;
+            #   extraSpecialArgs = {
+            #     inherit inputs outputs;
+            #     inherit pkgs-unstable;
+            #     inherit systemSettings;
+            #     inherit userSettings;
+            #   };
+            # };
+            # }
+          ];
+        };
+      };
+    };
 }

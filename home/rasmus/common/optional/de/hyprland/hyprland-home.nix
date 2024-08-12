@@ -286,7 +286,7 @@
 
         bind = [
           # Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
-          ''$mainMod, E, exec, emacsclient -c -a "emacs"'' # open emacs
+          "$mainMod, E, exec, ${userSettings.editor}" # open VISUAL editor
           "$mainMod, Q, exec, kitty" # open the terminal
           "$mainMod SHIFT, X, killactive," # close the active window
           "$mainMod, L, exec, swaylock" # Lock the screen
