@@ -9,11 +9,14 @@
   ];
 
   options = {
-    my.grub.enable =
+    my.grub.efi.enable =
+      lib.mkEnableOption "enables my grub config";
+
+    my.grub.boot.enable =
       lib.mkEnableOption "enables my grub config";
   };
 
-  config = lib.mkIf config.my.grub.enable {
+  config = lib.mkIf config.my.grub.efi.enable {
     boot.loader = {
        efi = {
         canTouchEfiVariables = true;
@@ -44,4 +47,5 @@
       # };
     };
   };
+
 }

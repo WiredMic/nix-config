@@ -69,7 +69,7 @@
       userSettings = {
         username = "rasmus";
         de = {
-          hyprland = true;
+          hyprland = false;
           kde = false;
           gnome = false;
           cosmic = false;
@@ -176,29 +176,27 @@
             inherit userSettings;
           };
           modules = [
-            # > Our main nixos configuration file <
-            ./hosts/nixServer/configuration.nix
-            # grub2-themes.nixosModules.default
+            nixos-cosmic.nixosModules.default
+            stylix.nixosModules.stylix
             nix-flatpak.nixosModules.nix-flatpak
             home-manager.nixosModules.home-manager
-            stylix.nixosModules.stylix
-            nixos-cosmic.nixosModules.default
-            # nixos-hardware.nixosModules.lenovo-legion-15ich
-            # {
-            # home-manager = {
-            #   useGlobalPkgs = true;
-            #   useUserPackages = true;
-            #   backupFileExtension = "backup";
-            #   users.${userSettings.username} =
-            #     import ./home/${userSettings.username}/nixServer/home.nix;
-            #   extraSpecialArgs = {
-            #     inherit inputs outputs;
-            #     inherit pkgs-unstable;
-            #     inherit systemSettings;
-            #     inherit userSettings;
-            #   };
-            # };
-            # }
+            # > Our main nixos configuration file <
+            ./hosts/nixServer/configuration.nix
+            {
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                backupFileExtension = "bkp";
+                users.${userSettings.username} =
+                  import ./home/${userSettings.username}/nixServer/home.nix;
+                extraSpecialArgs = {
+                  inherit inputs outputs;
+                  inherit pkgs-unstable;
+                  inherit systemSettings;
+                  inherit userSettings;
+                };
+              };
+            }
           ];
         };
       };

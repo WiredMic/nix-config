@@ -11,6 +11,9 @@
     # display manager
     ./sddm/sddm.nix
 
+    # boot manager
+    ./grub.nix
+
     # Dislexia help
     ./tts.nix
 
@@ -35,6 +38,8 @@
     lib.mkForce true
   else
     lib.mkDefault false;
+
+  my.grub.efi.enable = lib.mkDefault false;
 
   my.tts.enable = lib.mkDefault false;
 

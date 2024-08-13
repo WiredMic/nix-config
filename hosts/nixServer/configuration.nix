@@ -1,7 +1,7 @@
 # This is your system's configuration file.
 # Use this to configure your system environment (it replaces /etc/nixos/configuration.nix)
 { inputs, outputs, systemSettings, userSettings, lib, config, pkgs
-, pkgs-unstable, nixos-hardware, ... }: {
+, pkgs-unstable, ... }: {
   # You can import other NixOS modules here
   imports = [
 
@@ -75,64 +75,25 @@
     options = "--delete-older-than 30d";
   };
 
-  my.grub.efi.enable = true;
+
+    boot.loader.grub = {
+      enable = true;
+      device = "/dev/sda";
+      useOSProber = true;
+    };
 
   networking = {
     # Enable networking
     networkmanager.enable = true;
 
     # hostname
-    hostName = "nixLap";
+    hostName = "nixServer";
 
     firewall = { enable = true; };
   };
 
-  # Nvidia GPU
-  # https://nixos.wiki/wiki/NVIDIA
-  boot.initrd.kernelModules = [ "nvidia" ];
-  services.xserver.videoDrivers = [ "nvidia" ];
-
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-    extraPackages = with pkgs;
-      [
-        rocmPackages.clr.icd # OpenCL
-      ];
-  };
-
-  hardware = {
-    nvidia = {
-      modesetting.enable = lib.mkDefault true;
-      powerManagement.enable = lib.mkDefault true;
-
-      prime = {
-        intelBusId = "PCI:0:2:0";
-        nvidiaBusId = "PCI:1:0:0";
-
-        offload = {
-          enable = true;
-          enableOffloadCmd = true;
-        };
-      };
-    };
-  };
-
-  # INTEL CPU
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault true;
-
-  hardware.bluetooth = {
-    enable = true; # enables support for Bluetooth
-    powerOnBoot = true; # powers up the default Bluetooth controller on boot
-    settings = {
-      General = {
-        ControllerMode = "dual";
-        FastConnectable = "true";
-        Experimental = "true";
-      };
-      Policy = { AutoEnable = "true"; };
-    };
-  };
+  # AMD CPU
+  hardware.cpu.amd.updateMicrocode = true;
 
   # Set your time zone.
   time.timeZone = systemSettings.timezone;
@@ -152,30 +113,7 @@
     LC_TIME = "da_DK.UTF-8";
   };
 
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
-  # Enable sound with pipewire.
-  sound.enable = true;
-  hardware.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
-  };
-
   services.xserver = {
-    # Enable the X11 windowing system.
-    enable = true;
-    # 
     # Configure keymap in X11
     xkb = {
       layout = "us";
@@ -184,85 +122,16 @@
   };
 
   # Software
+
   environment.systemPackages = with pkgs; [
     git
     neovim
-    firefox
-    dolphin
-    xclip
-    tree
-    gcc
-    kdePackages.kdeconnect-kde
-
-    # network share maybe
-    kdePackages.kio
-    kdePackages.kio-extras
-    kdePackages.kio
-    kdePackages.kdenetwork-filesharing
-    samba
-    home-manager
-
-    wtype # does not work on kde or gnome
-    wev
-    miru
-    davinci-resolve
     just
-    fastfetch
-    nmap
-    gnome.gnome-system-monitor
-
-    # icons
-    papirus-icon-theme
-
-    wl-clipboard
-    wl-clipboard-x11
-
-    pciutils
-  ];
-
-  # https://github.com/gmodena/nix-flatpak
-  services.flatpak.enable = true;
-
-  # services.flatpak.remotes = lib.mkOptionDefault [{
-  #   name = "flathub-beta";
-  #   location = "https://flathub.org/beta-repo/flathub-beta.flatpakrepo";
-  # }];
-
-  services.flatpak.packages = [
-    {
-      appId = "org.mozilla.Thunderbird";
-      origin = "flathub";
-    }
-    {
-      appId = "com.spotify.Client";
-      origin = "flathub";
-    }
-    {
-      appId = "com.usebottles.bottles";
-      origin = "flathub";
-    }
-    {
-      appId = "com.github.tchx84.Flatseal";
-      origin = "flathub";
-    }
   ];
 
   # Software from optional
 
-  my.games.enable = true;
-  my.emulation.enable = true;
-
-  # Help to use the PC
-  my.tts.enable = true; # TODO piper
-  programs.ydotool.enable = true; # TODO get it to work
-  # TODO Spellcheck
-
-  # Cloud storage
-  my.onedrive.enable = true;
-
-  # theme gtk
-  programs.dconf.enable = true;
-
+  # Users
   user.rasmus.enable = true;
 
   programs.ssh.startAgent = true;
@@ -270,12 +139,9 @@
   fonts.packages = with pkgs;
     [
       (nerdfonts.override {
-        fonts = [ "FiraCode" "DroidSansMono" "JetBrainsMono" ];
+        fonts = [ "JetBrainsMono" ];
       })
     ];
-
-  # Depentencies
-  services.gvfs.enable = true;
 
   # This setups a SSH server. Very important if you're setting up a headless system.
   # Feel free to remove if you don't need it.
@@ -285,11 +151,9 @@
       # Forbid root login through SSH.
       PermitRootLogin = "no";
       # Use keys only. Remove if you want to SSH using password (not recommended)
-      PasswordAuthentication = false;
+      PasswordAuthentication = true;
     };
   };
-
-  programs.kdeconnect.enable = true;
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "24.05";

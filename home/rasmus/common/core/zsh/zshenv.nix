@@ -17,14 +17,10 @@
       "$XDG_DATA_DIRS:/usr/share:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share";
   };
 
-  # Environment Variables in the .zshenv file
-  programs.zsh = {
-    sessionVariables = { COWPATH = "$XDG_DATA_HOME/cowsay/"; };
-  };
 
   home.sessionVariables = {
+    COWPATH = "$XDG_DATA_HOME/cowsay/";
     EDITOR = "${userSettings.editor}";
-    VISUAL = "${userSettings.editor}";
+    VISUAL = "$EDITOR";
   };
-
 }
