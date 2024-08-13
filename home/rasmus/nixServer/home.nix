@@ -5,7 +5,6 @@
     # outputs.homeManagerModules.example
 
     # Or modules exported from other flakes (such as nix-colors):
-    # inputs.nix-colors.homeManagerModules.default
 
     # Core
     ../common/core/core.nix

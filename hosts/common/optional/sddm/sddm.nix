@@ -25,9 +25,9 @@
     '';
 
     # Set Icon Avatar
-    system.activationScripts.script.text = ''
-      cp ${./rasmus.face.png} /var/lib/AccountsService/icons/rasmus
-    '';
+    # system.activationScripts.script.text = ''
+    #   cp ${./rasmus.face.png} /var/lib/AccountsService/icons/rasmus
+    # '';
   };
 
 }

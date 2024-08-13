@@ -75,12 +75,13 @@
     options = "--delete-older-than 30d";
   };
 
+  boot.loader.timeout = 0;
 
-    boot.loader.grub = {
-      enable = true;
-      device = "/dev/sda";
-      useOSProber = true;
-    };
+  boot.loader.grub = {
+    enable = true;
+    device = "/dev/sda";
+    useOSProber = true;
+  };
 
   networking = {
     # Enable networking
@@ -128,6 +129,32 @@
     neovim
     just
   ];
+
+  # Server 
+  # https://nixos.wiki/wiki/Jellyfin
+  services.jellyfin = {
+    enable = true;
+    openFirewall = true;
+  };
+
+  virtualisation.docker.enable = true;
+  virtualisation.oci-containers.backend = "docker";
+
+  virtualisation.oci-containers.containers."audiobookshelf" = {
+	autoStart = true;
+	image = "ghcr.io/advplyr/audiobookshelf:latest";
+	environment = {
+	  AUDIOBOOKSHELF_UID = "99";
+	  AUDIOBOOKSHELF_GID = "100";
+	};
+	ports = [ "13378:80" ];
+	volumes = [
+	  "/media/Audiobooks:/audiobooks"
+	  "/media/Podcasts:/podcasts"
+	  "/media/Containers/Audiobookshelf/config:/config"
+	  "/media/Containers/Audiobookshelf/audiobooks:/metadata"
+	];
+  };
 
   # Software from optional
 
