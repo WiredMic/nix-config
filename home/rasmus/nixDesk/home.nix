@@ -69,6 +69,7 @@
   # Devops
   my.direnv.enable = true;
   my.emacs.enable = true;
+  my.neovim.enable = true;
   my.rust.enable = true;
   my.latex.enable = true;
 
