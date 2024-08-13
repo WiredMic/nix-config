@@ -289,6 +289,12 @@
     };
   };
 
+  services.emacs = {
+    enable = true;
+    package =
+      pkgs.emacs; # replace with emacs-gtk, or a version provided by the community overlay if desired.
+  };
+
   programs.kdeconnect.enable = true;
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion

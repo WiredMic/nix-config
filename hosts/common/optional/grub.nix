@@ -1,26 +1,13 @@
-{
-  pkgs,
-  lib,
-  config,
-  ...
-}:
-{
-  imports = [
-  ];
+{ pkgs, lib, config, ... }: {
+  imports = [ ];
 
   options = {
-    my.grub.efi.enable =
-      lib.mkEnableOption "enables my grub config";
-
-    my.grub.boot.enable =
-      lib.mkEnableOption "enables my grub config";
+    my.grub.efi.enable = lib.mkEnableOption "enables my grub config";
   };
 
   config = lib.mkIf config.my.grub.efi.enable {
     boot.loader = {
-       efi = {
-        canTouchEfiVariables = true;
-      };
+      efi = { canTouchEfiVariables = true; };
       grub = {
         enable = true;
         efiSupport = true;

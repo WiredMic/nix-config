@@ -19,9 +19,11 @@
       ispell
       pandoc
       graphviz
-      shellcheck
       python312Packages.editorconfig
-      (aspellWithDicts (dicts: with dicts; [ en en-computers en-science ]))
+
+      # Spellcheck
+      shellcheck
+      (aspellWithDicts (dicts: with dicts; [ en en-computers en-science da ]))
       #format https://docs.doomemacs.org/latest/modules/editor/format/
       nixfmt-classic # nix
       texlivePackages.latexindent # LaTeX
@@ -30,12 +32,13 @@
       # lsp
       nil # nix
       shfmt # sh
+      dap # A debugger
 
+      # autofmt
+      nixfmt # nix
     ];
 
-    home.sessionPath = [
-      "${config.xdg.configHome}/emacs/bin"
-    ];
+    home.sessionPath = [ "${config.xdg.configHome}/emacs/bin" ];
 
     xdg.configFile."doom" = {
       enable = true;

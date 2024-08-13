@@ -4,3 +4,6 @@
 * Editors
  zed 
  vscode
+
+* Tools
+** fzf

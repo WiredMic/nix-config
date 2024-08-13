@@ -46,6 +46,7 @@
     gimp
     gnome.gnome-calculator
     gnome-multi-writer
+    freecad
     tldr
     libation # audible libaretor
     pavucontrol
@@ -62,6 +63,7 @@
     # texlive.combined.scheme-full
 
     gparted
+    localsend
   ]) ++ (with pkgs-unstable;
     [
       # eza

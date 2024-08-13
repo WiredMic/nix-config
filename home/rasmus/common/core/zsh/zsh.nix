@@ -1,18 +1,17 @@
-{ 
-  config,
-  lib,
-  pkgs,
-  pkgs-unstable,
-  ...
-}:
-{
+{ config, lib, pkgs, pkgs-unstable, ... }: {
 
+  imports = [ ./zshenv.nix ./zprofile.nix ];
 
-  imports = [
-    ./zshenv.nix
-    ./zprofile.nix
-  ];
-  
+  home.packages = (with pkgs; [ lolcat cowsay eza bat ]) ++ (with pkgs-unstable;
+    [
+      # eza
+    ]);
+
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
   programs.zsh = {
     enable = true;
     dotDir = ".config/zsh";
@@ -21,18 +20,19 @@
 
     shellAliases = {
       ls = "eza -a --icons --group-directories-first";
+      ll = "eza -a --icons --group-directories-first -l";
       rm = "rm -I";
       vim = "nvim";
-      update = "sh -c 'sudo nixos-rebuild switch --flake .#$(hostname)'";
-      update-user = "sh -c ' rm -rf ~/.config/gtk-2.0/ && home-manager switch --flake .#$(whoami)@$(hostname)'";
+      tree = "eza --tree";
+      cat = "bat -p --color=always -P";
+
     };
-   
+
     # Manual lines in .zshrc file
     initExtra = ''
       [[ ! -f ${./files/p10k.zsh} ]] || source ${./files/p10k.zsh}
       source $ZDOTDIR/scripts/sweet_sentences.sh 
     '';
-
 
     plugins = with pkgs; [
       {
@@ -88,16 +88,6 @@
       share = true;
     };
   };
-  
-  home.packages = (with pkgs; [
-    lolcat
-    cowsay
-    # exa
-  ])
-  ++
-  (with pkgs-unstable;[
-    eza
-  ]);
 
   # Scripts
   xdg.configFile."./zsh/scripts".source = ./files/scripts;

@@ -83,6 +83,9 @@
 	    tex-mode         ; latexindent is broken
 	    latex-mode))
 
+(setq lsp-inlay-hint-enable t
+      lsp-inlay-hints-mod t)
+
 (setq org-directory "~/OneDrive/Org/"
       org-roam-directory "~/OneDrive/Org/Roam")
 
@@ -148,6 +151,8 @@ org-ellipsis "…"
     (set-face-attribute 'org-level-2 nil :height 1.1))
 
 (add-hook 'org-mode-hook #'my-org-faces)
+
+(org-add-link-type "local-html" (lambda (path) (browse-url-xdg-open path)))
 
 ;; (add-hook 'centaur-tabs-mode)
 

@@ -9,10 +9,12 @@
 - [[#fonts][Fonts]]
 - [[#theme][Theme]]
 - [[#format][Format]]
+- [[#lsp][LSP]]
 - [[#org-mode][Org-mode]]
   - [[#directories][Directories]]
   - [[#latex][LaTeX]]
   - [[#org-modern][Org-modern]]
+  - [[#hyper-links][Hyper Links]]
   - [[#centaur-tab][Centaur Tab]]
   - [[#anki][Anki]]
   - [[#org-roam][Org-roam]]
@@ -124,6 +126,13 @@ To Tangle a document press =
 	    tex-mode         ; latexindent is broken
 	    latex-mode))
 #+end_src
+
+* LSP
+#+begin_src elisp :tangle yes
+(setq lsp-inlay-hint-enable t
+      lsp-inlay-hints-mod t)
+#+end_src
+
 * Org-mode
 https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Org-mode-unicorn.svg/1200px-Org-mode-unicorn.svg.png
 
@@ -202,6 +211,10 @@ org-ellipsis "…"
 
 (add-hook 'org-mode-hook #'my-org-faces)
 
+#+end_src
+** Hyper Links
+#+begin_src elisp :tangle yes
+(org-add-link-type "local-html" (lambda (path) (browse-url-xdg-open path)))
 #+end_src
 
 ** Centaur Tab
