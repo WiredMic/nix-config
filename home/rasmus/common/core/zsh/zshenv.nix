@@ -18,7 +18,6 @@
   };
 
   home.sessionVariables = {
-    COWPATH = "$XDG_DATA_HOME/cowsay/";
     EDITOR = "${userSettings.editor}";
     VISUAL = "$EDITOR";
   };

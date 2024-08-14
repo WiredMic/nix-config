@@ -2,7 +2,7 @@
 
   imports = [ ./zshenv.nix ./zprofile.nix ];
 
-  home.packages = (with pkgs; [ lolcat cowsay eza bat ]) ++ (with pkgs-unstable;
+  home.packages = (with pkgs; [ eza bat ]) ++ (with pkgs-unstable;
     [
       # eza
     ]);
@@ -31,7 +31,6 @@
     # Manual lines in .zshrc file
     initExtra = ''
       [[ ! -f ${./files/p10k.zsh} ]] || source ${./files/p10k.zsh}
-      source $ZDOTDIR/scripts/sweet_sentences.sh 
     '';
 
     plugins = with pkgs; [
@@ -89,11 +88,4 @@
     };
   };
 
-  # Scripts
-  xdg.configFile."./zsh/scripts".source = ./files/scripts;
-  xdg.configFile."./zsh/scripts".recursive = true;
-
-  # Cows
-  xdg.dataFile."./cowsay".source = ./files/cows;
-  xdg.dataFile."./cowsay".recursive = true;
 }

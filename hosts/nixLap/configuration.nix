@@ -218,6 +218,7 @@
     wl-clipboard-x11
 
     pciutils
+    sshfs
   ];
 
   # https://github.com/gmodena/nix-flatpak

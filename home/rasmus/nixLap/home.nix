@@ -83,6 +83,9 @@
   # password manager 
   my.pass.enable = true;
 
+  # Zsh
+  my.cowsay-shell-script.enable = true;
+
   xdg.enable = true;
 
   # Enable home-manager and git

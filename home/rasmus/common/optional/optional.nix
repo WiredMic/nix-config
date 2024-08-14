@@ -19,6 +19,8 @@
 
     ./pass.nix
 
+    ./cowsay/cowsay.nix
+
   ];
 
   my.hyprland.enable = lib.mkForce userSettings.de.hyprland;
@@ -35,4 +37,6 @@
   my.latex.enable = lib.mkDefault false;
 
   my.pass.enable = lib.mkDefault false;
+
+  my.cowsay-shell-script.enable = lib.mkDefault false;
 }

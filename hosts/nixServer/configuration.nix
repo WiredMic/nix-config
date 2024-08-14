@@ -161,8 +161,6 @@
   # Users
   user.rasmus.enable = true;
 
-  programs.ssh.startAgent = true;
-
   fonts.packages = with pkgs;
     [
       (nerdfonts.override {
