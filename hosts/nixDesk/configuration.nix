@@ -189,6 +189,7 @@
     tree
     gcc
     kdePackages.kdeconnect-kde
+    ntfs3g
 
     # network share maybe
     kdePackages.kio
