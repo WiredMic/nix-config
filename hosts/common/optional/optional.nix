@@ -26,6 +26,8 @@
 
     # ricing
     ./stylix/stylix.nix
+
+    ./distrobox.nix
   ];
 
   # Because this is the optional dir not everything needs to be enabled by default
@@ -34,7 +36,7 @@
   de.kde.enable = lib.mkDefault userSettings.de.kde;
   de.hyprland.enable = lib.mkDefault userSettings.de.hyprland;
 
-  my.sddm.enable = if (config.de.kde.enable || config.de.hyprland.enable ) then
+  my.sddm.enable = if (config.de.kde.enable || config.de.hyprland.enable) then
     lib.mkForce true
   else
     lib.mkDefault false;
@@ -54,4 +56,5 @@
   else
     lib.mkDefault false;
 
+  my.distrobox.enable = lib.mkDefault false;
 }

@@ -85,6 +85,20 @@
     hostName = "nixLap";
 
     firewall = { enable = true; };
+
+    hosts = {
+      "192.168.86.100:8006" = [ "proxmox.local" ];
+      "192.168.86.35" = [ "nas.local" ];
+      "192.168.86.39:8096" = [ "jellyfin.local" ];
+      "192.168.86.39:5055" = [ "jellyserr.local" ];
+      "192.168.86.39:5656" = [ "bitwarden.local" ];
+      "192.168.86.39:9696" = [ "prowlarr.local" ];
+      "192.168.86.39:8989" = [ "sonarr.local" ];
+      "192.168.86.39:7878" = [ "radarr.local" ];
+      "192.168.86.39:6767" = [ "bazarr.local" ];
+      "192.168.86.39:8234" = [ "audiobookshelf.local" ];
+      "192.168.86.39:8083" = [ "calibre-web.local" ];
+    };
   };
 
   # Nvidia GPU
@@ -205,7 +219,8 @@
     wtype # does not work on kde or gnome
     wev
     miru
-    davinci-resolve
+    calibre
+    # davinci-resolve
     just
     fastfetch
     nmap
@@ -219,6 +234,8 @@
 
     pciutils
     sshfs
+    nfs-utils
+    cifs-utils
   ];
 
   # https://github.com/gmodena/nix-flatpak
@@ -246,6 +263,10 @@
       appId = "com.github.tchx84.Flatseal";
       origin = "flathub";
     }
+    {
+      appId = "io.github.diegoivan.pdf_metadata_editor";
+      origin = "flathub";
+    }
   ];
 
   # Software from optional
@@ -268,6 +289,13 @@
 
   programs.ssh.startAgent = true;
 
+  my.distrobox.enable = true;
+
+  services.mullvad-vpn = {
+    enable = true;
+    package = pkgs.mullvad-vpn;
+  };
+
   fonts.packages = with pkgs;
     [
       (nerdfonts.override {
@@ -289,6 +317,23 @@
       PasswordAuthentication = false;
     };
   };
+
+  # NFS NAS share
+  # https://nixos.wiki/wiki/NFS
+  services.rpcbind.enable = true; # needed for NFS
+
+  systemd.mounts = [{
+    type = "nfs";
+    mountConfig = { Options = "noatime"; };
+    what = "192.168.86.35:/mnt/ZPOOL0/share";
+    where = "/mnt/share";
+  }];
+
+  systemd.automounts = [{
+    wantedBy = [ "multi-user.target" ];
+    automountConfig = { TimeoutIdleSec = "600"; };
+    where = "/mnt/share";
+  }];
 
   services.emacs = {
     enable = true;

@@ -24,6 +24,7 @@
         Husk ikke at gå for sent i seng
         Ostemanden rasmus
         I chose you
+        heyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
         EOF
         ) | ${pkgs.cowsay}/bin/cowsay -f $(ls ${
           ./cows
