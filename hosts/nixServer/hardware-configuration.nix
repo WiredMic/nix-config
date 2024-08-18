@@ -18,6 +18,12 @@
       fsType = "ext4";
     };
 
+  fileSystems."/mnt/share" = {
+    device = "192.168.86.35:/mnt/ZPOOL0/share/";
+    fsType = "nfs";
+    options = [ "x-systemd.automount" "noauto" ];
+  };
+
   swapDevices = [ ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking

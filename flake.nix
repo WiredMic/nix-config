@@ -71,7 +71,7 @@
         username = "rasmus";
         de = {
           hyprland = false;
-          kde = true;
+          kde = false;
           gnome = false;
           cosmic = false;
         };

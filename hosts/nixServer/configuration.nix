@@ -124,37 +124,31 @@
 
   # Software
 
-  environment.systemPackages = with pkgs; [
-    git
-    neovim
-    just
-  ];
+  environment.systemPackages = with pkgs; [ git neovim just nfs-utils ];
 
   # Server 
-  # https://nixos.wiki/wiki/Jellyfin
-  services.jellyfin = {
-    enable = true;
-    openFirewall = true;
-  };
+  my.jellyfin.enable = true;
+  my.audiobookshelf.enable = true;
+  my.torrent.enable = true;
 
-  virtualisation.docker.enable = true;
-  virtualisation.oci-containers.backend = "docker";
+  my.calibre-web.enable = true;
 
-  virtualisation.oci-containers.containers."audiobookshelf" = {
-	autoStart = true;
-	image = "ghcr.io/advplyr/audiobookshelf:latest";
-	environment = {
-	  AUDIOBOOKSHELF_UID = "99";
-	  AUDIOBOOKSHELF_GID = "100";
-	};
-	ports = [ "13378:80" ];
-	volumes = [
-	  "/media/Audiobooks:/audiobooks"
-	  "/media/Podcasts:/podcasts"
-	  "/media/Containers/Audiobookshelf/config:/config"
-	  "/media/Containers/Audiobookshelf/audiobooks:/metadata"
-	];
-  };
+  # NFS NAS share
+  # https://nixos.wiki/wiki/NFS
+  services.rpcbind.enable = true; # needed for NFS
+
+  # systemd.mounts = [{
+  #   type = "nfs";
+  #   mountConfig = { Options = "noatime"; };
+  #   what = "192.168.86.35:/mnt/ZPOOL0/share";
+  #   where = "/mnt/share";
+  # }];
+  #
+  # systemd.automounts = [{
+  #   wantedBy = [ "multi-user.target" ];
+  #   automountConfig = { TimeoutIdleSec = "600"; };
+  #   where = "/mnt/share";
+  # }];
 
   # Software from optional
 
@@ -162,11 +156,7 @@
   user.rasmus.enable = true;
 
   fonts.packages = with pkgs;
-    [
-      (nerdfonts.override {
-        fonts = [ "JetBrainsMono" ];
-      })
-    ];
+    [ (nerdfonts.override { fonts = [ "JetBrainsMono" ]; }) ];
 
   # This setups a SSH server. Very important if you're setting up a headless system.
   # Feel free to remove if you don't need it.

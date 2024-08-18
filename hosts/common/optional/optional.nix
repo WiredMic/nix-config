@@ -28,6 +28,9 @@
     ./stylix/stylix.nix
 
     ./distrobox.nix
+
+    # server
+    ./server/server.nix
   ];
 
   # Because this is the optional dir not everything needs to be enabled by default
