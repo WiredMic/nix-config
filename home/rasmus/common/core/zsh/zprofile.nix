@@ -1,13 +1,6 @@
-{
-  pkgs,
-  config,
-  ...
-}:
-{
+{ pkgs, config, ... }: {
   programs.zsh.profileExtra = ''
-    source $XDG_STATE_HOME/home-manager/gcroots/current-home/home-path/etc/profile.d/hm-session-vars.sh
+    source ${config.xdg.stateHome}/home-manager/gcroots/current-home/home-path/etc/profile.d/hm-session-vars.sh
   '';
-  home.sessionPath = [
-    "${config.xdg.configHome}/test/bin"
-  ];
-  }
+  home.sessionPath = [ "${config.xdg.configHome}/test/bin" ];
+}
