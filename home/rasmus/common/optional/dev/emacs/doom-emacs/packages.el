@@ -57,3 +57,6 @@
 ;;; org mode and pdf
 (package! pdf-tools)
 (package! org-noter)
+
+;; arduino and board development
+(package! platformio-mode)

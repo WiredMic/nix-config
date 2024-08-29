@@ -175,9 +175,14 @@ org-ellipsis "…"
               #'org-roam-unlinked-references-insert-section))
   (org-roam-db-autosync-enable))
 
-;; (map!  :leader
-;;       :desc "test"
-;;       "n r t" #'org-roam-ui-open)
+(setq org-roam-mode-sections
+      (list #'org-roam-backlinks-section
+            #'org-roam-reflinks-section
+            #'org-roam-unlinked-references-section
+            ))
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages '((C . t)))
 
 (use-package! websocket
     :after org-roam)
@@ -192,7 +197,11 @@ org-ellipsis "…"
     (setq org-roam-ui-sync-theme t
           org-roam-ui-follow t
           org-roam-ui-update-on-save t
-          org-roam-ui-open-on-start t))
+          org-roam-ui-open-on-start nil)
+
+    (map! :leader
+      :desc "Show graph ui"
+      "n r g" #'org-roam-ui-open))
 
 (use-package! org-auto-tangle
   :defer t

@@ -231,7 +231,7 @@ https://rgoswami.me/posts/anki-decks-orgmode/
 ;;   (setq anki-editor-create-decks 't))
 #+end_src
 
-** Org-roam
+** [[https://www.orgroam.com/manual.html][Org-roam]]
 #+begin_src elisp :tangle yes
 (setq org-roam-v2-ack t)
 
@@ -246,10 +246,28 @@ https://rgoswami.me/posts/anki-decks-orgmode/
               #'org-roam-unlinked-references-insert-section))
   (org-roam-db-autosync-enable))
 
-;; (map!  :leader
-;;       :desc "test"
-;;       "n r t" #'org-roam-ui-open)
+#+end_src
 
+*** [[https://www.orgroam.com/manual.html#The-Org_002droam-Buffer][Org-roam Buffer]]
+The buffer in org roam can be used
+- BacklinksView (preview of) nodes that link to this node
+- Reference LinksNodes that reference this node (see Refs)
+- Unlinked referencesView nodes that contain text that match the nodes title/alias but are not linked
+
+#+begin_src elisp :tangle yes
+(setq org-roam-mode-sections
+      (list #'org-roam-backlinks-section
+            #'org-roam-reflinks-section
+            #'org-roam-unlinked-references-section
+            ))
+#+end_src
+
+*** [[https://www.orgroam.com/manual.html#The-Templating-System][Org-roam templates]]
+
+*** Org Bable
+#+begin_src elisp :tangle yes
+(org-babel-do-load-languages
+ 'org-babel-load-languages '((C . t)))
 #+end_src
 
 *** Org-roam-ui
@@ -267,7 +285,11 @@ https://rgoswami.me/posts/anki-decks-orgmode/
     (setq org-roam-ui-sync-theme t
           org-roam-ui-follow t
           org-roam-ui-update-on-save t
-          org-roam-ui-open-on-start t))
+          org-roam-ui-open-on-start nil)
+
+    (map! :leader
+      :desc "Show graph ui"
+      "n r g" #'org-roam-ui-open))
 #+end_src
 
 ** Org-auto-tangle
