@@ -1,20 +1,12 @@
-{
-  pkgs, 
-  lib,
-  config,
-  ...
-}:
-{
-  imports = [];
- 
+{ pkgs, lib, config, ... }: {
+  imports = [ ];
+
   options = {
-    my.emulation.enable = 
-      lib.mkEnableOption "enables my emulatores config";
+    my.emulation.enable = lib.mkEnableOption "enables my emulatores config";
   };
 
   config = lib.mkIf config.my.sddm.enable {
-    environment.systemPackages = with pkgs; [ 
-    ];
+    environment.systemPackages = with pkgs; [ ];
 
     # https://github.com/gmodena/nix-flatpak
     services.flatpak.enable = true;
@@ -25,7 +17,14 @@
     # }];
 
     services.flatpak.packages = [
-      { appId = "org.yuzu_emu.yuzu"; origin = "flathub";  }
+      {
+        appId = "net.retrodeck.retrodeck";
+        origin = "flathub";
+      }
+      {
+        appId = "org.yuzu_emu.yuzu";
+        origin = "flathub";
+      }
 
     ];
   };

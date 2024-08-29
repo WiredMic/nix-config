@@ -85,20 +85,6 @@
     hostName = "nixLap";
 
     firewall = { enable = true; };
-
-    hosts = {
-      "192.168.86.100:8006" = [ "proxmox.local" ];
-      "192.168.86.35" = [ "nas.local" ];
-      "192.168.86.39:8096" = [ "jellyfin.local" ];
-      "192.168.86.39:5055" = [ "jellyserr.local" ];
-      "192.168.86.39:5656" = [ "bitwarden.local" ];
-      "192.168.86.39:9696" = [ "prowlarr.local" ];
-      "192.168.86.39:8989" = [ "sonarr.local" ];
-      "192.168.86.39:7878" = [ "radarr.local" ];
-      "192.168.86.39:6767" = [ "bazarr.local" ];
-      "192.168.86.39:8234" = [ "audiobookshelf.local" ];
-      "192.168.86.39:8083" = [ "calibre-web.local" ];
-    };
   };
   my.aau-wifi-cert.enable = true;
 
@@ -204,12 +190,15 @@
     neovim
     firefox
     dolphin
+    xfce.thunar
     xclip
     tree
     gcc
     kdePackages.kdeconnect-kde
 
-    # network share maybe
+    # network share maybe s
+    # TODO Samba does not work
+    # it cannot connect to kpassd-server
     kdePackages.kio
     kdePackages.kio-extras
     kdePackages.kio
