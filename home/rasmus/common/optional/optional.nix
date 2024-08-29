@@ -11,7 +11,7 @@
     ./sddm/sddm-icon.nix
 
     # dev
-    ./dev/dev-env.nix
+    ./dev/devenv.nix
     ./dev/neovim/neovim.nix
     ./dev/emacs/emacs.nix
     ./dev/rust.nix
