@@ -34,6 +34,11 @@
 
   home.sessionVariables = { EDITOR = lib.mkForce "nvim"; };
 
+  programs.kitty = {
+    enable = true;
+    theme = "dracula";
+    shellIntegration.enableZshIntegration = true;
+    settings = { };
   };
 
   # Nicely reload system units when changing configs

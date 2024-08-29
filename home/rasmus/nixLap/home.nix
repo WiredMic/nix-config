@@ -48,7 +48,6 @@
     libation # audible libaretor
     pavucontrol
 
-    kitty # terminal
     btop # system monitor
 
     # Libra office and spell check

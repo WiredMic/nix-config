@@ -4,9 +4,6 @@
     # If you want to use modules your own flake exports (from modules/home-manager):
     # outputs.homeManagerModules.example
 
-    # Or modules exported from other flakes (such as nix-colors):
-    # inputs.nix-colors.homeManagerModules.default
-
     # Core
     ../common/core/core.nix
 
@@ -49,7 +46,6 @@
     libation # audible libaretor
     pavucontrol
 
-    kitty # terminal
     btop # system monitor
 
     # Libra office and spell check
@@ -84,6 +80,13 @@
 
   # Enable home-manager and git
   programs.home-manager.enable = true;
+
+  programs.kitty = {
+    enable = true;
+    shellIntegration.enableZshIntegration = true;
+    settings = { };
+  };
+
 
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
