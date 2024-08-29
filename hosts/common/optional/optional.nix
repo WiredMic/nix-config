@@ -57,7 +57,7 @@
   my.onedrive.enable = lib.mkDefault false;
 
   stylix.image = lib.mkDefault ./stylix/hong-kong-night.jpg;
-  my.stylix.enable = if (config.de.hyprland.enable) then
+  my.stylix.enable = if (config.de.kde.enable || config.de.hyprland.enable) then
     lib.mkForce true
   else
     lib.mkDefault false;
