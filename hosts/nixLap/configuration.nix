@@ -237,6 +237,7 @@
     sshfs
     nfs-utils
     cifs-utils
+
   ];
 
   # https://github.com/gmodena/nix-flatpak
@@ -271,7 +272,6 @@
   ];
 
   # Software from optional
-
   my.games.enable = true;
   my.emulation.enable = true;
 
@@ -291,6 +291,8 @@
   programs.ssh.startAgent = true;
 
   my.distrobox.enable = true;
+
+  my.arduino.enable = true;
 
   services.mullvad-vpn = {
     enable = true;

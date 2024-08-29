@@ -32,6 +32,9 @@
     # server
     ./server/server.nix
 
+    # Programming
+    ./arduino.nix
+
     # wifi certs
     ./aau-wifi-cert.nix
   ];
@@ -63,6 +66,8 @@
     lib.mkDefault false;
 
   my.distrobox.enable = lib.mkDefault false;
+
+  my.arduino.enable = lib.mkDefault false;
 
   my.aau-wifi-cert.enable = lib.mkDefault false;
 }
