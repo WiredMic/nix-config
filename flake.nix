@@ -13,10 +13,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-colors.url = "github:misterio77/nix-colors";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     # grub2-themes.url = "github:vinceliuice/grub2-themes";
 
+    # --Desktop Environments--
     hyprland = { url = "git+https://github.com/hyprwm/Hyprland?submodules=1"; };
     split-monitor-workspaces = {
       url = "github:Duckonaut/split-monitor-workspaces";
@@ -24,8 +25,17 @@
         "hyprland"; # <- make sure this line is present for the plugin to work as intended
     };
 
-    nixos-cosmic = {
-      url = "github:lilyinstarlight/nixos-cosmic";
+    # Bar for hyprland
+    ags.url = "github:Aylur/ags";
+
+    # nixos-cosmic = {
+    #   url = "github:lilyinstarlight/nixos-cosmic";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
+
+    # Secrets
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -34,16 +44,22 @@
 
     stylix.url = "github:danth/stylix";
 
-    ags.url = "github:Aylur/ags";
+    nix-ld.url = "github:Mic92/nix-ld";
+    # this line assume that you also have nixpkgs as an input
+    nix-ld.inputs.nixpkgs.follows = "nixpkgs";
 
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    solaar = {
+      url =
+        "https://flakehub.com/f/Svenum/Solaar-Flake/*.tar.gz"; # For latest stable version
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager,
     # grub2-themes,
     hyprland, nixos-cosmic, split-monitor-workspaces, nix-flatpak, stylix
-    , nix-colors, ags, nixos-hardware, ... }@inputs:
+    , nix-colors, ags, nixos-hardware, nix-ld, solaar, sops-nix, ... }@inputs:
     let
       inherit (self) outputs;
       # Supported systems for your flake packages, shell, etc.
@@ -112,6 +128,8 @@
             home-manager.nixosModules.home-manager
             stylix.nixosModules.stylix
             nixos-cosmic.nixosModules.default
+            nix-ld.nixosModules.nix-ld
+            solaar.nixosModules.default
             # nixos-hardware.nixosModules.lenovo-legion-15ich
             {
               home-manager = {
@@ -148,12 +166,14 @@
             home-manager.nixosModules.home-manager
             stylix.nixosModules.stylix
             nixos-cosmic.nixosModules.default
+            nix-ld.nixosModules.nix-ld
+            solaar.nixosModules.default
             # nixos-hardware.nixosModules.lenovo-legion-15ich
             {
               home-manager = {
                 useGlobalPkgs = true;
                 useUserPackages = true;
-                backupFileExtension = "bkp";
+                backupFileExtension = "bkp2";
                 users.${userSettings.username} =
                   import ./home/${userSettings.username}/nixLap/home.nix;
                 extraSpecialArgs = {
