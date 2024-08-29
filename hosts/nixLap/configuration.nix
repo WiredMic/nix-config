@@ -100,6 +100,7 @@
       "192.168.86.39:8083" = [ "calibre-web.local" ];
     };
   };
+  my.aau-wifi-cert.enable = true;
 
   # Nvidia GPU
   # https://nixos.wiki/wiki/NVIDIA
@@ -321,19 +322,6 @@
   # NFS NAS share
   # https://nixos.wiki/wiki/NFS
   services.rpcbind.enable = true; # needed for NFS
-
-  systemd.mounts = [{
-    type = "nfs";
-    mountConfig = { Options = "noatime"; };
-    what = "192.168.86.35:/mnt/ZPOOL0/share";
-    where = "/mnt/share";
-  }];
-
-  systemd.automounts = [{
-    wantedBy = [ "multi-user.target" ];
-    automountConfig = { TimeoutIdleSec = "600"; };
-    where = "/mnt/share";
-  }];
 
   services.emacs = {
     enable = true;

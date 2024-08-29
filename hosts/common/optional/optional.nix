@@ -31,6 +31,9 @@
 
     # server
     ./server/server.nix
+
+    # wifi certs
+    ./aau-wifi-cert.nix
   ];
 
   # Because this is the optional dir not everything needs to be enabled by default
@@ -60,4 +63,6 @@
     lib.mkDefault false;
 
   my.distrobox.enable = lib.mkDefault false;
+
+  my.aau-wifi-cert.enable = lib.mkDefault false;
 }
