@@ -294,6 +294,8 @@
 
   my.arduino.enable = true;
 
+  services.solaar.enable = true;
+
   services.mullvad-vpn = {
     enable = true;
     package = pkgs.mullvad-vpn;
