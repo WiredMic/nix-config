@@ -82,6 +82,8 @@
   # Zsh
   my.cowsay-shell-script.enable = true;
 
+  my.onedrive.enable = true;
+
   xdg.enable = true;
 
   # Enable home-manager and git

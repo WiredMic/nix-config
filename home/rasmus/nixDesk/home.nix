@@ -76,6 +76,9 @@
   # password manager 
   my.pass.enable = true;
 
+  # Cloud Storage
+  my.onedrive.enable = true;
+
   xdg.enable = true;
 
   # Enable home-manager and git
@@ -86,7 +89,6 @@
     shellIntegration.enableZshIntegration = true;
     settings = { };
   };
-
 
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";

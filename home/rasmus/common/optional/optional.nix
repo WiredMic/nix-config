@@ -21,6 +21,9 @@
 
     ./cowsay/cowsay.nix
 
+    # Clouds
+    ./onedrive.nix
+
   ];
 
   my.hyprland.enable = lib.mkForce userSettings.de.hyprland;
@@ -39,4 +42,6 @@
   my.pass.enable = lib.mkDefault false;
 
   my.cowsay-shell-script.enable = lib.mkDefault false;
+
+  my.onedrive.enable = lib.mkDefault false;
 }

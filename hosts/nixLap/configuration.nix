@@ -263,9 +263,6 @@
   programs.ydotool.enable = true; # TODO get it to work
   # TODO Spellcheck
 
-  # Cloud storage
-  my.onedrive.enable = true;
-
   # theme gtk
   programs.dconf.enable = true;
 
