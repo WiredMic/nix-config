@@ -90,34 +90,34 @@
 
   # Nvidia GPU
   # https://nixos.wiki/wiki/NVIDIA
-  boot.initrd.kernelModules = [ "nvidia" ];
-  services.xserver.videoDrivers = [ "nvidia" ];
+  # boot.initrd.kernelModules = [ "nvidia" ];
+  # services.xserver.videoDrivers = [ "nvidia" ];
 
-  hardware.graphics = {
+  hardware.opengl = {
     enable = true;
-    enable32Bit = true;
+    driSupport32Bit = true;
     extraPackages = with pkgs;
       [
         rocmPackages.clr.icd # OpenCL
       ];
   };
 
-  hardware = {
-    nvidia = {
-      modesetting.enable = lib.mkDefault true;
-      powerManagement.enable = lib.mkDefault true;
-
-      prime = {
-        intelBusId = "PCI:0:2:0";
-        nvidiaBusId = "PCI:1:0:0";
-
-        offload = {
-          enable = true;
-          enableOffloadCmd = true;
-        };
-      };
-    };
-  };
+  # hardware = {
+  #  nvidia = {
+  #    modesetting.enable = lib.mkDefault true;
+  #    powerManagement.enable = lib.mkDefault true;
+  #
+  #    prime = {
+  #      intelBusId = "PCI:0:2:0";
+  #      nvidiaBusId = "PCI:1:0:0";
+  #
+  #      offload = {
+  #        enable = true;
+  #        enableOffloadCmd = true;
+  #      };
+  #    };
+  #  };
+  # };
 
   # INTEL CPU
   hardware.cpu.intel.updateMicrocode = lib.mkDefault true;
@@ -157,8 +157,6 @@
   services.printing.enable = true;
 
   # Enable sound with pipewire.
-  sound.enable = true;
-  hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;

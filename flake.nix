@@ -3,19 +3,16 @@
 
   inputs = {
     # Nixpkgs
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    # nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     # Home manager
     home-manager = {
-      url = "github:nix-community/home-manager/master";
+      url = "github:nix-community/home-manager/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-
-    # grub2-themes.url = "github:vinceliuice/grub2-themes";
 
     # --Desktop Environments--
     hyprland = { url = "git+https://github.com/hyprwm/Hyprland?submodules=1"; };
@@ -44,9 +41,10 @@
 
     stylix.url = "github:danth/stylix";
 
-    nix-ld.url = "github:Mic92/nix-ld";
-    # this line assume that you also have nixpkgs as an input
-    nix-ld.inputs.nixpkgs.follows = "nixpkgs";
+    nix-ld = {
+      url = "github:Mic92/nix-ld";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     solaar = {
       url =
@@ -56,10 +54,10 @@
 
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager,
-    # grub2-themes,
-    hyprland, nixos-cosmic, split-monitor-workspaces, nix-flatpak, stylix
-    , nix-colors, ags, nixos-hardware, nix-ld, solaar, sops-nix, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, hyprland,
+    # nixos-cosmic,
+    split-monitor-workspaces, nix-flatpak, stylix, ags, nixos-hardware, nix-ld
+    , solaar, sops-nix, ... }@inputs:
     let
       inherit (self) outputs;
       # Supported systems for your flake packages, shell, etc.
@@ -127,7 +125,7 @@
             nix-flatpak.nixosModules.nix-flatpak
             home-manager.nixosModules.home-manager
             stylix.nixosModules.stylix
-            nixos-cosmic.nixosModules.default
+            # nixos-cosmic.nixosModules.default
             nix-ld.nixosModules.nix-ld
             solaar.nixosModules.default
             # nixos-hardware.nixosModules.lenovo-legion-15ich
@@ -165,7 +163,7 @@
             nix-flatpak.nixosModules.nix-flatpak
             home-manager.nixosModules.home-manager
             stylix.nixosModules.stylix
-            nixos-cosmic.nixosModules.default
+            # nixos-cosmic.nixosModules.default
             nix-ld.nixosModules.nix-ld
             solaar.nixosModules.default
             # nixos-hardware.nixosModules.lenovo-legion-15ich
@@ -197,7 +195,6 @@
             inherit userSettings;
           };
           modules = [
-            nixos-cosmic.nixosModules.default
             stylix.nixosModules.stylix
             nix-flatpak.nixosModules.nix-flatpak
             home-manager.nixosModules.home-manager
