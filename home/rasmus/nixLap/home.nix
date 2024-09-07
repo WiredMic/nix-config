@@ -65,6 +65,11 @@
       # eza
     ]);
 
+  programs.kitty.enable = true;
+
+  # Theme
+  my.theme.enable = true;
+
   # Devops
   my.direnv.enable = true;
   my.emacs.enable = true;

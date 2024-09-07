@@ -10,6 +10,9 @@
     # sddm
     ./sddm/sddm-icon.nix
 
+    # Theme
+    ./theme.nix
+
     # dev
     ./dev/devenv.nix
     ./dev/neovim/neovim.nix
@@ -32,6 +35,8 @@
   my.ags.enable = lib.mkForce userSettings.de.hyprland;
 
   my.sddm-icon.enable = lib.mkDefault true;
+
+  my.theme.enable = lib.mkDefault false;
 
   my.direnv.enable = lib.mkDefault false;
   my.emacs.enable = lib.mkDefault false;
