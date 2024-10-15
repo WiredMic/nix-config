@@ -18,7 +18,7 @@
     ./dev/neovim/neovim.nix
     ./dev/emacs/emacs.nix
     ./dev/rust.nix
-    ./dev/latex.nix
+    ./dev/latex/latex.nix
 
     ./pass.nix
 
