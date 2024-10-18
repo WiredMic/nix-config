@@ -22,6 +22,7 @@
   - [[#org-auto-tangle][Org-auto-tangle]]
   - [[#org-download][Org-download]]
   - [[#images][Images]]
+- [[#octave-mode][Octave mode]]
 
 * DOOM Emacs config
 To Tangle a document press =
@@ -450,3 +451,9 @@ When Using images in org-mode they can have a lot of attributes. This function f
 
 #+ATTR_ORG: :width 100 :center yes
 [[file:Org-mode/2024-03-20_16-57-44_screenshot.png]]
+
+
+* Octave mode
+#+begin_src elisp :tangle yes
+(add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
+#+end_src

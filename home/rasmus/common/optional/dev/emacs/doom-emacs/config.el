@@ -333,3 +333,5 @@ org-ellipsis "…"
 
 ;; (advice-add #'org-display-inline-images :around #'apply-with-image-drawers-unpacked)
 ;; (add-hook 'org-export-before-processing-hook 'unpack-image-drawers)
+
+(add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))

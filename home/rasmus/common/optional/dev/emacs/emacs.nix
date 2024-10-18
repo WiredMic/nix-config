@@ -32,6 +32,7 @@
       texlivePackages.latexindent # LaTeX
       nodePackages.prettier # YAML, Markdown
       dockfmt # Dockerfile
+      texlivePackages.latexindent # LaTeX
 
       # lsp
       nil # nix
@@ -42,6 +43,7 @@
       # autofmt
       nixfmt # nix
       # nixfmt-rfc-style # new nix format
+      #
     ];
 
     home.sessionPath = [ "${config.xdg.configHome}/emacs/bin" ];
