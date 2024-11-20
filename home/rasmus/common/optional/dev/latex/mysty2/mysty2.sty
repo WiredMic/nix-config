@@ -1,0 +1,117 @@
+% this is my first package
+%
+% (c) Rasmus Enevoldsen
+%
+%% This program can be redistributed and/or modified under the terms
+%% of the LaTeX Project Public License Distributed from CTAN archives
+%% in directory macros/latex/base/lppl.txt.
+%
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{personal}
+  [2024/10/14 v0.01 LaTeX]
+
+\RequirePackage{xparse}
+\RequirePackage{amsmath}
+
+
+\providecommand*{\ohm}{\ensuremath{\mathrm{\Omega}}}
+\providecommand*{\bar}{\ensuremath{\mathrm{bar}}}
+\providecommand*{\micro}{\ensuremath{\mathrm{\mu}}}
+\providecommand*{\degree}{\ensuremath{^\circ}}
+\providecommand*{\celsius}{\ensuremath{\mathrm{^\circ C}}}
+\providecommand*{\fahrenheit}{\ensuremath{\mathrm{^\circ F}}}
+
+%% Mathematical constanses
+\providecommand*{\eu}{\ensuremath{\mathrm{e}}}
+\providecommand*{\im}{\ensuremath{\mathrm{i}}}      % Imaginary number i
+\providecommand*{\varim}{\ensuremath{\mathrm{I}}}   % Pseudoscalar of $\mathbb{G}^3$
+\providecommand*{\imj}{\ensuremath{\mathrm{j}}}     % Imaginary number j
+\providecommand*{\imk}{\ensuremath{\mathrm{k}}}     % Imaginary number k
+
+
+%% Operators
+
+\providecommand{\newoperator}[3]{\newcommand*{#1}{\mathop{#2}#3}}
+\providecommand{\renewoperator}[3]{\renewcommand*{#1}{\mathop{#2}#3}}
+
+
+\renewoperator{\Re}{\mathrm{Re}}{\nolimits}
+\renewoperator{\Im}{\mathrm{Im}}{\nolimits}
+
+\newoperator{\diff}{\mathrm{d}}{\nolimits}
+
+\providecommand*{\dv}[3][]{%
+\frac{\diff^{#1}#2}{\diff #3^{#1}}}
+
+\providecommand*{\pdv}[3][]{%
+\frac{\partial^{#1}#2}%
+{\partial #3^{#1}}}
+
+
+% Brackets and braces
+\DeclareDocumentCommand\bracket{}{{\ifnum\z@=`}\fi\@bracket}
+\DeclareDocumentCommand\@bracket{ t\big t\Big t\bigg t\Bigg g o d() d|| d<> }
+{ % Flexible automatic bracketing of an expression in () or [] or {} or || or <>
+    % Handles manual override of sizing
+    \IfBooleanTF{#1}{\let\ltag\bigl \let\rtag\bigr}{
+        \IfBooleanTF{#2}{\let\ltag\Bigl \let\rtag\Bigr}{
+            \IfBooleanTF{#3}{\let\ltag\biggl \let\rtag\biggr}{
+                \IfBooleanTF{#4}
+                {\let\ltag\Biggl \let\rtag\Biggr}
+                {\let\ltag\left \let\rtag\right}
+            }
+        }
+    }
+    % Handles actual bracketing
+    \IfNoValueTF{#5}{
+        \IfNoValueTF{#6}{ % Square Bracket
+            \IfNoValueTF{#7}{ % Round Bracket
+                \IfNoValueTF{#8}{ % Vertical Bar
+                    \IfNoValueTF{#9} % Angle bracket
+                    {()}
+                    {\ltag\langle#9\rtag\rangle}
+                }
+                {\ltag\lvert{#8}\rtag\rvert
+                \IfNoValueTF{#9}{}{\ltag\langle#9\rtag\rangle}
+                }
+            }
+            {\ltag(#7\rtag) \IfNoValueTF{#8}{}{|#8|}
+            \IfNoValueTF{#9}{}{\ltag\langle#9\rtag\rangle}
+            }
+        }
+        {\ltag[#6\rtag] \IfNoValueTF{#7}{}{(#7)} \IfNoValueTF{#8}{}{|#8|}
+        \IfNoValueTF{#9}{}{\ltag\langle#9\rtag\rangle}
+        }
+    }
+    {\ltag\lbrace#5\rtag\rbrace  \IfNoValueTF{#6}{}{[#6]} \IfNoValueTF{#7}{}{(#7)} \IfNoValueTF{#8}{}{|#8|}
+    \IfNoValueTF{#9}{}{\ltag\langle#9\rtag\rangle}
+    }\ifnum\z@=`{\fi}
+}
+\DeclareDocumentCommand\brac{}{\bracket} % Shorthand for \bracket
+
+
+
+
+% Floor and Ceiling
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+
+
+\ExplSyntaxOn
+\NewDocumentCommand{\einheit}{m}{
+  \ensuremath{
+    \seq_set_split:Nnn \l_tmpa_seq { , } { #1 }
+    \seq_map_indexed_inline:Nn \l_tmpa_seq {
+      \ifnum##1>1\relax\fi
+      \mathrm{e}\sb{##2}
+    }
+  }
+}
+\ExplSyntaxOff
+
+
+
+
+\endinput
+%%
+%% End of file `mypackage.sty'.
