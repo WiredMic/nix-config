@@ -1,9 +1,10 @@
-{ pkgs, lib, config, ... }: {
+{ pkgs, lib, config, inputs, ... }: {
 
   options = { my.emacs.enable = lib.mkEnableOption "enables emacs"; };
 
   config = lib.mkIf config.my.direnv.enable {
-    programs.emacs.enable = true;
+    programs.emacs = { enable = true; };
+    programs.emacs.package = pkgs.emacs29-pgtk;
     services.emacs.socketActivation.enable = true;
 
     fonts.fontconfig.enable = true;
@@ -14,21 +15,21 @@
       fira
 
       # dependencies
+      anki
       ripgrep
       fd
       ispell
       pandoc
       graphviz
-      python312Packages.editorconfig
       clang # c format
       glslang
+      gnumake
 
       # Spellcheck
       shellcheck
       (aspellWithDicts (dicts: with dicts; [ en en-computers en-science da ]))
 
       # Format https://docs.doomemacs.org/latest/modules/editor/format/
-      nixfmt-classic # nix
       texlivePackages.latexindent # LaTeX
       nodePackages.prettier # YAML, Markdown
       dockfmt # Dockerfile
@@ -36,15 +37,18 @@
 
       # lsp
       nil # nix
+      # nixd # nix
       shfmt # sh
       dap # A debugger
-      ccls # c/cpp/objc
+      clang-tools # c/cpp/objc
 
       # autofmt
       nixfmt # nix
       # nixfmt-rfc-style # new nix format
-      #
     ];
+
+    # nixd for NixOS
+    # nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
 
     home.sessionPath = [ "${config.xdg.configHome}/emacs/bin" ];
 

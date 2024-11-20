@@ -7,9 +7,11 @@
 - [[#doom-emacs-config][DOOM Emacs config]]
 - [[#name--email][Name & Email]]
 - [[#fonts][Fonts]]
+  - [[#ligature][Ligature]]
 - [[#theme][Theme]]
 - [[#format][Format]]
 - [[#lsp][LSP]]
+  - [[#nixd][nixd]]
 - [[#org-mode][Org-mode]]
   - [[#directories][Directories]]
   - [[#latex][LaTeX]]
@@ -63,6 +65,12 @@ To Tangle a document press =
 
 #+end_src
 
+** Ligature
+
+#+begin_src elisp :tangle yes
+;; https://docs.doomemacs.org/v21.12/#/configuration/setting-ligatures
+#+end_src
+
 * Theme
 #+begin_src elisp :tangle yes
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
@@ -75,6 +83,9 @@ To Tangle a document press =
 ;; `load-theme' function. This is the default:
 ;; https://github.com/doomemacs/themes/tree/screenshots
 (setq doom-theme 'doom-one)
+
+(set-frame-parameter nil 'alpha-background 80) ; For current frame
+(add-to-list 'default-frame-alist '(alpha-background . 80)) ; For all new frames henceforth
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -133,6 +144,16 @@ To Tangle a document press =
 #+begin_src elisp :tangle yes
 (setq lsp-inlay-hint-enable t
       lsp-inlay-hints-mod t)
+#+end_src
+
+** nixd
+#+begin_src elisp :tangle yes
+;; (with-eval-after-load 'lsp-mode
+;;   (lsp-register-client
+;;     (make-lsp-client :new-connection (lsp-stdio-connection "nixd")
+;;                      :major-modes '(nix-mode)
+;;                      :priority 0
+;;                      :server-id 'nixd)))
 #+end_src
 
 * Org-mode
@@ -225,9 +246,14 @@ org-ellipsis "…"
 (add-to-list 'org-latex-packages-alist'("" "amsmath" t))
 (add-to-list 'org-latex-packages-alist'("" "amssymb" t))
 (add-to-list 'org-latex-packages-alist'("" "siunitx" t))
-(add-to-list 'org-latex-packages-alist'("" "circuitikz" t))
+(add-to-list 'org-latex-packages-alist'("" "tikz" t))
+(add-to-list 'org-latex-packages-alist'"\\usetikzlibrary{snakes,calc,patterns,angles,quotes,decorations.pathmorphing,decorations.text,math,decorations.pathreplacing,automata,arrows.meta,positioning,external}")
+(add-to-list 'org-latex-packages-alist'("european,siunitx" "circuitikz" t))
+;; (add-to-list 'org-latex-packages-alist"\\ctikzset{bipoles/ammeter/text rotate/.initial=0,rotation/.style={bipoles/ammeter/text rotate=#1},% style for ease introduction in code}" )
+;; (add-to-list 'org-latex-packages-alist'("" "pgfcircbipoles" t))
+(add-to-list 'org-latex-packages-alist'("" "tikz-3dplot" t))
 (add-to-list 'org-latex-packages-alist'("" "pgfplots" t))
-(add-to-list 'org-latex-packages-alist'("" "mysty" t))
+(add-to-list 'org-latex-packages-alist'("" "mysty2" t))
 #+end_src
 
 

@@ -25,6 +25,8 @@
      doom-symbol-font (font-spec :family "Nerd Font" :size 21)
      doom-serif-font (font-spec :family "JetBrains Mono" :size 20))
 
+;; https://docs.doomemacs.org/v21.12/#/configuration/setting-ligatures
+
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
 ;; refresh your font settings. If Emacs still can't find your font, it likely
@@ -35,6 +37,9 @@
 ;; `load-theme' function. This is the default:
 ;; https://github.com/doomemacs/themes/tree/screenshots
 (setq doom-theme 'doom-one)
+
+(set-frame-parameter nil 'alpha-background 80) ; For current frame
+(add-to-list 'default-frame-alist '(alpha-background . 80)) ; For all new frames henceforth
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -85,6 +90,13 @@
 
 (setq lsp-inlay-hint-enable t
       lsp-inlay-hints-mod t)
+
+;; (with-eval-after-load 'lsp-mode
+;;   (lsp-register-client
+;;     (make-lsp-client :new-connection (lsp-stdio-connection "nixd")
+;;                      :major-modes '(nix-mode)
+;;                      :priority 0
+;;                      :server-id 'nixd)))
 
 (setq org-directory "~/OneDrive/Org/"
       org-roam-directory "~/OneDrive/Org/Roam")
@@ -157,9 +169,14 @@ org-ellipsis "…"
 (add-to-list 'org-latex-packages-alist'("" "amsmath" t))
 (add-to-list 'org-latex-packages-alist'("" "amssymb" t))
 (add-to-list 'org-latex-packages-alist'("" "siunitx" t))
-(add-to-list 'org-latex-packages-alist'("" "circuitikz" t))
+(add-to-list 'org-latex-packages-alist'("" "tikz" t))
+(add-to-list 'org-latex-packages-alist'"\\usetikzlibrary{snakes,calc,patterns,angles,quotes,decorations.pathmorphing,decorations.text,math,decorations.pathreplacing,automata,arrows.meta,positioning,external}")
+(add-to-list 'org-latex-packages-alist'("european,siunitx" "circuitikz" t))
+;; (add-to-list 'org-latex-packages-alist"\\ctikzset{bipoles/ammeter/text rotate/.initial=0,rotation/.style={bipoles/ammeter/text rotate=#1},% style for ease introduction in code}" )
+;; (add-to-list 'org-latex-packages-alist'("" "pgfcircbipoles" t))
+(add-to-list 'org-latex-packages-alist'("" "tikz-3dplot" t))
 (add-to-list 'org-latex-packages-alist'("" "pgfplots" t))
-(add-to-list 'org-latex-packages-alist'("" "mysty" t))
+(add-to-list 'org-latex-packages-alist'("" "mysty2" t))
 
 (use-package org-latex-preview
   :config
