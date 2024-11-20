@@ -58,11 +58,13 @@
     hunspell
     hunspellDicts.da_DK
 
-    # LaTeX
-    # texlive.combined.scheme-full
-
     gparted
     localsend
+
+    ranger
+
+    # file manager
+    xfce.thunar
   ]) ++ (with pkgs-unstable;
     [
       # eza
@@ -79,6 +81,7 @@
   my.neovim.enable = true;
   my.rust.enable = true;
   my.latex.enable = true;
+  my.octave.enable = true;
 
   # ssh 
   my.ssh.enable = true;
