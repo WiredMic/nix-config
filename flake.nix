@@ -84,14 +84,13 @@
       userSettings = {
         username = "rasmus";
         de = {
-          hyprland = false;
+          hyprland = true;
           kde = false;
           gnome = false;
-          cosmic = false;
         };
         # deType = "wayland"; # x11 vs wayland
         editor = "emacsclient -c -a ''";
-        style-color = "dracula";
+        style-color = "catppuccin-mocha";
       };
 
     in {
