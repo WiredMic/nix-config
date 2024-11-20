@@ -1,11 +1,7 @@
 { pkgs, lib, config, userSettings, ... }: {
   imports = [
     # de 
-    ./de/hyprland/hyprland-home.nix
-
-    # hyprland tools
-    # ./hyprland_tool_configs/tofi.nix
-    ./hyprland_tool_configs/ags.nix
+    ./de/hyprland/hyprland.nix
 
     # sddm
     ./sddm/sddm-icon.nix
@@ -27,12 +23,10 @@
     # Clouds
     ./onedrive.nix
 
+    ./octave/octave.nix
   ];
 
-  my.hyprland.enable = lib.mkForce userSettings.de.hyprland;
-
-  # my.tofi.enable = lib.mkForce userSettings.de.hyprland;
-  my.ags.enable = lib.mkForce userSettings.de.hyprland;
+  my.common.hyprland.enable = lib.mkForce userSettings.de.hyprland;
 
   my.sddm-icon.enable = lib.mkDefault true;
 

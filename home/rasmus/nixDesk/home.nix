@@ -9,6 +9,9 @@
 
     # Optional
     ../common/optional/optional.nix
+
+    # Per PC configurations
+    ./de/de-optional.nix
   ];
 
   home = {

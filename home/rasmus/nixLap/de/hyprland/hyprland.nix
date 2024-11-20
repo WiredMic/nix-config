@@ -19,6 +19,8 @@
       };
 
       settings = {
+
+        exec-once = [ "${./check-battery.sh}" ];
         monitor = [
           # Setup monitors
           # See https://wiki.hyprland.org/Configuring/Monitors/

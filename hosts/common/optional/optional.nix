@@ -37,6 +37,8 @@
 
     # wifi certs
     ./aau-wifi-cert.nix
+
+    ./kanata.nix
   ];
 
   # Because this is the optional dir not everything needs to be enabled by default
@@ -70,4 +72,7 @@
   my.arduino.enable = lib.mkDefault false;
 
   my.aau-wifi-cert.enable = lib.mkDefault false;
+
+  my.kanata.enable = lib.mkDefault userSettings.de.hyprland;
+
 }

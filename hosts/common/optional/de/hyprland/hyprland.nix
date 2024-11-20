@@ -14,7 +14,12 @@
       # package = inputs.hyprland.packages.${pkgs.system}.hyprland;
     };
 
-    # hardware.opengl = {
+    environment.systemPackages = with pkgs; [
+      xdg-desktop-portal-hyprland
+      xdg-desktop-portal-gtk
+    ];
+
+    # hardware.graphics = {
     #   package = inputs.hyprland.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.mesa.drivers;
 
     #   # if you also want 32-bit support (e.g for Steam)

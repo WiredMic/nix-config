@@ -75,6 +75,7 @@
           #       "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
           #       # "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
           "emacs --daemon"
+          "flatpak run com.discordapp.Discord --start-minimized"
         ];
 
         #     # package = inputs.hyprland.packages.${pkgs.system}.hyprland;
@@ -86,7 +87,7 @@
           kb_layout = "us, dk";
           # kb_variant =
           # kb_model =
-          kb_options = "grp:alt_shift_toggle,caps:swapescape";
+          kb_options = "grp:alt_shift_toggle"; # ,caps:swapescape";
           # kb_rules =
 
           follow_mouse = 1;
