@@ -27,6 +27,11 @@ rebuild-full: rebuild-pre && rebuild-post
 rebuild-trace: rebuild-pre && rebuild-post
   scripts/system-flake-rebuild-trace.sh
 
+
+# Rebuilds boot from flake
+rebuild-boot: rebuild-pre && rebuild-post
+  scripts/system-flake-rebuild-boot.sh
+
 update:
   nix flake update
 
