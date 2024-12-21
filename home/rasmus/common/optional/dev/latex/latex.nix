@@ -4,11 +4,11 @@
 let
   latex-mysty = pkgs.stdenvNoCC.mkDerivation {
     name = "latex-mysty";
-    src = ./mysty2;
+    src = ./mysty5;
     dontUnpack = true;
     installPhase = ''
-      mkdir -p $out/tex/latex/mysty2
-      cp -r $src/. $out/tex/latex/mysty2
+      mkdir -p $out/tex/latex/mysty5
+      cp -r $src/. $out/tex/latex/mysty5
     '';
     passthru.tlType = "run";
   };

@@ -13,13 +13,13 @@
 \RequirePackage{xparse}
 \RequirePackage{amsmath}
 
-
-\providecommand*{\ohm}{\ensuremath{\mathrm{\Omega}}}
-\providecommand*{\bar}{\ensuremath{\mathrm{bar}}}
-\providecommand*{\micro}{\ensuremath{\mathrm{\mu}}}
-\providecommand*{\degree}{\ensuremath{^\circ}}
-\providecommand*{\celsius}{\ensuremath{\mathrm{^\circ C}}}
-\providecommand*{\fahrenheit}{\ensuremath{\mathrm{^\circ F}}}
+%% These are given in siunit
+%% \providecommand*{\ohm}{\ensuremath{\mathrm{\Omega}}}
+%% \providecommand*{\bar}{\ensuremath{\mathrm{bar}}}
+%% \providecommand*{\micro}{\ensuremath{\mathrm{\mu}}}
+%% \providecommand*{\degree}{\ensuremath{^\circ}}
+%% \providecommand*{\celsius}{\ensuremath{\mathrm{^\circ C}}}
+%% \providecommand*{\fahrenheit}{\ensuremath{\mathrm{^\circ F}}}
 
 %% Mathematical constanses
 \providecommand*{\eu}{\ensuremath{\mathrm{e}}}
@@ -38,15 +38,23 @@
 \renewoperator{\Re}{\mathrm{Re}}{\nolimits}
 \renewoperator{\Im}{\mathrm{Im}}{\nolimits}
 
-\newoperator{\diff}{\mathrm{d}}{\nolimits}
+\newoperator{\diff}{\mathrm{d}\!}{\nolimits}
 
-\providecommand*{\dv}[3][]{%
-\frac{\diff^{#1}#2}{\diff #3^{#1}}}
+%% These are given in derivative
+%% \providecommand*{\dv}[3][]{%
+%% \frac{\diff^{#1}#2}{\diff #3^{#1}}}
 
-\providecommand*{\pdv}[3][]{%
-\frac{\partial^{#1}#2}%
-{\partial #3^{#1}}}
+%% \providecommand*{\pdv}[3][]{%
+%% \frac{\partial^{#1}#2}%
+%% {\partial #3^{#1}}}
 
+%% % display mode
+%% \providecommand*{\ddv}[3][]{%
+%% \dfrac{\diff^{#1}#2}{\diff #3^{#1}}}
+
+%% \providecommand*{\dpdv}[3][]{%
+%% \dfrac{\partial^{#1}#2}%
+%% {\partial #3^{#1}}}
 
 % Brackets and braces
 \DeclareDocumentCommand\bracket{}{{\ifnum\z@=`}\fi\@bracket}

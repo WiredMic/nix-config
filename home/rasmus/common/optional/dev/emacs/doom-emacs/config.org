@@ -253,7 +253,9 @@ org-ellipsis "…"
 ;; (add-to-list 'org-latex-packages-alist'("" "pgfcircbipoles" t))
 (add-to-list 'org-latex-packages-alist'("" "tikz-3dplot" t))
 (add-to-list 'org-latex-packages-alist'("" "pgfplots" t))
-(add-to-list 'org-latex-packages-alist'("" "mysty2" t))
+(add-to-list 'org-latex-packages-alist'("" "mysty5" t))
+(add-to-list 'org-latex-packages-alist'("" "derivative" t))
+(add-to-list 'org-latex-packages-alist'("" "upgreek" t))
 #+end_src
 
 
