@@ -86,6 +86,7 @@
 ;;; org mode and pdf
 (package! pdf-tools)
 (package! org-noter)
+(package! valign)
 
 ;; arduino and board development
 (package! platformio-mode)

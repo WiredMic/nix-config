@@ -342,6 +342,20 @@ https://doubleloop.net/2020/08/02/adding-flashcards-to-your-digital-garden-with-
   (anki-editor-reset-cloze-number))
 #+end_src
 
+** Valign
+
+#+begin_src elisp :tangle yes
+(use-package! valign
+    :after org)
+(add-hook 'org-mode-hook #'valign-mode)
+#+end_src
+
+** Pixel Scroll Precision Mode
+
+#+begin_src elisp :tangle yes
+(add-hook 'org-mode-hook #'pixel-scroll-precision-mode)
+#+end_src
+
 ** [[https://www.orgroam.com/manual.html][Org-roam]]
 #+begin_src elisp :tangle yes
 (setq org-roam-v2-ack t)
@@ -400,7 +414,16 @@ The buffer in org roam can be used
 
     (map! :leader
       :desc "Show graph ui"
-      "n r g" #'org-roam-ui-open))
+      "n r g" #'org-roam-ui-open)
+)
+#+end_src
+
+*** Org-roam-id-heading
+#+begin_src elisp :tangle yes
+(map! :after org-roam
+      :leader
+      :desc "Give ID to a Heading"
+      "n r h" #'org-id-get-create)
 #+end_src
 
 ** Org-auto-tangle
