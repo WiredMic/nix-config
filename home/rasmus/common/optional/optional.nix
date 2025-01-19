@@ -27,6 +27,7 @@
   ];
 
   my.common.hyprland.enable = lib.mkForce userSettings.de.hyprland;
+  # my.common.hyprland.enable = false;
 
   my.sddm-icon.enable = lib.mkDefault true;
 

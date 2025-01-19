@@ -3,12 +3,15 @@
 
   inputs = {
     # Nixpkgs
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
+    # nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    # nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     # Home manager
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.05";
+      url = "github:nix-community/home-manager/release-24.11";
+      # url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -25,10 +28,10 @@
     # Bar for hyprland
     ags.url = "github:Aylur/ags";
 
-    # nixos-cosmic = {
-    #   url = "github:lilyinstarlight/nixos-cosmic";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
+    nixos-cosmic = {
+      url = "github:lilyinstarlight/nixos-cosmic";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Secrets
     sops-nix = {
@@ -41,8 +44,13 @@
 
     stylix.url = "github:danth/stylix";
 
-    nix-ld = {
-      url = "github:Mic92/nix-ld";
+    # nix-ld = {
+    #   url = "github:Mic92/nix-ld";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
+
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -54,10 +62,11 @@
 
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, hyprland,
-    # nixos-cosmic,
-    split-monitor-workspaces, nix-flatpak, stylix, ags, nixos-hardware, nix-ld
-    , solaar, sops-nix, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, hyprland
+    , nixos-cosmic, split-monitor-workspaces, nix-flatpak, stylix, ags
+    , nixos-hardware,
+    # nix-ld,
+    nix-index-database, solaar, sops-nix, ... }@inputs:
     let
       inherit (self) outputs;
       # Supported systems for your flake packages, shell, etc.
@@ -87,9 +96,11 @@
           hyprland = true;
           kde = false;
           gnome = false;
+          cosmic = false; # fails to compile
         };
         # deType = "wayland"; # x11 vs wayland
-        editor = "emacsclient -c -a ''";
+        # editor = "emacsclient -c -a ''";
+        editor = "emacs";
         style-color = "catppuccin-mocha";
       };
 
@@ -125,9 +136,8 @@
             home-manager.nixosModules.home-manager
             stylix.nixosModules.stylix
             # nixos-cosmic.nixosModules.default
-            nix-ld.nixosModules.nix-ld
+            # nix-ld.nixosModules.nix-ld
             solaar.nixosModules.default
-            # nixos-hardware.nixosModules.lenovo-legion-15ich
             {
               home-manager = {
                 useGlobalPkgs = true;
@@ -162,10 +172,11 @@
             nix-flatpak.nixosModules.nix-flatpak
             home-manager.nixosModules.home-manager
             stylix.nixosModules.stylix
-            # nixos-cosmic.nixosModules.default
-            nix-ld.nixosModules.nix-ld
+            nixos-cosmic.nixosModules.default
+            # nix-ld.nixosModules.nix-ld
+            nix-index-database.nixosModules.nix-index
             solaar.nixosModules.default
-            # nixos-hardware.nixosModules.lenovo-legion-15ich
+            <nixos-hardware/lenovo/legion/15ich>
             {
               home-manager = {
                 useGlobalPkgs = true;
