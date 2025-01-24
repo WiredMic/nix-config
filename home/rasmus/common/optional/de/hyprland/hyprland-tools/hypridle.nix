@@ -75,7 +75,6 @@
           outer_color = "rgb(24, 25, 38)";
           outline_thickness = 5;
           placeholder_text = "<i>Input Password...</i>";
-          shadow_passes = 2;
         }];
       };
     };

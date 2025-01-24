@@ -68,20 +68,21 @@
         enable = true;
         variables = [ "--all" ];
       };
+      xwayland.enable = true;
       settings = {
         exec-once = [
-          #       # ~/.config/hypr/xdg-portal-hyprland
-          #       # "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
-          #       "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
-          #       # "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
+          # ~/.config/hypr/xdg-portal-hyprland
+          # "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+          "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+          # "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
           "emacs --daemon"
           "flatpak run com.discordapp.Discord --start-minimized"
         ];
 
-        #     # package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-        #     # plugins = [
-        #     #   inputs.split-monitor-workspaces.packages.${pkgs.system}.split-monitor-workspaces
-        #     # ];
+        # package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+        # plugins = [
+        #   inputs.split-monitor-workspaces.packages.${pkgs.system}.split-monitor-workspaces
+        # ];
 
         input = {
           kb_layout = "us, dk";
@@ -102,8 +103,8 @@
           gaps_out = 20;
           border_size = 2;
           #col.active_border = rgba(33ccffee) rgba(00ff99ee) 45deg
-          "col.active_border" = lib.mkDefault "rgb(cdd6f4)";
-          "col.inactive_border" = lib.mkDefault "rgba(595959aa)";
+          # "col.active_border" = lib.mkDefault "rgb(cdd6f4)";
+          # "col.inactive_border" = lib.mkDefault "rgba(595959aa)";
 
           layout = "dwindle";
         };
@@ -117,12 +118,10 @@
           # blur_new_optimizations = on
           blurls = "lockscreen";
 
-          drop_shadow = "yes";
-          shadow_range = 4;
-          shadow_render_power = 3;
-          "col.shadow" = lib.mkDefault "rgba(1a1a1aee)";
-
         };
+
+        # This is because I cannot find the place where "col.shadow" is added
+        debug = { suppress_errors = true; };
 
         misc = { disable_hyprland_logo = "yes"; };
 
@@ -145,12 +144,12 @@
         "$mainMod" = "SUPER";
 
         bind = [
-          #       # Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
+          # Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
           "$mainMod, E, exec, ${userSettings.editor}" # open VISUAL editor
           "$mainMod, Q, exec, kitty" # open the terminal
           "$mainMod SHIFT, X, killactive," # close the active window
           "$mainMod, M, exec, killall wlogout || wlogout --protocol layer-shell" # show the logout window
-          #       "$mainMod SHIFT, M, exit," # Exit Hyprland all together no (force quit Hyprland)
+          "$mainMod SHIFT, M, exit," # Exit Hyprland all together no (force quit Hyprland)
           "$mainMod, D, exec, thunar" # Show the graphical file browser
           "$mainMod, F11, fullscreen"
 
@@ -210,44 +209,6 @@
         windowrulev2 = [ "opacity 0.8 0.8,class:^(kitty)$" ];
 
       };
-
-      # extraConfig = ''
-      #   #     #  _   _                  _                 _
-      #   #     # | | | |_   _ _ __  _ __| | __ _ _ __   __| |
-      #   #     # | |_| | | | | '_ \| '__| |/ _` | '_ \ / _` |
-      #   #     # |  _  | |_| | |_) | |  | | (_| | | | | (_| |
-      #   #     # |_| |_|\__, | .__/|_|  |_|\__,_|_| |_|\__,_|
-      #   #     #        |___/|_|
-      #   #     # modified by: Rasmus Enevolden (2023)
-      #   #     # -----------------------------------------------------------------
-
-      #   #     # See https://wiki.hyprland.org/Configuring/Keywords/ for more
-
-      #   #     # For all categories, see https://wiki.hyprland.org/Configuring/Variables/
-
-      #   #     # rules below would make the specific app transparent
-      #   #     # windowrulev2 = opacity 0.8 0.8,class:^(kitty)$
-      #   #     # windowrulev2 = opacity 0.8 0.8,class:^(thunar)$
-      #   #     # windowrulev2 = opacity 0.8 0.8,class:^(chromium)$
-      #   #     # windowrulev2 = opacity 0.8 0.8,class:^(Code)$
-
-      #   #     # bind = $mainMod SHIFT, W, exec, $HOME/.dotfiles/scripts/wallpaper-swaybg.sh
-      #   #     # bind = $mainMod SHIFT, B, exec, $HOME/.dotfiles/waybar/launch.sh
-
-      #   #     # Scroll through existing workspaces with mainMod + scroll
-      #   #     bind = $mainMod, mouse_down, workspace, e+1
-      #   #     bind = $mainMod, mouse_up, workspace, e-1
-
-      #   #     # Audio shortcuts [works only with spotify]
-      #   #     # bind = , code:173, execr, dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous
-      #   #     # bind = , code:172 , exec ,dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause
-      #   #     # bind = , code:171, execr, dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next
-
-      #   #     # binde=, XF86AudioRaiseVolume, exec, wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+
-      #   #     # binde=, XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
-
-      # '';
     };
   };
-
 }
