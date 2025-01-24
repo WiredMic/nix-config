@@ -12,6 +12,7 @@
       extraConfig = {
         init.defaultBranch = "main";
         pull.rebase = "true";
+        core = { editor = "${config.home.sessionVariables.EDITOR}"; };
       };
     };
   };

@@ -3,9 +3,24 @@
   options = { my.emacs.enable = lib.mkEnableOption "enables emacs"; };
 
   config = lib.mkIf config.my.direnv.enable {
-    programs.emacs = { enable = true; };
-    programs.emacs.package = pkgs.emacs29-pgtk;
-    services.emacs.socketActivation.enable = true;
+    programs.emacs = {
+      enable = true;
+      package = pkgs.emacs30-pgtk;
+    };
+
+    services.emacs = {
+      enable = true;
+      package = if config.programs.emacs.enable then
+        config.programs.emacs.package
+      else
+        pkgs.emacs;
+      socketActivation.enable = true;
+    };
+
+    home.sessionVariables = {
+      EDITOR = lib.mkForce "emacsclient";
+      VISUAL = lib.mkForce "emacsclient -nc";
+    };
 
     fonts.fontconfig.enable = true;
     home.packages = with pkgs; [

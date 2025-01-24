@@ -12,25 +12,7 @@
 
     home.packages = with pkgs; [
       wtype # middle mouse tab
-      #   wev
-      #   swww
-
-      #   kcalc
-      #   thunderbird
-
-      #   # file manager
-      #   xfce.thunar
-      #   # set services.gvfs.enable = true; in NixOS config
-      #   # edit `Open Terminal Here` to "xdg-open ."
-      #   # xfce.xfconf
-      #   samba
-      #   smbnetfs
       killall
-
-      #   kdePackages.qt6ct
-      #   # (callPackage ./base16-qt5ct.nix { })
-      #   adwaita-qt6
-      #   kdePackages.qtstyleplugin-kvantum
 
     ];
 
@@ -75,7 +57,6 @@
           # "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
           "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
           # "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
-          "emacs --daemon"
           "flatpak run com.discordapp.Discord --start-minimized"
         ];
 
@@ -145,7 +126,7 @@
 
         bind = [
           # Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
-          "$mainMod, E, exec, ${userSettings.editor}" # open VISUAL editor
+          "$mainMod, E, exec, ${config.home.sessionVariables.VISUAL}" # open VISUAL editor
           "$mainMod, Q, exec, kitty" # open the terminal
           "$mainMod SHIFT, X, killactive," # close the active window
           "$mainMod, M, exec, killall wlogout || wlogout --protocol layer-shell" # show the logout window
