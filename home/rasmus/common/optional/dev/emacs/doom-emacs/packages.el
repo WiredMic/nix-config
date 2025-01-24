@@ -82,6 +82,7 @@
 (package! org-auto-tangle)
 (package! org-download)
 (package! anki-editor)
+(package! engrave-faces)
 
 ;;; org mode and pdf
 (package! pdf-tools)

@@ -176,7 +176,9 @@ org-ellipsis "…"
 ;; (add-to-list 'org-latex-packages-alist'("" "pgfcircbipoles" t))
 (add-to-list 'org-latex-packages-alist'("" "tikz-3dplot" t))
 (add-to-list 'org-latex-packages-alist'("" "pgfplots" t))
-(add-to-list 'org-latex-packages-alist'("" "mysty2" t))
+(add-to-list 'org-latex-packages-alist'("" "mysty5" t))
+(add-to-list 'org-latex-packages-alist'("" "derivative" t))
+(add-to-list 'org-latex-packages-alist'("" "upgreek" t))
 
 (use-package org-latex-preview
   :config
@@ -211,6 +213,13 @@ org-ellipsis "…"
 
   ;; More immediate live-previews -- the default delay is 1 second
   (setq org-latex-preview-live-debounce 0.25))
+
+;; (add-to-list 'org-latex-packages-alist'("" "engraved" t))
+;; (setq org-latex-src-block-backend "minted")
+;; (setq org-latex-src-block-backend 'engraved)
+;; (setq org-latex-engraved-options
+;; '(("highlightcolor" "green") ("frame" "lines")))
+;; (setq org-latex-engraved-theme 'doom-one-light)  ;; Optional
 
 ;; (add-hook 'centaur-tabs-mode)
 
@@ -252,6 +261,12 @@ org-ellipsis "…"
   ;; Initialize
   (anki-editor-reset-cloze-number))
 
+(use-package! valign
+    :after org)
+(add-hook 'org-mode-hook #'valign-mode)
+
+(add-hook 'org-mode-hook #'pixel-scroll-precision-mode)
+
 (setq org-roam-v2-ack t)
 
 (use-package! org-roam
@@ -260,9 +275,9 @@ org-ellipsis "…"
   (setq org-roam-v2-ack t)
   (setq org-roam-completion-everywhere t)
   (setq org-roam-mode-sections
-        (list #'org-roam-backlinks-insert-section
-              #'org-roam-reflinks-insert-section
-              #'org-roam-unlinked-references-insert-section))
+  (list #'org-roam-backlinks-insert-section
+        #'org-roam-reflinks-insert-section
+        #'org-roam-unlinked-references-insert-section))
   (org-roam-db-autosync-enable))
 
 (setq org-roam-mode-sections
@@ -291,7 +306,13 @@ org-ellipsis "…"
 
     (map! :leader
       :desc "Show graph ui"
-      "n r g" #'org-roam-ui-open))
+      "n r g" #'org-roam-ui-open)
+)
+
+(map! :after org-roam
+      :leader
+      :desc "Give ID to a Heading"
+      "n r h" #'org-id-get-create)
 
 (use-package! org-auto-tangle
   :defer t

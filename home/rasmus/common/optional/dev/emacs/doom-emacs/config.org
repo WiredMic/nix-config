@@ -18,8 +18,11 @@
   - [[#org-modern][Org-modern]]
   - [[#hyper-links][Hyper Links]]
   - [[#org-latex-preview-packages][Org LaTeX preview packages]]
+  - [[#org-code-block-export][Org Code Block Export]]
   - [[#centaur-tab][Centaur Tab]]
   - [[#anki][Anki]]
+  - [[#valign][Valign]]
+  - [[#pixel-scroll-precision-mode][Pixel Scroll Precision Mode]]
   - [[#org-roam][Org-roam]]
   - [[#org-auto-tangle][Org-auto-tangle]]
   - [[#org-download][Org-download]]
@@ -295,6 +298,19 @@ org-ellipsis "…"
   (setq org-latex-preview-live-debounce 0.25))
 #+end_src
 
+** Org Code Block Export
+
+#+begin_src elisp :tangle yes
+;; (add-to-list 'org-latex-packages-alist'("" "engraved" t))
+;; (setq org-latex-src-block-backend "minted")
+;; (setq org-latex-src-block-backend 'engraved)
+;; (setq org-latex-engraved-options
+;; '(("highlightcolor" "green") ("frame" "lines")))
+;; (setq org-latex-engraved-theme 'doom-one-light)  ;; Optional
+#+end_src
+
+#+RESULTS:
+
 ** Centaur Tab
 #+begin_src elisp :tangle yes
 ;; (add-hook 'centaur-tabs-mode)
@@ -366,9 +382,9 @@ https://doubleloop.net/2020/08/02/adding-flashcards-to-your-digital-garden-with-
   (setq org-roam-v2-ack t)
   (setq org-roam-completion-everywhere t)
   (setq org-roam-mode-sections
-        (list #'org-roam-backlinks-insert-section
-              #'org-roam-reflinks-insert-section
-              #'org-roam-unlinked-references-insert-section))
+  (list #'org-roam-backlinks-insert-section
+        #'org-roam-reflinks-insert-section
+        #'org-roam-unlinked-references-insert-section))
   (org-roam-db-autosync-enable))
 
 #+end_src
