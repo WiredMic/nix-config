@@ -37,7 +37,7 @@
     ./llm.nix
 
     # wifi certs
-    ./aau-wifi-cert.nix
+    ./aau-wifi-cert/aau-wifi-cert.nix
 
     ./kanata.nix
   ];
