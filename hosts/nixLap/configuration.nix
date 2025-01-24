@@ -135,6 +135,11 @@
     };
   };
 
+  hardware.opentabletdriver = {
+    enable = true;
+    daemon.enable = true;
+  };
+
   # Set your time zone.
   time.timeZone = systemSettings.timezone;
 
@@ -183,12 +188,11 @@
     git
     neovim
     firefox
-    dolphin
-    xfce.thunar
     xclip
     tree
     gcc
     kdePackages.kdeconnect-kde
+    gparted
 
     # network share maybe s
     # TODO Samba does not work
@@ -203,15 +207,14 @@
     wtype # does not work on kde or gnome
     wev
     miru
-    calibre
+    # calibre
     # davinci-resolve
     just
     fastfetch
     nmap
-    gnome.gnome-system-monitor
+    gnome-system-monitor
 
-    # icons
-    papirus-icon-theme
+    thunderbird
 
     wl-clipboard
     wl-clipboard-x11
@@ -236,10 +239,10 @@
   # }];
 
   services.flatpak.packages = [
-    {
-      appId = "org.mozilla.Thunderbird";
-      origin = "flathub";
-    }
+    # {
+    #   appId = "org.mozilla.Thunderbird";
+    #   origin = "flathub";
+    # }
     {
       appId = "com.spotify.Client";
       origin = "flathub";
@@ -250,6 +253,14 @@
     }
     {
       appId = "com.github.tchx84.Flatseal";
+      origin = "flathub";
+    }
+    {
+      appId = "org.kde.okular";
+      origin = "flathub";
+    }
+    {
+      appId = "org.freecad.FreeCAD";
       origin = "flathub";
     }
   ];
@@ -273,14 +284,17 @@
   my.distrobox.enable = true;
 
   my.arduino.enable = true;
+  my.ollama.enable = true;
 
   services.solaar.enable = true;
 
+  # VPNs
   services.mullvad-vpn = {
     enable = true;
     package = pkgs.mullvad-vpn;
   };
 
+  services.tailscale.enable = false;
   fonts.packages = with pkgs;
     [
       (nerdfonts.override {
@@ -289,7 +303,7 @@
     ];
 
   # Depentencies
-  services.gvfs.enable = true;
+  services.gvfs.enable = true; # For gtk file managers
 
   # This setups a SSH server. Very important if you're setting up a headless system.
   # Feel free to remove if you don't need it.

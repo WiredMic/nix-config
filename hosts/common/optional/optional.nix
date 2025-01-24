@@ -34,6 +34,7 @@
 
     # Programming
     ./arduino.nix
+    ./llm.nix
 
     # wifi certs
     ./aau-wifi-cert.nix
@@ -70,6 +71,7 @@
   my.distrobox.enable = lib.mkDefault false;
 
   my.arduino.enable = lib.mkDefault false;
+  my.ollama.enable = lib.mkDefault false;
 
   my.aau-wifi-cert.enable = lib.mkDefault false;
 
