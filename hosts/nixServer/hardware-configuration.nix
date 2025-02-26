@@ -4,22 +4,33 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  imports =
-    [ (modulesPath + "/profiles/qemu-guest.nix")
-    ];
+  imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
 
-  boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "virtio_pci" "virtio_scsi" "sd_mod" "sr_mod" ];
+  boot.initrd.availableKernelModules =
+    [ "ata_piix" "uhci_hcd" "virtio_pci" "virtio_scsi" "sd_mod" "sr_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/8f8ceaa6-a384-4e0a-815f-a5c64dde1890";
-      fsType = "ext4";
-    };
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/8339c9b8-2395-442d-9336-da9839eb13bf";
+    fsType = "ext4";
+  };
 
   fileSystems."/mnt/share" = {
-    device = "192.168.86.35:/mnt/ZPOOL0/share/";
+    device = "192.168.86.101:/mnt/ZPOOL0/share/";
+    fsType = "nfs";
+    options = [ "x-systemd.automount" "noauto" ];
+  };
+
+  fileSystems."/mnt/pass" = {
+    device = "192.168.86.101:/mnt/ZPOOL0/pass/";
+    fsType = "nfs";
+    options = [ "x-systemd.automount" "noauto" ];
+  };
+
+  fileSystems."/mnt/home" = {
+    device = "192.168.86.101:/mnt/ZPOOL0/home/";
     fsType = "nfs";
     options = [ "x-systemd.automount" "noauto" ];
   };

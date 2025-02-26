@@ -6,7 +6,7 @@
 
   options = { my.torrent.enable = lib.mkEnableOption "enables torrent"; };
 
-  config = lib.mkIf config.my.jellyfin.enable {
+  config = lib.mkIf config.my.torrent.enable {
     users.groups.torrent = { };
     # prowlarr ( find tv shows )
     services.prowlarr = {

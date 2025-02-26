@@ -93,8 +93,28 @@
     firewall = { enable = true; };
   };
 
+  # Swap
+  swapDevices = [{
+    device = "/swapfile";
+    size = 16 * 1024; # 16GB
+  }];
+
   # AMD CPU
   hardware.cpu.amd.updateMicrocode = true;
+
+  # AMD GPU
+  boot.initrd.kernelModules = [ "amdgpu" ];
+  hardware.amdgpu = {
+    initrd.enable = true;
+    legacySupport.enable = true;
+    opencl.enable = false;
+  };
+
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+    # extraPackages = with pkgs; [ rocmPackages.clr.icd ];
+  };
 
   # Set your time zone.
   time.timeZone = systemSettings.timezone;
@@ -123,15 +143,54 @@
   };
 
   # Software
+  services.cloud-init.network.enable = false;
 
-  environment.systemPackages = with pkgs; [ git neovim just nfs-utils ];
+  environment.systemPackages = with pkgs; [
+    git
+    neovim
+    just
+    nfs-utils
+    lsof
+    ncdu
+    pciutils
+    fastfetch
+    ripgrep
+    # top derivitives
+    htop # cpu
+    nvtopPackages.amd # gpu
+  ];
 
-  # Server 
+  # services.tailscale = {
+  #   enable = true;
+  #   openFirewall = true;
+  #   useRoutingFeatures = "server";
+  #   authKeyFile = "/home/rasmus/tailscale.key";
+  # };
+  networking.firewall.trustedInterfaces =
+    [ config.services.tailscale.interfaceName ];
+
+  # Server
+  my.homepage.enable = true;
+
   my.jellyfin.enable = true;
-  my.audiobookshelf.enable = true;
   my.torrent.enable = true;
 
   my.calibre-web.enable = true;
+  my.codex.enable = true;
+  my.audiobookshelf.enable = true;
+
+  my.blocky.enable = false; # this will not work because of rsolved
+
+  my.vaultwarden.enable = false;
+  my.nginx.enable = false;
+  my.nextcloud.enable = false;
+  my.immich.enable = true;
+
+  # Cloud
+  my.syncthing.enable = true;
+
+  nixpkgs.config.permittedInsecurePackages =
+    [ "dotnet-sdk-6.0.428" "aspnetcore-runtime-6.0.36" ];
 
   # NFS NAS share
   # https://nixos.wiki/wiki/NFS
@@ -156,7 +215,10 @@
   user.rasmus.enable = true;
 
   fonts.packages = with pkgs;
-    [ (nerdfonts.override { fonts = [ "JetBrainsMono" ]; }) ];
+    [
+      nerd-fonts.jetbrains-mono
+      # (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+    ];
 
   # This setups a SSH server. Very important if you're setting up a headless system.
   # Feel free to remove if you don't need it.

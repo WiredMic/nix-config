@@ -4,7 +4,9 @@
 
   imports = [ ];
 
-  options = { my.calibre-web.enable = lib.mkEnableOption "enables jellyfin"; };
+  options = {
+    my.calibre-web.enable = lib.mkEnableOption "enables calibre-web";
+  };
 
   config = lib.mkIf config.my.calibre-web.enable {
     # https://nixos.wiki/wiki/Jellyfin
