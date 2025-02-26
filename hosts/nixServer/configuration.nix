@@ -215,10 +215,7 @@
   user.rasmus.enable = true;
 
   fonts.packages = with pkgs;
-    [
-      nerd-fonts.jetbrains-mono
-      # (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
-    ];
+    [ (nerdfonts.override { fonts = [ "JetBrainsMono" ]; }) ];
 
   # This setups a SSH server. Very important if you're setting up a headless system.
   # Feel free to remove if you don't need it.

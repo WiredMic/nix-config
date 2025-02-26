@@ -22,7 +22,8 @@
     ./gaming/emulation.nix
 
     # cloud storage
-    ./onedrive.nix
+    ./cloud/onedrive.nix
+    ./cloud/syncthing.nix
 
     # ricing
     ./stylix/stylix.nix
@@ -60,7 +61,9 @@
   my.games.enable = lib.mkDefault false;
   my.emulation.enable = lib.mkDefault false;
 
+  # Clouds
   my.onedrive.enable = lib.mkDefault false;
+  my.syncthing.enable = lib.mkDefault false;
 
   stylix.image = lib.mkDefault ./stylix/hong-kong-night.jpg;
   my.stylix.enable = if (config.de.kde.enable || config.de.hyprland.enable) then
