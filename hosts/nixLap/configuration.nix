@@ -317,6 +317,10 @@
     };
   };
 
+  # Cloud
+  my.onedrive.enable = true;
+  my.syncthing.enable = true;
+
   # NFS NAS share
   # https://nixos.wiki/wiki/NFS
   services.rpcbind.enable = true; # needed for NFS

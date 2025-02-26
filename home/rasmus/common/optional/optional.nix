@@ -20,9 +20,6 @@
 
     ./cowsay/cowsay.nix
 
-    # Clouds
-    ./onedrive.nix
-
     ./octave/octave.nix
   ];
 
@@ -42,8 +39,6 @@
   my.pass.enable = lib.mkDefault false;
 
   my.cowsay-shell-script.enable = lib.mkDefault false;
-
-  my.onedrive.enable = lib.mkDefault false;
 
   my.octave.enable = lib.mkDefault false;
 }
