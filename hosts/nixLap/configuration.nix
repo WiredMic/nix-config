@@ -62,6 +62,12 @@
     experimental-features = "nix-command flakes";
     # Deduplicate and optimize nix store
     auto-optimise-store = true;
+
+    substituters = [
+      "https://nix-community.cachix.org"
+      "https://cache.nixos.org/"
+      "https://nixcache.reflex-frp.org"
+    ];
   };
 
   nix.optimise = {
@@ -208,9 +214,8 @@
     cifs-utils
 
     inkscape
-    kicad
+    # kicad
     librepcb
-
   ];
 
   # https://github.com/gmodena/nix-flatpak
@@ -278,6 +283,7 @@
   };
 
   services.tailscale.enable = false;
+
   fonts.packages = with pkgs;
     [
       (nerdfonts.override {
@@ -313,6 +319,8 @@
     package =
       pkgs.emacs; # replace with emacs-gtk, or a version provided by the community overlay if desired.
   };
+
+  services.udev.packages = with pkgs; [ platformio-core.udev ];
 
   programs.kdeconnect.enable = true;
 
