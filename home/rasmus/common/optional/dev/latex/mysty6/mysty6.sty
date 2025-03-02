@@ -12,6 +12,8 @@
 
 \RequirePackage{xparse}
 \RequirePackage{amsmath}
+\RequirePackage{amssymb}
+
 
 %% These are given in siunit
 %% \providecommand*{\ohm}{\ensuremath{\mathrm{\Omega}}}
@@ -38,7 +40,7 @@
 \renewoperator{\Re}{\mathrm{Re}}{\nolimits}
 \renewoperator{\Im}{\mathrm{Im}}{\nolimits}
 
-\newoperator{\diff}{\mathrm{d}\!}{\nolimits}
+\renewcommand{\diff}{\mathrm{d}\!}{\nolimits}
 
 %% These are given in derivative
 %% \providecommand*{\dv}[3][]{%
@@ -104,7 +106,13 @@
 \newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
 \newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
 
+% Geometric Algebra
 
+%% Notations
+\DeclareRobustCommand{\bivec}[1]{\ensuremath{\overset{\Rightarrow}{#1}}}
+\DeclareRobustCommand{\trivec}[1]{\ensuremath{\overset{\Rrightarrow}{#1}}}
+
+%% Unit
 \ExplSyntaxOn
 \NewDocumentCommand{\einheit}{m}{
   \ensuremath{

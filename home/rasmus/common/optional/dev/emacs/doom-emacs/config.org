@@ -250,13 +250,13 @@ org-ellipsis "…"
 (add-to-list 'org-latex-packages-alist'("" "amssymb" t))
 (add-to-list 'org-latex-packages-alist'("" "siunitx" t))
 (add-to-list 'org-latex-packages-alist'("" "tikz" t))
-(add-to-list 'org-latex-packages-alist'"\\usetikzlibrary{snakes,calc,patterns,angles,quotes,decorations.pathmorphing,decorations.text,math,decorations.pathreplacing,automata,arrows.meta,positioning,external}")
+(add-to-list 'org-latex-packages-alist'"\\usetikzlibrary{snakes,calc,patterns,angles,quotes,math,decorations.pathmorphing,decorations.text,decorations.pathreplacing,decorations.markings,automata,arrows.meta,positioning,external}")
 (add-to-list 'org-latex-packages-alist'("european,siunitx" "circuitikz" t))
 ;; (add-to-list 'org-latex-packages-alist"\\ctikzset{bipoles/ammeter/text rotate/.initial=0,rotation/.style={bipoles/ammeter/text rotate=#1},% style for ease introduction in code}" )
 ;; (add-to-list 'org-latex-packages-alist'("" "pgfcircbipoles" t))
 (add-to-list 'org-latex-packages-alist'("" "tikz-3dplot" t))
 (add-to-list 'org-latex-packages-alist'("" "pgfplots" t))
-(add-to-list 'org-latex-packages-alist'("" "mysty5" t))
+(add-to-list 'org-latex-packages-alist'("" "mysty6" t))
 (add-to-list 'org-latex-packages-alist'("" "derivative" t))
 (add-to-list 'org-latex-packages-alist'("" "upgreek" t))
 #+end_src
@@ -297,6 +297,7 @@ org-ellipsis "…"
   ;; More immediate live-previews -- the default delay is 1 second
   (setq org-latex-preview-live-debounce 0.25))
 #+end_src
+
 
 ** Org Code Block Export
 
@@ -461,7 +462,7 @@ The buffer in org roam can be used
 ;; Drag-and-drop to `dired`
 (add-hook 'dired-mode-hook 'org-download-enable)
 (setq org-download-image-html-width '450
-      org-download-image-latex-width '450
+      org-download-image-latex-width '7
       org-download-image-org-width '450)
 #+end_src
 
