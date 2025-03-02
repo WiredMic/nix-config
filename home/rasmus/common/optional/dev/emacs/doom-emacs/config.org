@@ -12,6 +12,7 @@
 - [[#format][Format]]
 - [[#lsp][LSP]]
   - [[#nixd][nixd]]
+  - [[#rust-analyzer][rust-analyzer]]
 - [[#org-mode][Org-mode]]
   - [[#directories][Directories]]
   - [[#latex][LaTeX]]
@@ -157,6 +158,17 @@ To Tangle a document press =
 ;;                      :major-modes '(nix-mode)
 ;;                      :priority 0
 ;;                      :server-id 'nixd)))
+#+end_src
+
+** rust-analyzer
+#+begin_src elisp :tangle yes
+(setq lsp-inlay-hint-enable t)
+(setq lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+(setq lsp-rust-analyzer-display-chaining-hints t)
+(setq lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t)
+(setq lsp-rust-analyzer-display-closure-return-type-hints t)
+(setq lsp-rust-analyzer-display-parameter-hints t)
+(setq lsp-rust-analyzer-display-reborrow-hints t)
 #+end_src
 
 * Org-mode

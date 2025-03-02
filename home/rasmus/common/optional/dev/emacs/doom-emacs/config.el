@@ -98,6 +98,14 @@
 ;;                      :priority 0
 ;;                      :server-id 'nixd)))
 
+(setq lsp-inlay-hint-enable t)
+(setq lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+(setq lsp-rust-analyzer-display-chaining-hints t)
+(setq lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t)
+(setq lsp-rust-analyzer-display-closure-return-type-hints t)
+(setq lsp-rust-analyzer-display-parameter-hints t)
+(setq lsp-rust-analyzer-display-reborrow-hints t)
+
 (setq org-directory "~/OneDrive/Org/"
       org-roam-directory "~/OneDrive/Org/Roam")
 
@@ -170,13 +178,13 @@ org-ellipsis "…"
 (add-to-list 'org-latex-packages-alist'("" "amssymb" t))
 (add-to-list 'org-latex-packages-alist'("" "siunitx" t))
 (add-to-list 'org-latex-packages-alist'("" "tikz" t))
-(add-to-list 'org-latex-packages-alist'"\\usetikzlibrary{snakes,calc,patterns,angles,quotes,decorations.pathmorphing,decorations.text,math,decorations.pathreplacing,automata,arrows.meta,positioning,external}")
+(add-to-list 'org-latex-packages-alist'"\\usetikzlibrary{snakes,calc,patterns,angles,quotes,math,decorations.pathmorphing,decorations.text,decorations.pathreplacing,decorations.markings,automata,arrows.meta,positioning,external}")
 (add-to-list 'org-latex-packages-alist'("european,siunitx" "circuitikz" t))
 ;; (add-to-list 'org-latex-packages-alist"\\ctikzset{bipoles/ammeter/text rotate/.initial=0,rotation/.style={bipoles/ammeter/text rotate=#1},% style for ease introduction in code}" )
 ;; (add-to-list 'org-latex-packages-alist'("" "pgfcircbipoles" t))
 (add-to-list 'org-latex-packages-alist'("" "tikz-3dplot" t))
 (add-to-list 'org-latex-packages-alist'("" "pgfplots" t))
-(add-to-list 'org-latex-packages-alist'("" "mysty5" t))
+(add-to-list 'org-latex-packages-alist'("" "mysty6" t))
 (add-to-list 'org-latex-packages-alist'("" "derivative" t))
 (add-to-list 'org-latex-packages-alist'("" "upgreek" t))
 
@@ -324,7 +332,7 @@ org-ellipsis "…"
 ;; Drag-and-drop to `dired`
 (add-hook 'dired-mode-hook 'org-download-enable)
 (setq org-download-image-html-width '450
-      org-download-image-latex-width '450
+      org-download-image-latex-width '7
       org-download-image-org-width '450)
 
 ;; (defun unpack-image-drawers (&rest r)

@@ -91,3 +91,9 @@
 
 ;; arduino and board development
 (package! platformio-mode)
+
+;; llm
+(package! gptel)
+;; (package! llm)
+;; (package! llm-ollama)
+;; (package! ellama)

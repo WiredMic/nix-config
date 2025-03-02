@@ -49,6 +49,8 @@
       nodePackages.prettier # YAML, Markdown
       dockfmt # Dockerfile
       texlivePackages.latexindent # LaTeX
+      nixfmt # nix
+      # rPackages.lintr # R
 
       # lsp
       nil # nix
@@ -56,10 +58,11 @@
       shfmt # sh
       dap # A debugger
       clang-tools # c/cpp/objc
+      pyright # Python
+      # rPackages.languageserver # R
 
-      # autofmt
-      nixfmt # nix
-      # nixfmt-rfc-style # new nix format
+      # Programming languages
+      # R
     ];
 
     # nixd for NixOS
