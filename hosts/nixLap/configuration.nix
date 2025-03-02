@@ -88,52 +88,31 @@
   };
   my.aau-wifi-cert.enable = true;
 
-  # Nvidia GPU
-  # https://nixos.wiki/wiki/NVIDIA
-  # boot.initrd.kernelModules = [ "nvidia" ];
-  # services.xserver.videoDrivers = [ "nvidia" ];
-
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
-    driSupport32Bit = true;
     extraPackages = with pkgs;
       [
         rocmPackages.clr.icd # OpenCL
       ];
   };
 
-  # hardware = {
-  #  nvidia = {
-  #    modesetting.enable = lib.mkDefault true;
-  #    powerManagement.enable = lib.mkDefault true;
-  #
-  #    prime = {
-  #      intelBusId = "PCI:0:2:0";
-  #      nvidiaBusId = "PCI:1:0:0";
-  #
-  #      offload = {
-  #        enable = true;
-  #        enableOffloadCmd = true;
-  #      };
-  #    };
-  #  };
-  # };
-
   # INTEL CPU
   hardware.cpu.intel.updateMicrocode = lib.mkDefault true;
 
   hardware.bluetooth = {
-    enable = true; # enables support for Bluetooth
-    powerOnBoot = true; # powers up the default Bluetooth controller on boot
+    enable = true;
     settings = {
       General = {
+        Name = "Hello";
         ControllerMode = "dual";
         FastConnectable = "true";
         Experimental = "true";
+        enable = "Source,Sink,Media,Socket";
       };
       Policy = { AutoEnable = "true"; };
     };
   };
+  services.blueman.enable = true;
 
   hardware.opentabletdriver = {
     enable = true;
@@ -168,6 +147,15 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+    # wireplumber.extraConfig."10-bluez" = {
+    #   "monitor.bluez.properties" = {
+    #     "bluez5.enable-sbc-xq" = true;
+    #     "bluez5.enable-msbc" = true;
+    #     "bluez5.enable-hw-volume" = true;
+    #     "bluez5.roles" = [ "hsp_hs" "hsp_ag" "hfp_hf" "hfp_ag" ];
+    #   };
+    # };
+
     # If you want to use JACK applications, uncomment this
     #jack.enable = true;
   };
@@ -197,12 +185,7 @@
     # network share maybe s
     # TODO Samba does not work
     # it cannot connect to kpassd-server
-    kdePackages.kio
-    kdePackages.kio-extras
-    kdePackages.kio
-    kdePackages.kdenetwork-filesharing
     samba
-    home-manager
 
     wtype # does not work on kde or gnome
     wev
