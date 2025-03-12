@@ -7,7 +7,7 @@
 %% in directory macros/latex/base/lppl.txt.
 %
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
-\ProvidesPackage{personal}
+\ProvidesPackage{mysty9}
   [2024/10/14 v0.01 LaTeX]
 
 \RequirePackage{xparse}
@@ -40,7 +40,7 @@
 \renewoperator{\Re}{\mathrm{Re}}{\nolimits}
 \renewoperator{\Im}{\mathrm{Im}}{\nolimits}
 
-\renewcommand{\diff}{\mathrm{d}\!}{\nolimits}
+\newoperator{\diff}{\mathrm{d}\!}{\nolimits}
 
 %% These are given in derivative
 %% \providecommand*{\dv}[3][]{%
@@ -111,6 +111,35 @@
 %% Notations
 \DeclareRobustCommand{\bivec}[1]{\ensuremath{\overset{\Rightarrow}{#1}}}
 \DeclareRobustCommand{\trivec}[1]{\ensuremath{\overset{\Rrightarrow}{#1}}}
+
+
+\newcommand{\bihat}[1]{%
+\begingroup%
+  \let\macc@kerna\z@%
+  \let\macc@kernb\z@%
+  \let\macc@nucleus\@empty%
+  \hat{\mathchoice%
+    {\raisebox{.2ex}{\vphantom{\ensuremath{\displaystyle #1}}}}%
+    {\raisebox{.2ex}{\vphantom{\ensuremath{\textstyle #1}}}}%
+    {\raisebox{.16ex}{\vphantom{\ensuremath{\scriptstyle #1}}}}%
+    {\raisebox{.14ex}{\vphantom{\ensuremath{\scriptscriptstyle #1}}}}%
+    \smash{\hat{#1}}}%
+\endgroup%
+}
+
+\newcommand{\trihat}[1]{%
+\begingroup%
+  \let\macc@kerna\z@%
+  \let\macc@kernb\z@%
+  \let\macc@nucleus\@empty%
+  \hat{\mathchoice%
+    {\raisebox{.4ex}{\vphantom{\ensuremath{\displaystyle #1}}}}%
+    {\raisebox{.4ex}{\vphantom{\ensuremath{\textstyle #1}}}}%
+    {\raisebox{.32ex}{\vphantom{\ensuremath{\scriptstyle #1}}}}%
+    {\raisebox{.28ex}{\vphantom{\ensuremath{\scriptscriptstyle #1}}}}%
+    \smash{\bihat{#1}}}%
+\endgroup%
+}
 
 %% Unit
 \ExplSyntaxOn
