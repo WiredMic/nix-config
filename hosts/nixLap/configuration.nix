@@ -216,6 +216,7 @@
     inkscape
     # kicad
     librepcb
+    openscad
   ];
 
   # https://github.com/gmodena/nix-flatpak

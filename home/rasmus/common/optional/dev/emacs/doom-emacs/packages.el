@@ -97,3 +97,7 @@
 ;; (package! llm)
 ;; (package! llm-ollama)
 ;; (package! ellama)
+
+
+;; OpenSCAD
+;; (package! scad-mode) ;; does not work
