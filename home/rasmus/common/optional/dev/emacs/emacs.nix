@@ -73,6 +73,7 @@
       ccls
       pyright # Python
       # rPackages.languageserver # R
+      openscad-lsp # openSCAD
 
       # Programming languages
       # R
