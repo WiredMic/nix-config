@@ -93,7 +93,7 @@
       userSettings = {
         username = "rasmus";
         de = {
-          hyprland = false;
+          hyprland = true;
           kde = false;
           gnome = false;
           cosmic = false; # fails to compile

@@ -10,7 +10,7 @@
       # git config --global init.defaultBranch
       aliases = { tree = "log --graph --oneline --all"; };
       extraConfig = {
-        init.defaultBranch = "main";
+        init.defaultBranch = "trunk";
         pull.rebase = "true";
         core = { editor = "${config.home.sessionVariables.EDITOR}"; };
       };
