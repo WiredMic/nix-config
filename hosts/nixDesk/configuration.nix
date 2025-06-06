@@ -200,7 +200,7 @@
     just
     fastfetch
     nmap
-    gnome.gnome-system-monitor
+    gnome-system-monitor
 
     # icons
     papirus-icon-theme
@@ -253,12 +253,10 @@
 
   programs.ssh.startAgent = true;
 
-  fonts.packages = with pkgs;
-    [
-      (nerdfonts.override {
-        fonts = [ "FiraCode" "DroidSansMono" "JetBrainsMono" ];
-      })
-    ];
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.fira-code
+  ];
 
   # Depentencies
   services.gvfs.enable = true;

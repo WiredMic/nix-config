@@ -43,7 +43,7 @@
     nurl
     unzip
     gimp
-    gnome.gnome-calculator
+    gnome-calculator
     gnome-multi-writer
     tldr
     libation # audible libaretor
@@ -99,6 +99,5 @@
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
 
-  # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  home.stateVersion = "24.05";
+  home.stateVersion = "25.05";
 }

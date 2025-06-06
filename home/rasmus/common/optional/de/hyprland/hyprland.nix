@@ -102,9 +102,9 @@
         };
 
         # This is because I cannot find the place where "col.shadow" is added
-        debug = { suppress_errors = true; };
+        debug = { suppress_errors = false; };
 
-        misc = { disable_hyprland_logo = "yes"; };
+        misc = { disable_hyprland_logo = true; };
 
         animations = {
           enabled = "yes";

@@ -29,7 +29,7 @@
     };
 
     # Manual lines in .zshrc file
-    initExtra = ''
+    initContent = ''
       [[ ! -f ${./files/p10k.zsh} ]] || source ${./files/p10k.zsh}
     '';
 

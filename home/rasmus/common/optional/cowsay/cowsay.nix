@@ -28,11 +28,11 @@
         EOF
         ) | ${pkgs.cowsay}/bin/cowsay -f $(ls ${
           ./cows
-        } | shuf -n 1) | ${pkgs.lolcat}/bin/lolcat
+        } | shuf -n 1) | ${pkgs.lolcat}/bin/lolcat 2> /dev/null
       '')
     ];
 
-    programs.zsh.initExtra = ''
+    programs.zsh.initContent = ''
       source cowsay-shell-script
     '';
 

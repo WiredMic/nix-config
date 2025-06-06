@@ -28,25 +28,27 @@
     XCOMPOSECACHE = "${config.xdg.cacheHome}/X11/xcompose";
 
     GTK2_RC_FILES = lib.mkForce "${config.xdg.configHome}/gtk-2.0/gtkrc";
+
+    # Temp Env Var
+    GSK_RENDERER = "gl";
   };
 
   nix.settings.use-xdg-base-directories = true; # moves .nix-* out of HOME
 
   home.packages = (with pkgs; [
-    stow
     xdg-ninja
 
     flatpak
     vlc
-    # gnome.gnome-software
     neofetch
     pass
     nurl
+
+    zip
     unzip
-    gimp
-    gnome.gnome-calculator
+
+    gnome-calculator
     gnome-multi-writer
-    freecad
     tldr
     libation # audible libaretor
     pavucontrol
@@ -57,14 +59,21 @@
     libreoffice-qt
     hunspell
     hunspellDicts.da_DK
+    hunspellDicts.en-us
 
-    gparted
     localsend
 
     ranger
 
     # file manager
     xfce.thunar
+
+    (rWrapper.override {
+      packages = with rPackages; [
+        languageserver # LSP
+        lintr
+      ];
+    })
   ]) ++ (with pkgs-unstable;
     [
       # eza
@@ -101,6 +110,5 @@
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
 
-  # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  home.stateVersion = "24.05";
+  home.stateVersion = "25.05";
 }

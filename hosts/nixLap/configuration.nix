@@ -285,12 +285,7 @@
 
   services.tailscale.enable = false;
 
-  fonts.packages = with pkgs;
-    [
-      (nerdfonts.override {
-        fonts = [ "FiraCode" "DroidSansMono" "JetBrainsMono" ];
-      })
-    ];
+  fonts.packages = with pkgs; [ nerd-fonts.jetbrains-mono ];
 
   # Depentencies
   services.gvfs.enable = true; # For gtk file managers
