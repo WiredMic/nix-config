@@ -1,4 +1,8 @@
-{ pkgs, lib, config, userSettings, ... }: {
+{ pkgs, lib, config, userSettings, ... }:
+let
+  kurzgesagt_dyson_sphere =
+    pkgs.callPackage ./background/kurzgesagt_dyson_sphere.nix { };
+in {
   options = {
     my.stylix.enable =
       lib.mkEnableOption "enables stylix to style tilling managers";
@@ -10,6 +14,7 @@
     environment.systemPackages = with pkgs; [
       base16-schemes
       papirus-icon-theme
+      kurzgesagt_dyson_sphere
     ];
 
     stylix = {
@@ -17,8 +22,15 @@
       autoEnable = true;
     };
 
+    stylix.cursor = {
+      package = pkgs.bibata-cursors;
+      name = "Bibata-Modern-Classic";
+      size = 18;
+    };
+
     # Don't forget to apply wallpaper
-    stylix.image = lib.mkForce ./hong-kong-night.jpg;
+    stylix.image =
+      lib.mkForce "${kurzgesagt_dyson_sphere}/kurzgesagt_dyson_sphere.png";
 
     stylix.base16Scheme =
       "${pkgs.base16-schemes}/share/themes/${userSettings.style-color}.yaml";
@@ -56,5 +68,4 @@
 
     stylix.targets.grub.enable = true; # Change if another theme
   };
-
 }
