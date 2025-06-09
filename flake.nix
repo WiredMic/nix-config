@@ -54,13 +54,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    waveforms.url = "github:liff/waveforms-flake";
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, hyprland
     , nixos-cosmic, split-monitor-workspaces, nix-flatpak, stylix, ags
     , nixos-hardware,
     # nix-ld,
-    nix-index-database, solaar, sops-nix, ... }@inputs:
+    nix-index-database, solaar, sops-nix, waveforms, ... }@inputs:
     let
       inherit (self) outputs;
       # Supported systems for your flake packages, shell, etc.
@@ -171,6 +172,7 @@
             nix-index-database.nixosModules.nix-index
             solaar.nixosModules.default
             <nixos-hardware/lenovo/legion/15ich>
+            waveforms.nixosModule
             {
               home-manager = {
                 useGlobalPkgs = true;

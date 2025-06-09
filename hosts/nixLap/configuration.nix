@@ -269,6 +269,8 @@
 
   user.rasmus.enable = true;
 
+  users.users.rasmus.extraGroups = [ "plugdev" ];
+
   programs.ssh.startAgent = true;
 
   my.distrobox.enable = true;
