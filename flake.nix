@@ -27,11 +27,6 @@
     # Bar for hyprland
     ags.url = "github:Aylur/ags";
 
-    nixos-cosmic = {
-      url = "github:lilyinstarlight/nixos-cosmic";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # Secrets
     sops-nix = {
       url = "github:Mic92/sops-nix";
@@ -58,8 +53,7 @@
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, hyprland
-    , nixos-cosmic, split-monitor-workspaces, nix-flatpak, stylix, ags
-    , nixos-hardware,
+    , split-monitor-workspaces, nix-flatpak, stylix, ags, nixos-hardware,
     # nix-ld,
     nix-index-database, solaar, sops-nix, waveforms, ... }@inputs:
     let
@@ -91,7 +85,7 @@
           hyprland = true;
           kde = false;
           gnome = false;
-          cosmic = false; # fails to compile
+          cosmic = false;
         };
         # deType = "wayland"; # x11 vs wayland
         # editor = "emacsclient -c -a ''";
@@ -130,7 +124,6 @@
             nix-flatpak.nixosModules.nix-flatpak
             home-manager.nixosModules.home-manager
             stylix.nixosModules.stylix
-            # nixos-cosmic.nixosModules.default
             # nix-ld.nixosModules.nix-ld
             solaar.nixosModules.default
             {
@@ -167,7 +160,6 @@
             nix-flatpak.nixosModules.nix-flatpak
             home-manager.nixosModules.home-manager
             stylix.nixosModules.stylix
-            nixos-cosmic.nixosModules.default
             # nix-ld.nixosModules.nix-ld
             nix-index-database.nixosModules.nix-index
             solaar.nixosModules.default
