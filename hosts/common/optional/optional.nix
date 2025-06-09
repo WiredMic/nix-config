@@ -42,6 +42,8 @@
     ./aau-wifi-cert/aau-wifi-cert.nix
 
     ./kanata.nix
+
+    ./file_browser/thunar.nix
   ];
 
   # Because this is the optional dir not everything needs to be enabled by default
@@ -82,4 +84,5 @@
 
   my.kanata.enable = lib.mkDefault userSettings.de.hyprland;
 
+  my.thunar.enable = lib.mkDefault false;
 }

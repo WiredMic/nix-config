@@ -280,6 +280,8 @@
 
   my.vpn.enable = true;
 
+  my.thunar.enable = true;
+
   fonts.packages = with pkgs; [ nerd-fonts.jetbrains-mono ];
 
   # Depentencies

@@ -1,4 +1,4 @@
-{ pkgs, config, lib, userSettings, inputs, ... }: {
+{ pkgs, config, lib, userSettings, inputs, osConfig, ... }: {
   imports = [
     # inputs.split-monitor-workspaces.homeManagerModules.default
     ./hyprland-tools/hyprland-tools.nix
@@ -131,7 +131,7 @@
           "$mainMod SHIFT, X, killactive," # close the active window
           "$mainMod, M, exec, killall wlogout || wlogout --protocol layer-shell" # show the logout window
           "$mainMod SHIFT, M, exit," # Exit Hyprland all together no (force quit Hyprland)
-          "$mainMod, D, exec, thunar" # Show the graphical file browser
+          "$mainMod, D, exec, ${osConfig.environment.sessionVariables.FILE_BROWSER}" # Show the graphical file browser
           "$mainMod, F11, fullscreen"
 
           "$mainMod, V, togglefloating," # Allow a window to float

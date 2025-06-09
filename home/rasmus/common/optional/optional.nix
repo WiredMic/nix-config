@@ -21,6 +21,7 @@
     ./cowsay/cowsay.nix
 
     ./octave/octave.nix
+
   ];
 
   my.common.hyprland.enable = lib.mkForce userSettings.de.hyprland;
@@ -41,4 +42,5 @@
   my.cowsay-shell-script.enable = lib.mkDefault false;
 
   my.octave.enable = lib.mkDefault false;
+
 }

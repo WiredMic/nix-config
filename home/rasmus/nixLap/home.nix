@@ -65,8 +65,7 @@
 
     ranger
 
-    # file manager
-    xfce.thunar
+    nix-index
 
     (rWrapper.override {
       packages = with rPackages; [
