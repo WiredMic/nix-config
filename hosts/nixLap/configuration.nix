@@ -217,6 +217,7 @@
     # kicad
     librepcb
     openscad
+
   ];
 
   # https://github.com/gmodena/nix-flatpak
@@ -277,13 +278,7 @@
 
   services.solaar.enable = true;
 
-  # VPNs
-  services.mullvad-vpn = {
-    enable = true;
-    package = pkgs.mullvad-vpn;
-  };
-
-  services.tailscale.enable = false;
+  my.vpn.enable = true;
 
   fonts.packages = with pkgs; [ nerd-fonts.jetbrains-mono ];
 

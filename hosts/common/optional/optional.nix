@@ -24,6 +24,7 @@
     # cloud storage
     ./cloud/onedrive.nix
     ./cloud/syncthing.nix
+    ./vpn.nix
 
     # ricing
     ./stylix/stylix.nix
@@ -77,6 +78,7 @@
   # Clouds
   my.onedrive.enable = lib.mkDefault false;
   my.syncthing.enable = lib.mkDefault false;
+  my.vpn.enable = lib.mkDefault false;
 
   my.kanata.enable = lib.mkDefault userSettings.de.hyprland;
 
