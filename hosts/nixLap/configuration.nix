@@ -1,7 +1,18 @@
 # This is your system's configuration file.
 # Use this to configure your system environment (it replaces /etc/nixos/configuration.nix)
-{ inputs, outputs, systemSettings, userSettings, lib, config, pkgs
-, pkgs-unstable, nixos-hardware, ... }: {
+{
+  inputs,
+  outputs,
+  systemSettings,
+  userSettings,
+  lib,
+  config,
+  pkgs,
+  pkgs-unstable,
+  nixos-hardware,
+  ...
+}:
+{
   # You can import other NixOS modules here
   imports = [
 
@@ -46,8 +57,9 @@
 
   # This will add each flake input as a registry
   # To make nix3 commands consistent with your flake
-  nix.registry = (lib.mapAttrs (_: flake: { inherit flake; }))
-    ((lib.filterAttrs (_: lib.isType "flake")) inputs);
+  nix.registry = (lib.mapAttrs (_: flake: { inherit flake; })) (
+    (lib.filterAttrs (_: lib.isType "flake")) inputs
+  );
 
   # This will additionally add your inputs to the system's legacy channels
   # Making legacy nix commands consistent as well, awesome!
@@ -90,16 +102,17 @@
     # hostname
     hostName = "nixLap";
 
-    firewall = { enable = true; };
+    firewall = {
+      enable = true;
+    };
   };
   my.aau-wifi-cert.enable = true;
 
   hardware.graphics = {
     enable = true;
-    extraPackages = with pkgs;
-      [
-        rocmPackages.clr.icd # OpenCL
-      ];
+    extraPackages = with pkgs; [
+      rocmPackages.clr.icd # OpenCL
+    ];
   };
 
   # INTEL CPU
@@ -115,7 +128,9 @@
         Experimental = "true";
         enable = "Source,Sink,Media,Socket";
       };
-      Policy = { AutoEnable = "true"; };
+      Policy = {
+        AutoEnable = "true";
+      };
     };
   };
   services.blueman.enable = true;
@@ -169,7 +184,7 @@
   services.xserver = {
     # Enable the X11 windowing system.
     enable = true;
-    # 
+    #
     # Configure keymap in X11
     xkb = {
       layout = "us";
@@ -218,6 +233,7 @@
     librepcb
     openscad
 
+    kdePackages.okular
   ];
 
   # https://github.com/gmodena/nix-flatpak
@@ -246,10 +262,6 @@
       origin = "flathub";
     }
     {
-      appId = "org.kde.okular";
-      origin = "flathub";
-    }
-    {
       appId = "org.freecad.FreeCAD";
       origin = "flathub";
     }
@@ -268,8 +280,6 @@
   programs.dconf.enable = true;
 
   user.rasmus.enable = true;
-
-  users.users.rasmus.extraGroups = [ "plugdev" ];
 
   programs.ssh.startAgent = true;
 
@@ -311,8 +321,7 @@
 
   services.emacs = {
     enable = true;
-    package =
-      pkgs.emacs; # replace with emacs-gtk, or a version provided by the community overlay if desired.
+    package = pkgs.emacs; # replace with emacs-gtk, or a version provided by the community overlay if desired.
   };
 
   services.udev.packages = with pkgs; [ platformio-core.udev ];

@@ -1,4 +1,4 @@
-  {
+{
   lib,
   config,
   pkgs,
@@ -9,11 +9,14 @@
   ];
 
   options = {
-    user.rasmus.enable =
-      lib.mkEnableOption "enables the user rasmus";
+    user.rasmus.enable = lib.mkEnableOption "enables the user rasmus";
   };
 
   config = lib.mkIf config.user.rasmus.enable {
+    nix.settings.trusted-users = [
+      "rasmus"
+    ];
+
     users.users = {
       rasmus = {
         # TODO: You can set an initial password for your user.
@@ -24,9 +27,15 @@
         openssh.authorizedKeys.keys = [
           # TODO: Add your SSH public key(s) here, if you plan on using SSH to connect
         ];
-        extraGroups = ["networkmanager" "wheel" "docker"];
+        extraGroups = [
+          "networkmanager"
+          "wheel"
+          "docker"
+          "plugdev"
+        ];
+
       };
     };
   };
-  
+
 }

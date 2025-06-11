@@ -1,9 +1,23 @@
-{ config, lib, pkgs, pkgs-unstable, ... }: {
+{
+  config,
+  lib,
+  pkgs,
+  pkgs-unstable,
+  ...
+}:
+{
 
-  imports = [ ./zshenv.nix ./zprofile.nix ];
+  imports = [
+    ./zshenv.nix
+    ./zprofile.nix
+  ];
 
-  home.packages = (with pkgs; [ eza bat ]) ++ (with pkgs-unstable;
-    [
+  home.packages =
+    (with pkgs; [
+      eza
+      bat
+    ])
+    ++ (with pkgs-unstable; [
       # eza
     ]);
 
@@ -25,7 +39,7 @@
       vim = "nvim";
       tree = "eza --tree";
       cat = "bat -p --color=always -P";
-
+      wget = "wget --hsts-file=${config.xdg.dataHome}/wget-hsts";
     };
 
     # Manual lines in .zshrc file

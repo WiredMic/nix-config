@@ -1,4 +1,11 @@
-{ config, lib, pkgs, userSettings, ... }: {
+{
+  config,
+  lib,
+  pkgs,
+  userSettings,
+  ...
+}:
+{
   imports = [ ];
 
   # XDG
@@ -13,8 +20,7 @@
 
   home.sessionVariables = {
     # flatpak
-    XDG_DATA_DIRS =
-      "$XDG_DATA_DIRS:/usr/share:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share";
+    XDG_DATA_DIRS = "$XDG_DATA_DIRS:/usr/share:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share";
   };
 
   home.sessionVariables = {
@@ -22,7 +28,13 @@
     VISUAL = "$EDITOR";
     PLATFORMIO_CORE_DIR = "${config.xdg.configHome}/platformio";
     TLDR_CACHE_DIR = "${config.xdg.configHome}/tldr";
+
     PYTHONSTARTUP = "${config.xdg.configHome}/python/pythonrc";
+    IPYTHONDIR = "${config.xdg.configHome}/ipython";
+    JUPYTER_CONFIG_DIR = "${config.xdg.configHome}/jupyter";
+
+    HISTFILE = "${config.xdg.stateHome}/bash/history";
+    DOTNET_CLI_HOME = "${config.xdg.dataHome}}/dotnet";
   };
 
   xdg.configFile."python/pythonrc".text = ''

@@ -58,7 +58,7 @@ check-sops:
 
 update-nix-secrets:
   (cd ../nix-secrets && git fetch && git rebase) || true
-  nix flake lock --update-input nix-secrets
+  nix flake update nix-secrets
 
 update-doom:
   just rebuild

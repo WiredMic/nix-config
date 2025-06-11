@@ -1,6 +1,15 @@
-{ pkgs, lib, config, inputs, ... }: {
+{
+  pkgs,
+  lib,
+  config,
+  inputs,
+  ...
+}:
+{
 
-  options = { my.emacs.enable = lib.mkEnableOption "enables emacs"; };
+  options = {
+    my.emacs.enable = lib.mkEnableOption "enables emacs";
+  };
 
   config = lib.mkIf config.my.direnv.enable {
     programs.emacs = {
@@ -10,10 +19,7 @@
 
     services.emacs = {
       enable = true;
-      package = if config.programs.emacs.enable then
-        config.programs.emacs.package
-      else
-        pkgs.emacs;
+      package = if config.programs.emacs.enable then config.programs.emacs.package else pkgs.emacs;
       socketActivation.enable = true;
     };
 
@@ -25,7 +31,7 @@
     fonts.fontconfig.enable = true;
     home.packages = with pkgs; [
       # fonts
-      (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
+      nerd-fonts.symbols-only
       jetbrains-mono
       fira
 
@@ -42,22 +48,29 @@
 
       # Spellcheck
       shellcheck
-      (aspellWithDicts (dicts: with dicts; [ en en-computers en-science da ]))
+      (aspellWithDicts (
+        dicts: with dicts; [
+          en
+          en-computers
+          en-science
+          da
+        ]
+      ))
 
       # Format https://docs.doomemacs.org/latest/modules/editor/format/
       texlivePackages.latexindent # LaTeX
       nodePackages.prettier # YAML, Markdown
       dockfmt # Dockerfile
       texlivePackages.latexindent # LaTeX
-      nixfmt # nix
+      nixfmt-rfc-style # nix
       # rPackages.lintr # R
 
       # lsp
       nil # nix
       # nixd # nix
       shfmt # sh
-      dap # A debugger
       clang-tools # c/cpp/objc
+      ccls
       pyright # Python
       # rPackages.languageserver # R
 
