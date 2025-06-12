@@ -1,7 +1,17 @@
 # This is your system's configuration file.
 # Use this to configure your system environment (it replaces /etc/nixos/configuration.nix)
-{ inputs, outputs, systemSettings, userSettings, lib, config, pkgs
-, pkgs-unstable, ... }: {
+{
+  inputs,
+  outputs,
+  systemSettings,
+  userSettings,
+  lib,
+  config,
+  pkgs,
+  pkgs-unstable,
+  ...
+}:
+{
   # You can import other NixOS modules here
   imports = [
 
@@ -46,8 +56,9 @@
 
   # This will add each flake input as a registry
   # To make nix3 commands consistent with your flake
-  nix.registry = (lib.mapAttrs (_: flake: { inherit flake; }))
-    ((lib.filterAttrs (_: lib.isType "flake")) inputs);
+  nix.registry = (lib.mapAttrs (_: flake: { inherit flake; })) (
+    (lib.filterAttrs (_: lib.isType "flake")) inputs
+  );
 
   # This will additionally add your inputs to the system's legacy channels
   # Making legacy nix commands consistent as well, awesome!
@@ -90,14 +101,18 @@
     # hostname
     hostName = "nixServer";
 
-    firewall = { enable = true; };
+    firewall = {
+      enable = true;
+    };
   };
 
   # Swap
-  swapDevices = [{
-    device = "/swapfile";
-    size = 16 * 1024; # 16GB
-  }];
+  swapDevices = [
+    {
+      device = "/swapfile";
+      size = 16 * 1024; # 16GB
+    }
+  ];
 
   # AMD CPU
   hardware.cpu.amd.updateMicrocode = true;
@@ -166,11 +181,10 @@
   #   useRoutingFeatures = "server";
   #   authKeyFile = "/home/rasmus/tailscale.key";
   # };
-  networking.firewall.trustedInterfaces =
-    [ config.services.tailscale.interfaceName ];
+  networking.firewall.trustedInterfaces = [ config.services.tailscale.interfaceName ];
 
   # Server
-  my.homepage.enable = true;
+  # my.homepage.enable = true;
 
   my.jellyfin.enable = true;
   my.torrent.enable = true;
@@ -181,16 +195,18 @@
 
   my.blocky.enable = false; # this will not work because of rsolved
 
-  my.vaultwarden.enable = false;
-  my.nginx.enable = false;
-  my.nextcloud.enable = false;
-  my.immich.enable = true;
+  # my.vaultwarden.enable = false;
+  # my.nginx.enable = false;
+  # my.nextcloud.enable = false;
+  # my.immich.enable = true;
 
   # Cloud
   my.syncthing.enable = true;
 
-  nixpkgs.config.permittedInsecurePackages =
-    [ "dotnet-sdk-6.0.428" "aspnetcore-runtime-6.0.36" ];
+  nixpkgs.config.permittedInsecurePackages = [
+    "dotnet-sdk-6.0.428"
+    "aspnetcore-runtime-6.0.36"
+  ];
 
   # NFS NAS share
   # https://nixos.wiki/wiki/NFS
@@ -214,11 +230,10 @@
   # Users
   user.rasmus.enable = true;
 
-  fonts.packages = with pkgs;
-    [
-      nerd-fonts.jetbrains-mono
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
 
-    ];
+  ];
 
   # This setups a SSH server. Very important if you're setting up a headless system.
   # Feel free to remove if you don't need it.

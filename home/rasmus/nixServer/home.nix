@@ -1,4 +1,13 @@
-{ inputs, outputs, lib, config, pkgs, pkgs-unstable, ... }: {
+{
+  inputs,
+  outputs,
+  lib,
+  config,
+  pkgs,
+  pkgs-unstable,
+  ...
+}:
+{
   # You can import other home-manager modules here
   imports = [
     # If you want to use modules your own flake exports (from modules/home-manager):
@@ -22,8 +31,9 @@
 
   nix.settings.use-xdg-base-directories = true; # moves .nix-* out of HOME
 
-  home.packages = (with pkgs; [ ]) ++ (with pkgs-unstable;
-    [
+  home.packages =
+    (with pkgs; [ ])
+    ++ (with pkgs-unstable; [
       # eza
     ]);
 
@@ -32,12 +42,16 @@
 
   programs.neovim.enable = true;
 
-  home.sessionVariables = { EDITOR = lib.mkForce "nvim"; };
+  home.sessionVariables = {
+    EDITOR = lib.mkForce "nvim";
+  };
 
   programs.kitty = {
     enable = true;
     shellIntegration.enableZshIntegration = true;
   };
+
+  my.common.hyprland.enable = lib.mkForce false;
 
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";

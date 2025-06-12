@@ -1,7 +1,17 @@
 # This is your system's configuration file.
 # Use this to configure your system environment (it replaces /etc/nixos/configuration.nix)
-{ inputs, outputs, systemSettings, userSettings, lib, config, pkgs
-, pkgs-unstable, ... }: {
+{
+  inputs,
+  outputs,
+  systemSettings,
+  userSettings,
+  lib,
+  config,
+  pkgs,
+  pkgs-unstable,
+  ...
+}:
+{
   # You can import other NixOS modules here
   imports = [
 
@@ -46,8 +56,9 @@
 
   # This will add each flake input as a registry
   # To make nix3 commands consistent with your flake
-  nix.registry = (lib.mapAttrs (_: flake: { inherit flake; }))
-    ((lib.filterAttrs (_: lib.isType "flake")) inputs);
+  nix.registry = (lib.mapAttrs (_: flake: { inherit flake; })) (
+    (lib.filterAttrs (_: lib.isType "flake")) inputs
+  );
 
   # This will additionally add your inputs to the system's legacy channels
   # Making legacy nix commands consistent as well, awesome!
@@ -84,7 +95,9 @@
     # hostname
     hostName = "nixDesk";
 
-    firewall = { enable = true; };
+    firewall = {
+      enable = true;
+    };
   };
 
   # Amd GPU
@@ -95,10 +108,9 @@
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
-    extraPackages = with pkgs;
-      [
-        rocmPackages.clr.icd # OpenCL
-      ];
+    extraPackages = with pkgs; [
+      rocmPackages.clr.icd # OpenCL
+    ];
   };
 
   hardware.amdgpu = {
@@ -125,7 +137,9 @@
         FastConnectable = "true";
         Experimental = "true";
       };
-      Policy = { AutoEnable = "true"; };
+      Policy = {
+        AutoEnable = "true";
+      };
     };
   };
 
@@ -164,7 +178,7 @@
   services.xserver = {
     # Enable the X11 windowing system.
     enable = true;
-    # 
+    #
     # Configure keymap in X11
     xkb = {
       layout = "us";
@@ -178,7 +192,6 @@
     git
     neovim
     firefox
-    dolphin
     xclip
     tree
     gcc
@@ -245,6 +258,8 @@
   my.tts.enable = true; # TODO piper
   programs.ydotool.enable = true; # TODO get it to work
   # TODO Spellcheck
+
+  my.thunar.enable = true;
 
   # theme gtk
   programs.dconf.enable = true;

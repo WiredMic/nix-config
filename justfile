@@ -6,6 +6,7 @@ default:
 
 rebuild-pre: update-nix-secrets
   git add **
+  nix flake check
 
 rebuild-post:
   just check-sops
@@ -34,6 +35,9 @@ rebuild-boot: rebuild-pre && rebuild-post
 
 update:
   nix flake update
+
+check:
+  nix flake check
 
 rebuild-update: update && rebuild
 

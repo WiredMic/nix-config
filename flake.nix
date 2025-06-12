@@ -17,11 +17,12 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     # --Desktop Environments--
-    hyprland = { url = "git+https://github.com/hyprwm/Hyprland?submodules=1"; };
+    hyprland = {
+      url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
+    };
     split-monitor-workspaces = {
       url = "github:Duckonaut/split-monitor-workspaces";
-      inputs.hyprland.follows =
-        "hyprland"; # <- make sure this line is present for the plugin to work as intended
+      inputs.hyprland.follows = "hyprland"; # <- make sure this line is present for the plugin to work as intended
     };
 
     # Bar for hyprland
@@ -33,8 +34,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-flatpak.url =
-      "github:gmodena/nix-flatpak"; # unstable branch. Use github:gmodena/nix-flatpak/?ref=<tag> to pin releases.
+    nix-flatpak.url = "github:gmodena/nix-flatpak"; # unstable branch. Use github:gmodena/nix-flatpak/?ref=<tag> to pin releases.
 
     stylix.url = "github:danth/stylix/release-25.05";
 
@@ -44,18 +44,32 @@
     };
 
     solaar = {
-      url =
-        "https://flakehub.com/f/Svenum/Solaar-Flake/*.tar.gz"; # For latest stable version
+      url = "https://flakehub.com/f/Svenum/Solaar-Flake/*.tar.gz"; # For latest stable version
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     waveforms.url = "github:liff/waveforms-flake";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, hyprland
-    , split-monitor-workspaces, nix-flatpak, stylix, ags, nixos-hardware,
-    # nix-ld,
-    nix-index-database, solaar, sops-nix, waveforms, ... }@inputs:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      nixpkgs-unstable,
+      home-manager,
+      hyprland,
+      split-monitor-workspaces,
+      nix-flatpak,
+      stylix,
+      ags,
+      nixos-hardware,
+      # nix-ld,
+      nix-index-database,
+      solaar,
+      sops-nix,
+      waveforms,
+      ...
+    }@inputs:
     let
       inherit (self) outputs;
       # Supported systems for your flake packages, shell, etc.
@@ -64,8 +78,7 @@
         "x86_64-linux"
       ];
 
-      pkgs =
-        nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
+      pkgs = nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
       pkgs-unstable = nixpkgs-unstable.legacyPackages.x86_64-linux;
 
       # This is a function that generates an attribute by calling a function you
@@ -93,12 +106,12 @@
         style-color = "catppuccin-mocha";
       };
 
-    in {
+    in
+    {
 
       # Your custom packages
       # Accessible through 'nix build', 'nix shell', etc
-      packages = forAllSystems
-        (system: import ./pkgs nixpkgs.legacyPackages.${systemSettings.system});
+      packages = forAllSystems (system: import ./pkgs nixpkgs.legacyPackages.${systemSettings.system});
 
       # Your custom packages and modifications, exported as overlays
       overlays = import ./overlays { inherit inputs; };
@@ -131,8 +144,7 @@
                 useGlobalPkgs = true;
                 useUserPackages = true;
                 backupFileExtension = "bkp";
-                users.${userSettings.username} =
-                  import ./home/${userSettings.username}/nixDesk/home.nix;
+                users.${userSettings.username} = import ./home/${userSettings.username}/nixDesk/home.nix;
                 extraSpecialArgs = {
                   inherit inputs outputs;
                   inherit pkgs-unstable;
@@ -163,15 +175,15 @@
             # nix-ld.nixosModules.nix-ld
             nix-index-database.nixosModules.nix-index
             solaar.nixosModules.default
-            <nixos-hardware/lenovo/legion/15ich>
+            # nixos-hardware.nixosModules.lenovo-legion-15ich
+            "${nixos-hardware}/lenovo/legion/15ich"
             waveforms.nixosModule
             {
               home-manager = {
                 useGlobalPkgs = true;
                 useUserPackages = true;
                 backupFileExtension = "bkp2";
-                users.${userSettings.username} =
-                  import ./home/${userSettings.username}/nixLap/home.nix;
+                users.${userSettings.username} = import ./home/${userSettings.username}/nixLap/home.nix;
                 extraSpecialArgs = {
                   inherit inputs outputs;
                   inherit pkgs-unstable;
@@ -203,8 +215,7 @@
                 useGlobalPkgs = true;
                 useUserPackages = true;
                 backupFileExtension = "bkp";
-                users.${userSettings.username} =
-                  import ./home/${userSettings.username}/nixServer/home.nix;
+                users.${userSettings.username} = import ./home/${userSettings.username}/nixServer/home.nix;
                 extraSpecialArgs = {
                   inherit inputs outputs;
                   inherit pkgs-unstable;

@@ -1,6 +1,13 @@
-{ pkgs, lib, config, userSettings, ... }: {
+{
+  pkgs,
+  lib,
+  config,
+  userSettings,
+  ...
+}:
+{
   imports = [
-    # de 
+    # de
     ./de/hyprland/hyprland.nix
 
     # sddm
@@ -24,7 +31,7 @@
 
   ];
 
-  my.common.hyprland.enable = lib.mkForce userSettings.de.hyprland;
+  my.common.hyprland.enable = lib.mkDefault userSettings.de.hyprland;
   # my.common.hyprland.enable = false;
 
   my.sddm-icon.enable = lib.mkDefault true;

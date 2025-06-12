@@ -1,4 +1,12 @@
-{ pkgs, config, lib, userSettings, inputs, ... }: {
+{
+  pkgs,
+  config,
+  lib,
+  userSettings,
+  inputs,
+  ...
+}:
+{
   imports = [
     # inputs.split-monitor-workspaces.homeManagerModules.default
   ];
@@ -8,7 +16,7 @@
   };
 
   config = lib.mkIf config.my.hyprland.enable {
-    home.packages = with pkgs; [ wev kcalc ];
+    home.packages = with pkgs; [ wev ];
 
     wayland.windowManager.hyprland = {
       # https://github.com/hyprland-community/awesome-hyprland
@@ -29,7 +37,9 @@
 
         input = {
 
-          touchpad = { natural_scroll = "no"; };
+          touchpad = {
+            natural_scroll = "no";
+          };
         };
 
         gestures = {

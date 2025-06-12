@@ -1,4 +1,13 @@
-{ inputs, outputs, lib, config, pkgs, pkgs-unstable, ... }: {
+{
+  inputs,
+  outputs,
+  lib,
+  config,
+  pkgs,
+  pkgs-unstable,
+  ...
+}:
+{
   # You can import other home-manager modules here
   imports = [
     # If you want to use modules your own flake exports (from modules/home-manager):
@@ -33,35 +42,36 @@
 
   nix.settings.use-xdg-base-directories = true; # moves .nix-* out of HOME
 
-  home.packages = (with pkgs; [
-    stow
-    flatpak
-    vlc
-    # gnome.gnome-software
-    neofetch
-    pass
-    nurl
-    unzip
-    gimp
-    gnome-calculator
-    gnome-multi-writer
-    tldr
-    libation # audible libaretor
-    pavucontrol
+  home.packages =
+    (with pkgs; [
+      stow
+      flatpak
+      vlc
+      # gnome.gnome-software
+      neofetch
+      pass
+      nurl
+      unzip
+      gimp
+      gnome-calculator
+      gnome-multi-writer
+      tldr
+      libation # audible libaretor
+      pavucontrol
 
-    btop # system monitor
+      btop # system monitor
 
-    # Libra office and spell check
-    libreoffice-qt
-    hunspell
-    hunspellDicts.da_DK
+      # Libra office and spell check
+      libreoffice-qt
+      hunspell
+      hunspellDicts.da_DK
 
-    # LaTeX
-    # texlive.combined.scheme-full
+      # LaTeX
+      # texlive.combined.scheme-full
 
-    gparted
-  ]) ++ (with pkgs-unstable;
-    [
+      gparted
+    ])
+    ++ (with pkgs-unstable; [
       # eza
     ]);
 
@@ -75,15 +85,12 @@
   my.rust.enable = true;
   my.latex.enable = true;
 
-  # ssh 
+  # ssh
   my.ssh.enable = true;
   my.gpg.enable = true;
 
-  # password manager 
+  # password manager
   my.pass.enable = true;
-
-  # Cloud Storage
-  my.onedrive.enable = true;
 
   xdg.enable = true;
 
