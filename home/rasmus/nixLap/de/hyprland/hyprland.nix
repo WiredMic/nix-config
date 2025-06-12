@@ -25,6 +25,8 @@
           # Setup monitors
           # See https://wiki.hyprland.org/Configuring/Monitors/
           "desc:LG Display 0x05CF,1920x1080@144,0x0,1"
+          "desc:LG Electronics LG TV SSCR2 0x01010101,3840x2160@60.00000,auto,2"
+
           ", preferred, auto, 1"
         ];
 
