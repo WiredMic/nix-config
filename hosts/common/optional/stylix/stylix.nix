@@ -1,11 +1,16 @@
-{ pkgs, lib, config, userSettings, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  userSettings,
+  ...
+}:
 let
-  kurzgesagt_dyson_sphere =
-    pkgs.callPackage ./background/kurzgesagt_dyson_sphere.nix { };
-in {
+  kurzgesagt_dyson_sphere = pkgs.callPackage ./background/kurzgesagt_dyson_sphere.nix { };
+in
+{
   options = {
-    my.stylix.enable =
-      lib.mkEnableOption "enables stylix to style tilling managers";
+    my.stylix.enable = lib.mkEnableOption "enables stylix to style tilling managers";
   };
 
   config = lib.mkIf config.my.stylix.enable {
@@ -25,15 +30,13 @@ in {
     stylix.cursor = {
       package = pkgs.bibata-cursors;
       name = "Bibata-Modern-Classic";
-      size = 18;
+      size = 20;
     };
 
     # Don't forget to apply wallpaper
-    stylix.image =
-      lib.mkForce "${kurzgesagt_dyson_sphere}/kurzgesagt_dyson_sphere.png";
+    stylix.image = lib.mkForce "${kurzgesagt_dyson_sphere}/kurzgesagt_dyson_sphere.png";
 
-    stylix.base16Scheme =
-      "${pkgs.base16-schemes}/share/themes/${userSettings.style-color}.yaml";
+    stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/${userSettings.style-color}.yaml";
 
     stylix.fonts = {
       monospace = {
