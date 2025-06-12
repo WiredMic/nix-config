@@ -1,4 +1,10 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  pkgs-unstable,
+  ...
+}:
 
 {
   imports = [ ];
@@ -9,13 +15,15 @@
 
   config = lib.mkIf config.my.octave.enable {
 
-    home.packages = with pkgs; [
-      (octaveFull.withPackages (opkgs:
-        with opkgs; [
+    home.packages = with pkgs-unstable; [
+      (octave.withPackages (
+        opkgs: with opkgs; [
           symbolic
           quaternion
-          # (callPackage ./clifford-multivector-toolbox.nix { })
-        ]))
+          signal
+          control
+        ]
+      ))
       ghostscript
     ];
 

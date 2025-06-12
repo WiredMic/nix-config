@@ -75,11 +75,6 @@
     # Deduplicate and optimize nix store
     auto-optimise-store = true;
 
-    substituters = [
-      "https://nix-community.cachix.org"
-      "https://cache.nixos.org/"
-      "https://nixcache.reflex-frp.org"
-    ];
   };
 
   nix.optimise = {
@@ -319,15 +314,10 @@
   # https://nixos.wiki/wiki/NFS
   services.rpcbind.enable = true; # needed for NFS
 
-  services.emacs = {
-    enable = true;
-    package = pkgs.emacs; # replace with emacs-gtk, or a version provided by the community overlay if desired.
-  };
-
   services.udev.packages = with pkgs; [ platformio-core.udev ];
 
   programs.kdeconnect.enable = true;
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = "24.05";
+  system.stateVersion = "25.05";
 }
