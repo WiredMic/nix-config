@@ -20,7 +20,7 @@
     #   ];
     # };
 
-    services.onedrive.enable = true;
-    services.onedrive.package = pkgs-unstable.onedrive;
+    # services.onedrive.enable = true;
+    # services.onedrive.package = pkgs-unstable.onedrive;
   };
 }
