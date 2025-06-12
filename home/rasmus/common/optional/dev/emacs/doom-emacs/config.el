@@ -84,9 +84,10 @@
 
 (setq +format-on-save-enabled-modes
       '(not emacs-lisp-mode  ; elisp's mechanisms are good enough
-	    sql-mode         ; sqlformat is currently broken
-	    tex-mode         ; latexindent is broken
-	    latex-mode))
+	sql-mode         ; sqlformat is currently broken
+	;; tex-mode         ; latexindent is broken
+	;; latex-mode
+        ))
 
 (setq lsp-inlay-hint-enable t
       lsp-inlay-hints-mod t)
@@ -105,6 +106,16 @@
 (setq lsp-rust-analyzer-display-closure-return-type-hints t)
 (setq lsp-rust-analyzer-display-parameter-hints t)
 (setq lsp-rust-analyzer-display-reborrow-hints t)
+(setq lsp-rust-all-features t)
+
+(after! ccls
+  (setq ccls-initialization-options '(:index (:comments 2)
+                                      :compilationDatabaseDirectory "." ;; Look in the current directory
+                                      :completion (:detailedLabel t)))
+  (set-lsp-priority! 'ccls 2)) ; optional as ccls is the default in Doom
+
+(after! projectile
+  (add-to-list 'projectile-project-root-files "platformio.ini"))
 
 (setq org-directory "~/OneDrive/Org/"
       org-roam-directory "~/OneDrive/Org/Roam")
@@ -174,6 +185,28 @@ org-ellipsis "…"
 
 (org-add-link-type "local-html" (lambda (path) (browse-url-xdg-open path)))
 
+;; set Compiler
+(setq org-latex-compiler "lualatex")
+
+;; lualatex preview
+(setq org-latex-pdf-process
+  '("lualatex -shell-escape -interaction nonstopmode %f"
+    "lualatex -shell-escape -interaction nonstopmode %f"))
+
+(setq luamagick '(luamagick :programs ("lualatex" "convert")
+       :description "pdf > png"
+       :message "you need to install lualatex and imagemagick."
+       :use-xcolor t
+       :image-input-type "pdf"
+       :image-output-type "png"
+       :image-size-adjust (1.0 . 1.0)
+       :latex-compiler ("lualatex -interaction nonstopmode -output-directory %o %f")
+       :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))
+
+(add-to-list 'org-preview-latex-process-alist luamagick)
+
+(setq org-preview-latex-default-process 'luamagick)
+
 ;; (add-to-list 'org-latex-packages-alist'("" "amsmath" t) t)
 ;; (add-to-list 'org-latex-packages-alist'("" "amssymb" t) t)
 (add-to-list 'org-latex-packages-alist'("" "siunitx" t) t)
@@ -222,6 +255,11 @@ org-ellipsis "…"
   ;; More immediate live-previews -- the default delay is 1 second
   (setq org-latex-preview-live-debounce 0.25))
 
+(add-to-list 'org-latex-packages-alist '("math-style=ISO,bold-style=ISO,mathrm=sym,mathup=sym,mathit=sym,mathsf=sym,mathbf=sym,mathtt=sym," "unicode-math" t) t)
+(add-to-list 'org-latex-packages-alist '"\\setmainfont{XITS}" t)
+(add-to-list 'org-latex-packages-alist '"\\setmathfont{XITS Math}" t)
+(add-to-list 'org-latex-packages-alist '"\\setmonofont{JetBrainsMonoNerdFont}[Scale=0.85, Contextuals = Alternate, Ligatures=TeX, UprightFont =*-Regular, BoldFont = *-Bold, ItalicFont = *-Italic, BoldItalicFont = *-BoldItalic, ]" t)
+
 ;; (require 'ox-latex)
 ;; (add-to-list 'org-latex-packages-alist '"\\lstset{ basicstyle=\\footnotesize\\ttfamily}")
 (setq org-latex-src-block-backend "listings")
@@ -259,6 +297,10 @@ org-ellipsis "…"
 (add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@blue}{HTML}{268BD2}" t)
 (add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@cyan}{HTML}{2AA198}" t)
 (add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@green}{HTML}{859900}" t)
+
+;; Ligatures in code blocks
+(add-to-list 'org-latex-packages-alist '"\\makeatletter \\renewcommand*\\verbatim@nolig@list{} \\makeatother" t)
+
 (setq org-latex-listings-options
       '(("basicstyle" "\\footnotesize\\ttfamily")
         ("captionpos" "b")
@@ -276,7 +318,7 @@ org-ellipsis "…"
         ("frame" "single")
         ("numberstyle" "\\tiny\\color{solarized@base01}")
         ("keywordstyle" "\\color{solarized@green}")
-        ("stringstyle" "\\color{solarized@cyan}\ttfamily")
+        ("stringstyle" "\\color{solarized@cyan}\\ttfamily")
         ("identifierstyle" "\\color{solarized@blue}")
         ("commentstyle" "\\color{solarized@base01}")
         ("emphstyle" "\\color{solarized@red}")

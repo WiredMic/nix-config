@@ -147,9 +147,30 @@ To Tangle a document press =
 #+begin_src elisp :tangle yes
 (setq +format-on-save-enabled-modes
       '(not emacs-lisp-mode  ; elisp's mechanisms are good enough
-	    sql-mode         ; sqlformat is currently broken
-	    tex-mode         ; latexindent is broken
-	    latex-mode))
+	sql-mode         ; sqlformat is currently broken
+	;; tex-mode         ; latexindent is broken
+	;; latex-mode
+        ))
+#+end_src
+
+** LaTeX
+
+#+begin_src elisp :tangle no
+;; (setq-hook! 'latex-mode-hook +format-with 'tex-fmt)
+
+(setq +format-on-save-enabled-modes
+      '(tex-mode
+        latex-mode))
+
+(set-formatter! 'tex-fmt
+  '("tex-fmt"
+    ("-s -t 2"))
+
+  :modes
+  '((latex-mode ".tex")
+    (latex-mode ".bib")
+    (latex-mode ".sty")
+    (latex-mode ".cls")))
 #+end_src
 
 * LSP
@@ -177,6 +198,21 @@ To Tangle a document press =
 (setq lsp-rust-analyzer-display-closure-return-type-hints t)
 (setq lsp-rust-analyzer-display-parameter-hints t)
 (setq lsp-rust-analyzer-display-reborrow-hints t)
+(setq lsp-rust-all-features t)
+#+end_src
+
+** CCLS
+#+begin_src elisp :tangle yes
+(after! ccls
+  (setq ccls-initialization-options '(:index (:comments 2)
+                                      :compilationDatabaseDirectory "." ;; Look in the current directory
+                                      :completion (:detailedLabel t)))
+  (set-lsp-priority! 'ccls 2)) ; optional as ccls is the default in Doom
+#+end_src
+** Projectile
+#+begin_src elisp :tangle yes
+(after! projectile
+  (add-to-list 'projectile-project-root-files "platformio.ini"))
 #+end_src
 
 * Org-mode
@@ -263,6 +299,31 @@ org-ellipsis "…"
 (org-add-link-type "local-html" (lambda (path) (browse-url-xdg-open path)))
 #+end_src
 
+** Org LaTeX preview Compiler
+#+begin_src elisp :tangle yes
+;; set Compiler
+(setq org-latex-compiler "lualatex")
+
+;; lualatex preview
+(setq org-latex-pdf-process
+  '("lualatex -shell-escape -interaction nonstopmode %f"
+    "lualatex -shell-escape -interaction nonstopmode %f"))
+
+(setq luamagick '(luamagick :programs ("lualatex" "convert")
+       :description "pdf > png"
+       :message "you need to install lualatex and imagemagick."
+       :use-xcolor t
+       :image-input-type "pdf"
+       :image-output-type "png"
+       :image-size-adjust (1.0 . 1.0)
+       :latex-compiler ("lualatex -interaction nonstopmode -output-directory %o %f")
+       :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))
+
+(add-to-list 'org-preview-latex-process-alist luamagick)
+
+(setq org-preview-latex-default-process 'luamagick)
+#+end_src
+
 ** Org LaTeX preview packages
 
 #+begin_src elisp :tangle yes
@@ -321,7 +382,15 @@ This is my own LaTeX commands
   (setq org-latex-preview-live-debounce 0.25))
 #+end_src
 
+** Org LaTeX Unicode Font
+#+begin_src elisp :tangle yes
 
+(add-to-list 'org-latex-packages-alist '("math-style=ISO,bold-style=ISO,mathrm=sym,mathup=sym,mathit=sym,mathsf=sym,mathbf=sym,mathtt=sym," "unicode-math" t) t)
+(add-to-list 'org-latex-packages-alist '"\\setmainfont{XITS}" t)
+(add-to-list 'org-latex-packages-alist '"\\setmathfont{XITS Math}" t)
+(add-to-list 'org-latex-packages-alist '"\\setmonofont{JetBrainsMonoNerdFont}[Scale=0.85, Contextuals = Alternate, Ligatures=TeX, UprightFont =*-Regular, BoldFont = *-Bold, ItalicFont = *-Italic, BoldItalicFont = *-BoldItalic, ]" t)
+
+#+end_src
 ** Org Code Block Export
 
 #+begin_src elisp :tangle yes
@@ -362,6 +431,10 @@ This is my own LaTeX commands
 (add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@blue}{HTML}{268BD2}" t)
 (add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@cyan}{HTML}{2AA198}" t)
 (add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@green}{HTML}{859900}" t)
+
+;; Ligatures in code blocks
+(add-to-list 'org-latex-packages-alist '"\\makeatletter \\renewcommand*\\verbatim@nolig@list{} \\makeatother" t)
+
 (setq org-latex-listings-options
       '(("basicstyle" "\\footnotesize\\ttfamily")
         ("captionpos" "b")
@@ -379,20 +452,17 @@ This is my own LaTeX commands
         ("frame" "single")
         ("numberstyle" "\\tiny\\color{solarized@base01}")
         ("keywordstyle" "\\color{solarized@green}")
-        ("stringstyle" "\\color{solarized@cyan}\ttfamily")
+        ("stringstyle" "\\color{solarized@cyan}\\ttfamily")
         ("identifierstyle" "\\color{solarized@blue}")
         ("commentstyle" "\\color{solarized@base01}")
         ("emphstyle" "\\color{solarized@red}")
         ("rulecolor" "\\color{solarized@base2}")
         ("rulesepcolor" "\\color{solarized@base2}")
         ))
-
 #+end_src
                                          "\\makeatletter"
                                          "\\renewcommand*\\verbatim@nolig@list{}"
                                          "\\makeatother"
-                                         ))
-
 
 
 
@@ -400,6 +470,7 @@ This is my own LaTeX commands
 #+begin_src elisp :tangle yes
 ;; (add-hook 'centaur-tabs-mode)
 #+end_src
+
 ** Anki
 https://rgoswami.me/posts/anki-decks-orgmode/
 https://doubleloop.net/2020/08/02/adding-flashcards-to-your-digital-garden-with-org-roam-and-anki/
