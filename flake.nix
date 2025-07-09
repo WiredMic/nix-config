@@ -10,13 +10,12 @@
     # Home manager
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
-      # url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
-    # --Desktop Environments--
+    # Desktop Environments
     hyprland = {
       url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
     };
@@ -36,7 +35,10 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak"; # unstable branch. Use github:gmodena/nix-flatpak/?ref=<tag> to pin releases.
 
-    stylix.url = "github:danth/stylix/release-25.05";
+    stylix = {
+      url = "github:danth/stylix/release-25.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
@@ -49,6 +51,11 @@
     };
 
     waveforms.url = "github:liff/waveforms-flake";
+
+    emacs-overlay = {
+      url = "github:nix-community/emacs-overlay/";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -68,6 +75,7 @@
       solaar,
       sops-nix,
       waveforms,
+      emacs-overlay,
       ...
     }@inputs:
     let

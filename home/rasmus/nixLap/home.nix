@@ -1,4 +1,13 @@
-{ inputs, outputs, lib, config, pkgs, pkgs-unstable, ... }: {
+{
+  inputs,
+  outputs,
+  lib,
+  config,
+  pkgs,
+  pkgs-unstable,
+  ...
+}:
+{
   # You can import other home-manager modules here
   imports = [
     # If you want to use modules your own flake exports (from modules/home-manager):
@@ -35,46 +44,47 @@
 
   nix.settings.use-xdg-base-directories = true; # moves .nix-* out of HOME
 
-  home.packages = (with pkgs; [
-    xdg-ninja
+  home.packages =
+    (with pkgs; [
+      xdg-ninja
 
-    flatpak
-    vlc
-    neofetch
-    pass
-    nurl
+      flatpak
+      vlc
+      neofetch
+      pass
+      nurl
 
-    zip
-    unzip
+      zip
+      unzip
 
-    gnome-calculator
-    gnome-multi-writer
-    tldr
-    libation # audible libaretor
-    pavucontrol
+      gnome-calculator
+      gnome-multi-writer
+      tldr
+      libation # audible libaretor
+      pavucontrol
 
-    btop # system monitor
+      btop # system monitor
 
-    # Libra office and spell check
-    libreoffice-qt
-    hunspell
-    hunspellDicts.da_DK
-    hunspellDicts.en-us
+      # Libra office and spell check
+      libreoffice-qt
+      hunspell
+      hunspellDicts.da_DK
+      hunspellDicts.en-us
 
-    localsend
+      localsend
 
-    ranger
+      ranger
 
-    nix-index
+      nix-index
 
-    (rWrapper.override {
-      packages = with rPackages; [
-        languageserver # LSP
-        lintr
-      ];
-    })
-  ]) ++ (with pkgs-unstable;
-    [
+      (rWrapper.override {
+        packages = with rPackages; [
+          languageserver # LSP
+          lintr
+        ];
+      })
+    ])
+    ++ (with pkgs-unstable; [
       # eza
     ]);
 
@@ -91,11 +101,11 @@
   my.latex.enable = true;
   my.octave.enable = true;
 
-  # ssh 
+  # ssh
   my.ssh.enable = true;
   my.gpg.enable = true;
 
-  # password manager 
+  # password manager
   my.pass.enable = true;
 
   # Zsh

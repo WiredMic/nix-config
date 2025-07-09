@@ -1,0 +1,357 @@
+#+title: My GNU Emacs Config
+#+AUTHOR: Rasmus Enevoldsen
+#+PROPERTY: header-args:emacs-lisp :tangle yes
+
+* Table of Contents :toc:
+- [[#general-setup][General Setup]]
+- [[#ui-and-theming][UI and Theming]]
+  - [[#ui-elements][UI Elements]]
+  - [[#theme-and-fonts][Theme and Fonts]]
+  - [[#line-numbering][Line Numbering]]
+  - [[#modeline][Modeline]]
+  - [[#dashboard][Dashboard]]
+  - [[#miscallenous-ui-toolssettings][Miscallenous UI Tools/Settings]]
+- [[#evil][Evil]]
+  - [[#evil-package][Evil Package]]
+  - [[#evil-collection-package][Evil Collection Package]]
+  - [[#additional-evil-tools][Additional Evil Tools]]
+- [[#keybindings][Keybindings]]
+  - [[#miscallenous-settings][Miscallenous Settings]]
+- [[#git-integration][Git Integration]]
+- [[#terminal-emulation-and-shells][Terminal Emulation and Shells]]
+- [[#completion][Completion]]
+- [[#org-mode][Org-mode]]
+  - [[#prettify-org][Prettify Org]]
+  - [[#org-download][org-download]]
+  - [[#org-roam][Org-roam]]
+- [[#development-tools][Development Tools]]
+  - [[#direnv][Direnv]]
+  - [[#lsp-integration][LSP Integration]]
+- [[#programming-languages-setup][Programming Languages Setup]]
+  - [[#c][C/*]]
+  - [[#lisp][Lisp]]
+  - [[#lua][Lua]]
+  - [[#nix][Nix]]
+  - [[#python][Python]]
+  - [[#rust][Rust]]
+  - [[#yamljsontomletc][YAML/JSON/TOML/etc]]
+- [[#projects-with-projectile][Projects with projectile]]
+
+* General Setup
+Set a higher garbage collection limit (50MB), and log the startup time on the splash screen:
+
+#+begin_src emacs-lisp
+  (setq gc-cons-threshold (* 50 1000 1000))
+#+end_src
+
+Use [[https://github.com/emacscollective/no-littering][no-littering]] to automatically set common paths to the new user-emacs-directory:
+#+begin_src emacs-lisp
+  (use-package no-littering)
+#+end_src
+
+[[https://github.com/jwiegley/use-package][use-package]] is added automatically by the nix emacs overlay.
+Here we just make sure we don't have to keep typing ~:ensure t~:
+#+begin_src emacs-lisp
+  (setq use-package-always-ensure t)
+#+end_src
+
+Do not make unnecessary sounds:
+#+begin_src emacs-lisp
+  (setq ring-bell-function #'ignore)
+#+end_src
+
+Install [[https://github.com/purcell/exec-path-from-shell][exec-path-from-shell]] to ensure environment variables inside Emacs look the same as in the my shell:
+#+begin_src emacs-lisp
+  (use-package exec-path-from-shell)
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+#+end_src
+* UI and Theming
+** UI Elements
+
+Disable all unnecessary UI elements such as tool bar, menu bar, scroll bar, etc.:
+
+#+begin_src emacs-lisp
+(scroll-bar-mode -1) ; Disable visible scrollbar
+(tool-bar-mode -1)   ; Disable the toolbar
+(menu-bar-mode -1)   ; Disable menu bar
+(tooltip-mode -1)    ; Disable tooltips
+(set-fringe-mode 10) ; Give some breathing room
+#+end_src
+
+** Theme and Fonts
+
+Theming and fonts is managed by [[https://github.com/nix-community/stylix][stylix]].
+
+We still have to enable ligatures:
+
+#+begin_src emacs-lisp
+(use-package ligature
+  :config
+  ;; Enable the "www" ligature in every possible major mode
+  (ligature-set-ligatures 't '("www"))
+  ;; Enable traditional ligature support in eww-mode, if the
+  ;; `variable-pitch' face supports it
+  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+  ;; Enable all Cascadia Code ligatures in programming modes
+  (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                      ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                      "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                      "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                      "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                      "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                      "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                      "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                      ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                      "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                      "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                      "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                      "\\\\" "://"))
+  (global-ligature-mode t))
+#+end_src
+
+We simply enable italics for commented text and keywords:
+
+#+begin_src emacs-lisp
+(set-face-attribute 'font-lock-comment-face nil :slant 'italic)
+(set-face-attribute 'font-lock-keyword-face nil :slant 'italic)
+#+end_src
+
+Let’s also adjust the line height (mostly for org-modern to work correctly):
+
+#+begin_src emacs-lisp
+(setq-default line-spacing 0.15)
+#+end_src
+
+Last, we enable nerd-icons.el:
+
+#+begin_src emacs-lisp
+(use-package nerd-icons)
+#+end_src
+
+** Line Numbering
+
+Configure relative line numbers in all buffers:
+
+#+begin_src emacs-lisp
+(column-number-mode)
+(display-line-numbers-mode t)
+(setq display-line-numbers-type 'relative)
+(global-display-line-numbers-mode t)
+(setq global-display-line-numbers-type 'relative)
+#+end_src
+
+Disable line numbers specifically in org-mode, and all shell environments:
+
+#+begin_src emacs-lisp
+(dolist (mode '(org-mode-hook
+                org-agenda-mode-hook
+                term-mode-hook
+                vterm-mode-hook
+                shell-mode-hook
+                eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+#+end_src
+
+** Modeline
+We use the [[https://github.com/seagle0128/doom-modeline][doom-modeline]]:
+
+#+begin_src emacs-lisp
+(use-package doom-modeline
+  :hook (after-init . doom-modeline-mode))
+#+end_src
+** Dashboard
+On the dashboard (splash screen), we want to:
+
+    Show the emacs logo
+    Recent files
+    Agenda items
+    Bookmarks
+    Projects
+    Registers
+
+We the use dashboard.el package for this:
+
+#+begin_src emacs-lisp
+(use-package dashboard
+  :init
+  (setq initial-buffer-choice 'dashboard-open)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  ;; (setq dashboard-startup-banner "./banner.txt") ;; use standard emacs logo as banner
+  (setq dashboard-startup-banner 'logo)
+  (setq dashboard-center-content t) ;; set to 't' for centered content
+  (setq dashboard-items '((recents . 5)
+                          (agenda . 5)
+                          (bookmarks . 3)
+                          (projects . 3)
+                          (registers . 3)))
+  :custom
+  (dashboard-modify-heading-icons '((recents . "file-text")
+                                    (bookmarks . "book")))
+  :config
+  (dashboard-setup-startup-hook))
+#+end_src
+
+We also inhibit the default splash screen:
+
+#+begin_src emacs-lisp
+(setq inhibit-splash-screen t)
+(setq inhibit-startup-message t)
+#+end_src
+
+** Miscallenous UI Tools/Settings
+Add transparency:
+#+begin_src emacs-lisp
+(set-frame-parameter nil 'alpha-background 80) ; For current frame
+(add-to-list 'default-frame-alist '(alpha-background . 80)) ; For all new frames henceforth
+#+end_src
+
+* Evil
+[[https://github.com/emacs-evil/evil][evil]] or ~evil-mode~ is a package that provides Vim keybindings and behaviors within Emacs.
+
+** Evil Package
+We enable ~evil-mode~ for normal text buffers first:
+
+#+begin_src emacs-lisp
+  (use-package evil
+    :init
+    (setq evil-want-C-u-scroll t)
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-vsplit-window-right t)
+    (setq evil-split-window-below t)
+    :config
+    (evil-mode)
+    (evil-set-undo-system 'undo-redo))
+#+end_src
+
+Next, we would like to be able to escape insert-mode by typing ~jj~:
+#+begin_src emacs-lisp :tangle no
+  (use-package evil-escape
+    :after evil
+    :init
+    (setq evil-escape-excluded-states '(normal visual)
+          evil-escape-excluded-major-modes '(neotree-mode treemacs-mode vterm-mode))
+    :config
+    (setq-default evil-escape-delay 0.2)
+    (setq-default evil-escape-key-sequence "jj")
+    (evil-escape-mode))
+#+end_src
+
+** Evil Collection Package
+[[https://github.com/emacs-evil/evil-collection][evil-collection]] allows us to enable vim keybindings outside of text buffers, that is,
+we then can use evil everywhere in emacs. For example, it will allow us to use
+evil in org-agenda, calendar, ~help-mode~, etc.
+
+#+begin_src emacs-lisp
+  (use-package evil-collection
+    :after evil
+    :config
+    (evil-collection-init))
+#+end_src
+
+** Additional Evil Tools
+Apart from the ~evil~ and ~evil-collection~, there are a few packages that improve
+~evil-mode~ beyond the standard bindings. All these packages usually have an
+equivalent counterpart in (Neo)vim.
+*** Evil Comments
+[[https://github.com/linktohack/evil-commentary][evil-commentary]] is a simple plugin that enables us to toggle comments with
+the keybinding ~gcc~:
+#+begin_src emacs-lisp
+  (use-package evil-commentary
+    :after evil
+    :config
+    (evil-commentary-mode))
+#+end_src
+
+The package is the Emacs counterpart to [[https://github.com/tpope/vim-commentary][commentary.vim]].
+
+*** Evil Surround
+[[https://github.com/emacs-evil/evil-surround][evil-surround]] is a package the let's us edit surrounding elements with
+the keybinding ~s~ (e.g. ~ds(~ deletes surrounding ~( )~ brackets).
+
+#+begin_src emacs-lisp
+  (use-package evil-surround
+    :config
+    (global-evil-surround-mode 1))
+#+end_src
+
+The package is the Emacs counterpart to [[https://github.com/tpope/vim-surround][vim-surround]].
+* Keybindings
+** Miscallenous Settings
+
+By default Emacs requires you to hit ESC three times to close the minibuffer. This is annoying, so we’re going to change it to just once:
+#+begin_src emacs-lisp
+(global-set-key [escape] 'keyboard-escape-quit)
+#+end_src
+
+* Git Integration
+* Terminal Emulation and Shells
+* Completion
+* Org-mode
+** Prettify Org
+** org-download
+** Org-roam
+[[https://www.orgroam.com/]]
+
+* Development Tools
+** Direnv
+** LSP Integration
+I use [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] together with its UI plugins.
+Let’s enable ~lsp-mode~ first:
+
+#+begin_src emacs-lisp
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  :config
+  (setq lsp-enable-which-key-integration t
+        lsp-prefer-flymake nil))
+#+end_src
+
+[[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] is an addition to ~lsp-mode~ that enables context menus, hover information, etc. to ~lsp-mode~.
+It is activated automatically by ~lsp-mode~.
+
+#+begin_src emacs-lisp
+(use-package lsp-ui
+  :after lsp-mode)
+#+end_src
+
+Keybindings
+
+#+begin_src emacs-lisp :tangle no
+(local-leader-def lsp-mode-map "f" '(format-all-buffer :wk "Format Buffer"))
+(local-leader-def lsp-mode-map "a" '(lsp-execute-code-action :wk "Code Action"))
+(local-leader-def c-mode-map "f" '(format-all-buffer :wk "Format Buffer"))
+(local-leader-def c-mode-map "a" '(lsp-execute-code-action :wk "Code Action"))
+
+(general-evil-define-key 'normal lsp-mode-map "gd" '(lsp-find-definition :wk "Goto Definition"))
+(general-evil-define-key 'normal lsp-mode-map "gD" '(lsp-find-declaration :wk "Goto Declaration"))
+(general-evil-define-key 'normal lsp-mode-map "gI" '(lsp-ui-peek-find-implementation :wk "Goto Implementation"))
+(general-evil-define-key 'normal lsp-mode-map "gr" '(lsp-ui-peek-find-references :wk "Peek References"))
+(local-leader-def lsp-mode-map "m" '(lsp-rename :wk "Rename"))
+
+(custom-set-variables '(lsp-ui-doc-position 'at-point))
+(evil-define-key 'normal 'lsp-mode-map "K" 'lsp-ui-doc-glance)
+#+end_src
+
+* Programming Languages Setup
+** C/*
+** Lisp
+** Lua
+** Nix
+I use [[https://github.com/NixOS/nix-mode][nix-mode]] and active ~lsp-mode~ when entering ~nix-mode~:
+
+#+begin_src emacs-lisp
+(use-package nix-mode
+  :mode "\\.nix\\'"
+  :hook (nix-mode . lsp-deferred))
+#+end_src
+
+** Python
+** Rust
+** YAML/JSON/TOML/etc
+* Projects with projectile
