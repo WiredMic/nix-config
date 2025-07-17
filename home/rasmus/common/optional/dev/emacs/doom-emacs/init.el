@@ -22,9 +22,9 @@
 
        :completion
        (company +childframe)           ; the ultimate code completion backend
+       ;;ivy               ; a search engine for love and life
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
-       ;;ivy               ; a search engine for love and life
        vertico           ; the search engine of the future
 
        :ui
@@ -91,7 +91,7 @@
        ;; (debugger +lsp)          ; FIXME stepping through code, to help you add bugs
        direnv
        ;;docker
-       editorconfig      ; let someone else argue about tabs vs spaces
+       ;; editorconfig      ; let someone else argue about tabs vs spaces
        ;;ein               ; tame Jupyter notebooks with emacs
        (eval +overlay)     ; run code, run (also, repls)
        lookup              ; navigate your code and its documentation
