@@ -7,36 +7,32 @@
 }:
 {
 
+  imports = [
+    inputs.nix-doom-emacs-unstraightened.homeModule
+  ];
+
   options = {
     my.emacs.enable = lib.mkEnableOption "enables emacs";
   };
 
   config = lib.mkIf config.my.direnv.enable {
 
-
-  # nixpkgs = {
-  #   # You can add overlays here
-  #   overlays = [
-  #     inputs.emacs-overlay.overlays.default
-  #   ];
-  # };
-
     programs.emacs = {
       enable = true;
       package = pkgs.emacsWithPackagesFromUsePackage {
         # We use the README.org directly. The file will be tangled automatically,
         # that is, the source code blocks are going to be extracted.
-        # config = ./README.org;
+        config = ./README.org;
 
         # workaround for making stylix work with emacs-overlay
-        config = pkgs.writeTextFile {
-          text = ''
-            ${builtins.readFile ./README.org}
-             #+begin_src emacs-lisp
-            ${config.programs.emacs.extraConfig}
-             #+end_src'';
-          name = "config.org";
-        };
+        # config = pkgs.writeTextFile {
+        #   text = ''
+        #     ${builtins.readFile ./README.org}
+        #      #+begin_src emacs-lisp
+        #     ${config.programs.emacs.extraConfig}
+        #      #+end_src'';
+        #   name = "config.org";
+        # };
 
         # Include the config as a default init file
         defaultInitFile = true;

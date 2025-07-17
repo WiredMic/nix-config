@@ -1,8 +1,10 @@
 #+title: My GNU Emacs Config
 #+AUTHOR: Rasmus Enevoldsen
 #+PROPERTY: header-args:emacs-lisp :tangle yes
+#+STARTUP: overview
 
 * Table of Contents :toc:
+- [[#intoduction][Intoduction]]
 - [[#general-setup][General Setup]]
 - [[#ui-and-theming][UI and Theming]]
   - [[#ui-elements][UI Elements]]
@@ -16,17 +18,30 @@
   - [[#evil-collection-package][Evil Collection Package]]
   - [[#additional-evil-tools][Additional Evil Tools]]
 - [[#keybindings][Keybindings]]
+  - [[#which-key][Which-key]]
+  - [[#generalel-setup][General.el Setup]]
+  - [[#zooming-inout][Zooming In/Out]]
+  - [[#global][Global]]
   - [[#miscallenous-settings][Miscallenous Settings]]
 - [[#git-integration][Git Integration]]
 - [[#terminal-emulation-and-shells][Terminal Emulation and Shells]]
 - [[#completion][Completion]]
+  - [[#vertico][Vertico]]
+  - [[#consult][Consult]]
+  - [[#marginalia][Marginalia]]
+  - [[#embark][Embark]]
 - [[#org-mode][Org-mode]]
-  - [[#prettify-org][Prettify Org]]
+  - [[#keybinds][Keybinds]]
+  - [[#org-modern][org-modern]]
   - [[#org-download][org-download]]
-  - [[#org-roam][Org-roam]]
+  - [[#toc-org][toc-org]]
+  - [[#org-roam][org-roam]]
+  - [[#evil-org][evil-org]]
 - [[#development-tools][Development Tools]]
   - [[#direnv][Direnv]]
   - [[#lsp-integration][LSP Integration]]
+  - [[#diagnostics-with-flycheck][Diagnostics with flycheck]]
+  - [[#formatting-with-format-all][Formatting with format-all]]
 - [[#programming-languages-setup][Programming Languages Setup]]
   - [[#c][C/*]]
   - [[#lisp][Lisp]]
@@ -34,8 +49,14 @@
   - [[#nix][Nix]]
   - [[#python][Python]]
   - [[#rust][Rust]]
+  - [[#octave-mode][Octave mode]]
   - [[#yamljsontomletc][YAML/JSON/TOML/etc]]
 - [[#projects-with-projectile][Projects with projectile]]
+- [[#dired][Dired]]
+
+* Intoduction
+Most of this config has been stolen from [[https://github.com/thomaslaich/nix-config/tree/main/home/emacs#diagnostics-with-flycheck][thomaslaich]] on GitHub.
+I should also try to steal from [[https://github.com/emacs-tw/awesome-emacs][awesome-emacs]].
 
 * General Setup
 Set a higher garbage collection limit (50MB), and log the startup time on the splash screen:
@@ -82,49 +103,83 @@ Disable all unnecessary UI elements such as tool bar, menu bar, scroll bar, etc.
 ** Theme and Fonts
 
 Theming and fonts is managed by [[https://github.com/nix-community/stylix][stylix]].
-
-We still have to enable ligatures:
+#+begin_src emacs-lisp
+(use-package catppuccin-theme)
+#+end_src
 
 #+begin_src emacs-lisp
-(use-package ligature
-  :config
-  ;; Enable the "www" ligature in every possible major mode
-  (ligature-set-ligatures 't '("www"))
-  ;; Enable traditional ligature support in eww-mode, if the
-  ;; `variable-pitch' face supports it
-  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-  ;; Enable all Cascadia Code ligatures in programming modes
-  (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
-                                      ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
-                                      "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
-                                      "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
-                                      "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
-                                      "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
-                                      "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
-                                      "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
-                                      ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
-                                      "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
-                                      "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
-                                      "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-                                      "\\\\" "://"))
-  (global-ligature-mode t))
+  (use-package doom-themes
+    :ensure t
+    :custom
+    ;; Global settings (defaults)
+    (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
+    (doom-themes-enable-italic t) ; if nil, italics is universally disabled
+    ;; for treemacs users
+    (doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+    :config
+    (load-theme 'catppuccin t)
+
+    ;; Enable flashing mode-line on errors
+    (doom-themes-visual-bell-config)
+    ;; Enable custom neotree theme (nerd-icons must be installed!)
+    (doom-themes-neotree-config)
+    ;; or for treemacs users
+    (doom-themes-treemacs-config)
+    ;; Corrects (and improves) org-mode's native fontification.
+    (doom-themes-org-config))
+#+end_src
+
+
+Set fonts
+ * mono space
+ * veriable picth
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(font . "JetBrains Mono 16"))
+  ;; (set-face-attribute 'default t :font "JetBrains Mono 16" )
+
+  ;; (set-face-attribute 'default nil :font "JetBrains Mono 16")
+  ;; (set-frame-font "JetBrains Mono 16" nil t)
+#+end_src
+
+
+We still have to enable ligatures:
+#+begin_src emacs-lisp
+  (use-package ligature
+    :config
+    ;; Enable the "www" ligature in every possible major mode
+    (ligature-set-ligatures 't '("www"))
+    ;; Enable traditional ligature support in eww-mode, if the
+    ;; `variable-pitch' face supports it
+    (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+    ;; Enable all Cascadia Code ligatures in programming modes
+    (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                        ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                        "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                        "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                        "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                        "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                        "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                        "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                        ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                        "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                        "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                        "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                        "\\\\" "://"))
+    (global-ligature-mode t))
 #+end_src
 
 We simply enable italics for commented text and keywords:
-
 #+begin_src emacs-lisp
 (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
 (set-face-attribute 'font-lock-keyword-face nil :slant 'italic)
 #+end_src
 
 Let’s also adjust the line height (mostly for org-modern to work correctly):
-
 #+begin_src emacs-lisp
 (setq-default line-spacing 0.15)
 #+end_src
 
 Last, we enable nerd-icons.el:
-
 #+begin_src emacs-lisp
 (use-package nerd-icons)
 #+end_src
@@ -132,7 +187,6 @@ Last, we enable nerd-icons.el:
 ** Line Numbering
 
 Configure relative line numbers in all buffers:
-
 #+begin_src emacs-lisp
 (column-number-mode)
 (display-line-numbers-mode t)
@@ -142,7 +196,6 @@ Configure relative line numbers in all buffers:
 #+end_src
 
 Disable line numbers specifically in org-mode, and all shell environments:
-
 #+begin_src emacs-lisp
 (dolist (mode '(org-mode-hook
                 org-agenda-mode-hook
@@ -154,13 +207,15 @@ Disable line numbers specifically in org-mode, and all shell environments:
 #+end_src
 
 ** Modeline
-We use the [[https://github.com/seagle0128/doom-modeline][doom-modeline]]:
 
+We use the [[https://github.com/seagle0128/doom-modeline][doom-modeline]]:
 #+begin_src emacs-lisp
 (use-package doom-modeline
   :hook (after-init . doom-modeline-mode))
 #+end_src
+
 ** Dashboard
+
 On the dashboard (splash screen), we want to:
 
     Show the emacs logo
@@ -171,7 +226,6 @@ On the dashboard (splash screen), we want to:
     Registers
 
 We the use dashboard.el package for this:
-
 #+begin_src emacs-lisp
 (use-package dashboard
   :init
@@ -201,6 +255,7 @@ We also inhibit the default splash screen:
 #+end_src
 
 ** Miscallenous UI Tools/Settings
+
 Add transparency:
 #+begin_src emacs-lisp
 (set-frame-parameter nil 'alpha-background 80) ; For current frame
@@ -211,8 +266,8 @@ Add transparency:
 [[https://github.com/emacs-evil/evil][evil]] or ~evil-mode~ is a package that provides Vim keybindings and behaviors within Emacs.
 
 ** Evil Package
-We enable ~evil-mode~ for normal text buffers first:
 
+We enable ~evil-mode~ for normal text buffers first:
 #+begin_src emacs-lisp
   (use-package evil
     :init
@@ -278,7 +333,111 @@ the keybinding ~s~ (e.g. ~ds(~ deletes surrounding ~( )~ brackets).
 #+end_src
 
 The package is the Emacs counterpart to [[https://github.com/tpope/vim-surround][vim-surround]].
+
 * Keybindings
+** Which-key
+Emacs [[https://github.com/justbur/emacs-which-key][which-key]] is a powerful package designed to enhance the usability of Emacs by providing users with context-sensitive help for keybindings.
+It dynamically displays a popup window listing possible keybindings and their associated commands when a user enters a key sequence.
+This feature is particularly helpful for users who are new to Emacs or who want to discover the available functionality without having to memorize all the keybindings.
+Emacs ~which-key~ significantly improves the discoverability and efficiency of using Emacs.
+
+We enable it like so:
+
+#+begin_src emacs-lisp
+(which-key-mode 1)
+(setq which-key-side-window-location 'bottom
+        which-key-sort-order #'which-key-key-order-alpha
+        which-key-sort-uppercase-first nil
+        which-key-add-column-padding 1
+        which-key-max-display-columns nil
+        which-key-min-display-lines 6
+        which-key-side-window-slot -10
+        which-key-side-window-max-height 0.25
+        which-key-idle-delay 0.8
+        which-key-max-description-length 25
+        which-key-allow-imprecise-window-fit t
+        which-key-separator " → ")
+#+end_src
+** General.el Setup
+[[https://github.com/noctuid/general.el][general.el]] simplifies defining keybindings greatly.
+Let’s install it and enable its evil-setup like so:
+
+#+begin_src emacs-lisp
+(use-package general
+  :after evil
+  :config
+  (general-evil-setup))
+#+end_src
+
+Set up ~SPC~ and ~,~ as the leader and local leader keys, respectively:
+
+#+begin_src emacs-lisp
+(general-create-definer leader-def
+  :states '(normal visual insert emacs)
+  :keymaps 'override
+  :prefix "SPC" ; set leader
+  :global-prefix "M-SPC") ; access leader in insert mode (do we need this?)
+
+(general-create-definer local-leader-def
+  :states '(normal visual insert emacs)
+  :keymaps 'override
+  :prefix "," ; set leader
+  :global-prefix "M-,") ; access leader in insert mode (do we need this?)
+#+end_src
+
+** Zooming In/Out
+
+Zooming in and out by using either the ~+~, ~-~ keys or the mouse scroll wheel:
+#+begin_src emacs-lisp
+(general-define-key "C-=" 'text-scale-increase)
+(general-define-key "C--" 'text-scale-decrease)
+(general-define-key "<C-wheel-up>" 'text-scale-increase)
+(general-define-key "<C-wheel-down>" 'text-scale-decrease)
+#+end_src
+
+** Global
+*** Top-Level Keybindings
+This section contains all keybindings that are directly accessible after pressing the leader key.
+#+begin_src emacs-lisp
+(leader-def
+  "." 'find-file)
+#+end_src
+
+*** Window-Management Keybindings (w)
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-h") 'evil-window-left)
+(global-set-key (kbd "C-j") 'evil-window-down)
+(global-set-key (kbd "C-k") 'evil-window-up)
+(global-set-key (kbd "C-l") 'evil-window-right)
+
+(leader-def
+  "w" '(:ignore t :wk "[W]indows")
+
+  ;; Window splits
+  "w c" '(evil-window-delete :wk "Close Current Window")
+  "w n" '(evil-window-new :wk "New Window")
+  "w s" '(evil-window-split :wk "Split (Horizontally)")
+  "w v" '(evil-window-vsplit :wk "Split Vertically")
+  "w o" '(delete-other-windows :wk "Close Other Windows")
+  "w =" '(balance-windows :wk "Balance Windows")
+  "w |" '(evil-window-set-width :wk "Set Window Width")
+  "w _" '(evil-window-set-height :wk "Set Window Height")
+
+  ;; Window motions
+  "w h" '(evil-window-left :wk "Move Left")
+  "w j" '(evil-window-down :wk "Move Down")
+  "w k" '(evil-window-up :wk "Move Up")
+  "w l" '(evil-window-right :wk "Move Right")
+  "w w" '(evil-window-next :wk "Next Window")
+
+  ;; Move windows
+  "w H" '(buf-move-left :wk "Buffer Move Left")
+  "w J" '(buf-move-down :wk "Buffer Move Down")
+  "w K" '(buf-move-up :wk "Buffer Move Up")
+  "w L" '(buf-move-right :wk "Buffer Move Right"))
+#+end_src
+
 ** Miscallenous Settings
 
 By default Emacs requires you to hit ESC three times to close the minibuffer. This is annoying, so we’re going to change it to just once:
@@ -289,14 +448,336 @@ By default Emacs requires you to hit ESC three times to close the minibuffer. Th
 * Git Integration
 * Terminal Emulation and Shells
 * Completion
-* Org-mode
-** Prettify Org
-** org-download
-** Org-roam
-[[https://www.orgroam.com/]]
+https://midirus.com/blog/from-ivy-to-vertico#the-vertco-stack
 
+Here we setup all the grepping and completion in Emacs using the powerful Consult/Vertico/Embark/Corfu ecosystem.
+Note that these packages supersede the older (but more established) Ivy/Counsel/etc ecosystem.
+** Vertico
+
+[[https://github.com/minad/vertico][vertico.el]] is a package that offers a vertical completion interface, simplifying navigation and selection within the minibuffer.
+
+Let’s activate vertico-mode like so:
+#+begin_src emacs-lisp :results none
+  (use-package vertico
+    :ensure t
+    :init
+    (vertico-mode)
+    (vertico-multiform-mode)
+    :config
+    (setq vertico-multiform-categories
+  	'((file reverse)
+  	    (command reverse) ;; this is for M-x
+  	    (minor-mode reverse)
+  	    (imenu buffer)
+  	    (t unobtrusive)))
+    (setq vertico-multiform-commands
+            '((projectile-find-file reverse)
+                (projectile-find-dir reverse)
+                (projectile-switch-to-buffer unobtrusive))))
+#+end_src
+
+A few extra config options taken directly from the Vertico github page:
+#+begin_src elisp :tangle yes
+  ;; Emacs minibuffer configurations.
+  (use-package emacs
+    :custom
+    ;; Enable context menu. `vertico-multiform-mode' adds a menu in the minibuffer
+    ;; to switch display modes.
+    (context-menu-mode t)
+    ;; Support opening new minibuffers from inside existing minibuffers.
+    (enable-recursive-minibuffers t)
+    ;; Hide commands in M-x which do not work in the current mode.  Vertico
+    ;; commands are hidden in normal buffers. This setting is useful beyond
+    ;; Vertico.
+    (read-extended-command-predicate #'command-completion-default-include-p)
+    ;; Do not allow the cursor in the minibuffer prompt
+    (minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt)))
+#+end_src
+
+#+RESULTS:
+
+#+begin_src elisp :tangle yes
+  ;; Optionally use the `orderless' completion style.
+  (use-package orderless
+    :ensure t
+    :custom
+    (setq completion-styles '(orderless basic)))
+#+end_src
+
+** Consult
+[[https://github.com/minad/consult][consult.el]] is an Emacs package that enhances search and navigation capabilities within Emacs.
+It offers a set of interactive commands and utilities that enable users to perform efficient searches
+across different types of data, such as buffers, files, and bookmarks.
+Consult provides features like incremental search, fuzzy matching, and filtering, making it easier
+for users to find and navigate to specific locations or items within their Emacs environment.
+
+Note that there are alternatives, most prominently Ivy and Helm.
+However, those packages are older, less actively maintained, and less leightweight.
+
+# A minium config of consult looks like this:
+# #+begin_src elisp :tangle no
+# (use-package consult
+#   ;; Enable automatic preview at point in the *Completions* buffer. This is
+#   ;; relevant when you use the default completion UI.
+#   :hook (completion-list-mode . consult-preview-at-point-mode)
+
+#   :custom
+#   ;; set consult project root
+#   (setq consult-project-function #'projectile-project-root)
+
+#   :config
+#   (setq consult-narrow-key "<") ;; "C-+"
+# )
+# #+end_src
+
+** Marginalia
+
+[[https://github.com/minad/marginalia][marginalia.el]] is a package that enhances the minibuffer completion experience by providing rich contextual
+annotations for candidates, helping users make more informed selections.
+
+# A minimal config looks like this:
+# #+begin_src elisp :tangle no
+# (use-package marginalia
+#   ;; The :init section is always executed.
+#   :init
+
+#   ;; Marginalia must be activated in the :init section of use-package such that
+#   ;; the mode gets enabled right away. Note that this forces loading the
+#   ;; package.
+#   (marginalia-mode))
+# #+end_src
+
+** Embark
+
+[[https://github.com/oantolin/embark][embark]] makes it easy to choose a command to run based on what is near point, both during a minibuffer
+completion session (in a way familiar to Helm or Counsel users) and in normal buffers.
+# #+begin_src elisp :tangle no
+# (use-package embark
+#   :bind
+#   (("C-." . embark-act)         ;; pick some comfortable binding
+#    ("C-;" . embark-dwim))        ;; good alternative: M-.
+#   ;; ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+
+#   :init
+
+#   ;; Optionally replace the key help with a completing-read interface
+#   (setq prefix-help-command #'embark-prefix-help-command)
+
+#   ;; Show the Embark target at point via Eldoc.  You may adjust the Eldoc
+#   ;; strategy, if you want to see the documentation from multiple providers.
+#   (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+#   ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+
+#   :config
+
+#   ;; Hide the mode line of the Embark live/completions buffers
+#   (add-to-list 'display-buffer-alist
+#                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+#                  nil
+#                  (window-parameters (mode-line-format . none)))))
+# #+end_src
+
+Integrate Embark with Consult with [[https://github.com/oantolin/embark/blob/master/embark-consult.el][embark-consult.el]]:
+# #+begin_src elisp :tangle yes
+# (use-package embark-consult
+#   :hook
+#   (embark-collect-mode . consult-preview-at-point-mode))
+# #+end_src
+
+* Org-mode
+
+#+begin_src elisp :tangle yes
+(setq org-directory "~/OneDrive/Org/")
+#+end_src
+
+** Keybinds
+Add a keycombination.
+#+begin_src elisp :tangle yes
+(leader-def
+    "o" '(:ignore t :wk "[O]rg"))
+#+end_src
+
+** org-modern
+First, let’s enable indent mode for org:
+#+begin_src emacs-lisp :tangle yes
+(add-hook 'org-mode-hook 'org-indent-mode)
+#+end_src
+
+Use [[https://github.com/minad/org-modern][org-modern]] to give a very slick modern UI to ~org-mode~.
+#+begin_src emacs-lisp :tangle yes :results none
+  (use-package org-modern
+    :ensure t
+    :after (org)
+    :config
+    (setq org-modern-star 'replace)
+    (global-org-modern-mode))
+#+end_src
+
+Remove emphasis markers (for italics, bold, etc.):
+#+begin_src emacs-lisp :tangle yes
+  (setq org-hide-emphasis-markers t)
+  (setq org-pretty-entities t)
+  (setq org-ellipsis "…")
+  (setq org-startup-indented t)
+  (setq org-startup-with-inline-images t)
+#+end_src
+
+We also want to set font-sizes for different levels in org:
+#+begin_src emacs-lisp :tangle yes
+(defun my/org-mode-hook ()
+  "Set custom heights for org-level headers."
+  (set-face-attribute 'org-level-1 nil :weight 'semi-bold :height 1.3)
+  (set-face-attribute 'org-level-2 nil :weight 'semi-bold :height 1.2)
+  (set-face-attribute 'org-level-3 nil :weight 'semi-bold :height 1.1)
+  (set-face-attribute 'org-level-4 nil :weight 'semi-bold :height 1.05)
+  (set-face-attribute 'org-level-5 nil :weight 'semi-bold :height 1))
+
+(add-hook 'org-mode-hook #'my/org-mode-hook)
+#+end_src
+
+**** TODO org-checkboxes
+Let's prettyfy ~org-modern~'s checkboxes.
+The nerd font must be prop
+#+begin_src elisp :tangle yes
+(setq org-modern-checkbox
+      '((?X . "󰱒")
+        (?\s . "")))
+#+end_src
+
+#+begin_src elisp :tangle yes
+(package-initialize)
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+#+end_src
+
+Extra ~org-modern~ settings
+#+begin_src elisp :tangle yes
+(setq org-auto-align-tags nil
+      org-tags-column 0
+      org-fold-catch-invisible-edits 'show-and-error
+      org-special-ctrl-a/e t
+      org-insert-heading-respect-content t)
+#+end_src
+
+** org-download
+[[https://github.com/abo-abo/org-download][org-download]] helps with downloading images.
+#+begin_src elisp :tangle yes
+(use-package org-download)
+#+end_src
+
+Set the most common image attributes.
+#+begin_src elisp :tangle yes
+(setq org-download-image-html-width '450
+      org-download-image-latex-width '7
+      org-download-image-org-width '450)
+#+end_src
+** toc-org
+
+[[https://github.com/snosov1/toc-org][toc-org]] allows to generate “Table of Contents” sections in org document by simply using the tag :toc:.
+You can see an example of this in this very document.
+
+We install and enable it like so:
+#+begin_src elisp :tangle yes
+(use-package toc-org
+  :commands toc-org-enable
+  :init (add-hook 'org-mode-hook 'toc-org-enable))
+#+end_src
+
+** org-roam
+[[https://www.orgroam.com/][org-roam]] is a way to keep track of notes.
+*** Basic configuration
+#+begin_src elisp :tangle yes
+(use-package org-roam :after org
+  :custom
+  (org-roam-directory "~/OneDrive/Org/Roam")
+  :config
+  (setq org-roam-v2-ack t)
+  (setq org-roam-completion-everywhere t)
+  (setq org-roam-mode-sections
+  (list #'org-roam-backlinks-insert-section
+        #'org-roam-reflinks-insert-section
+        #'org-roam-unlinked-references-insert-section))
+  (org-roam-db-autosync-enable)
+  (org-roam-setup))
+#+end_src
+
+*** Keybinds
+Add a keycombination.
+#+begin_src elisp :tangle yes
+(leader-def
+    "o r" '(:ignore t :wk "[R]oam")
+    "o r f" '(org-roam-node-find :wk "Find Org Roam Node")
+    "o r i" '(org-roam-node-insert :wk "Insert Org Roam Link"))
+#+end_src
+
+*** org-roam-ui
+[[https://github.com/org-roam/org-roam-ui][org-roam-ui]] is a web interface to look and interact with the ~org-roam~ database.
+
+#+begin_src elisp :tangle yes
+(use-package websocket
+    :after org-roam)
+
+(use-package org-roam-ui
+    :after org-roam
+    :config
+        (setq org-roam-ui-sync-theme t
+              org-roam-ui-follow t
+              org-roam-ui-update-on-save t
+              org-roam-ui-open-on-start nil))
+#+end_src
+
+Add a keycombination.
+#+begin_src elisp :tangle yes
+(leader-def
+    "o r g" '(org-roam-ui-open :wk "Show graph ui"))
+#+end_src
+
+*** [[https://www.orgroam.com/manual.html#The-Org_002droam-Buffer][org-roam Buffer]]
+The buffer in org roam can be used
+- BacklinksView (preview of) nodes that link to this node
+- Reference LinksNodes that reference this node (see Refs)
+- Unlinked referencesView nodes that contain text that match the nodes title/alias but are not linked
+
+#+begin_src elisp :tangle yes
+(setq org-roam-mode-sections
+      (list #'org-roam-backlinks-section
+            #'org-roam-reflinks-section
+            #'org-roam-unlinked-references-section
+            ))
+#+end_src
+
+*** [[HTTPo://www.orgroam.com/manual.html#The-Templating-System][org-roam templates]]
+** evil-org
+[[https://github.com/Somelauw/evil-org-mode][evil-org]] is a way to introduce ~evil~ bindings into ~org-mode~.
+
+#+begin_src elisp :tangle yes
+  (use-package evil-org
+    :ensure t
+    :after (evil org)
+    :hook (org-mode . (lambda () evil-org-mode))
+    :config
+    (require 'evil-org-agenda)
+    (evil-org-agenda-set-keys)
+    (evil-org-set-key-theme '(textobjects
+  			    insert
+  			    navigation
+  			    additional
+  			    shift
+  			    todo
+  			    heading)))
+#+end_src
 * Development Tools
 ** Direnv
+[[https://github.com/wbolster/emacs-direnv][emacs-direnv]] provides [[https://direnv.net/][direnv]] integration for Emacs.
+It’s an essential development tool for me.
+#+begin_src emacs-lisp
+(use-package direnv
+  :config
+  (direnv-mode)) ;; direnv integration for emacs
+#+end_src
+  
 ** LSP Integration
 I use [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] together with its UI plugins.
 Let’s enable ~lsp-mode~ first:
@@ -322,7 +803,7 @@ It is activated automatically by ~lsp-mode~.
 
 Keybindings
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle yes
 (local-leader-def lsp-mode-map "f" '(format-all-buffer :wk "Format Buffer"))
 (local-leader-def lsp-mode-map "a" '(lsp-execute-code-action :wk "Code Action"))
 (local-leader-def c-mode-map "f" '(format-all-buffer :wk "Format Buffer"))
@@ -338,8 +819,45 @@ Keybindings
 (evil-define-key 'normal 'lsp-mode-map "K" 'lsp-ui-doc-glance)
 #+end_src
 
+** Diagnostics with flycheck
+
+#+begin_src emacs-lisp
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+;; (use-package flycheck-pos-tip)
+;; (with-eval-after-load 'flycheck
+;;   (flycheck-pos-tip-mode))
+(setq lsp-eldoc-enable-hover nil)
+
+(use-package flycheck-popup-tip
+  :hook (flycheck-mode . flycheck-popup-tip-mode))
+#+end_src
+** Formatting with format-all
+
+[[https://github.com/lassik/emacs-format-all-the-code][format-all]] or ~emacs-format-all-the-code~ is a package very similar to conform-nvim for neovim.
+It supports many formatters for all kinds of different languages.
+I prefer dedicated formatters to LSP formatting whenever possible.
+
+#+begin_src emacs-lisp
+  (use-package format-all
+    :commands format-all-mode
+    :hook (prog-mode . format-all-mode)
+    :config
+    (setq-default format-all-formatters
+                  '(("C"       (clang-format))
+  		  ("C++" clang-format)
+  		  ("Rust"    (rustfmt))
+                    ("Nix"     (nixfmt))
+                    ("Shell"   (shfmt "-i" "4" "-ci")))))
+#+end_src
 * Programming Languages Setup
 ** C/*
+Emacs ships with c-mode. We just activate the LSP (clangd) like so:
+#+begin_src emacs-lisp
+(add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
+(add-hook 'c-ts-mode-hook 'lsp-deferred)
+#+end_src
 ** Lisp
 ** Lua
 ** Nix
@@ -353,5 +871,62 @@ I use [[https://github.com/NixOS/nix-mode][nix-mode]] and active ~lsp-mode~ when
 
 ** Python
 ** Rust
+
+[[https://github.com/rust-lang/rust-mode][rust-mode]] is very good.
+#+begin_src emacs-lisp
+(use-package rust-mode
+  :init
+  (setq rust-mode-treesitter-derive t))
+#+end_src
+
+Add lsp support 
+#+begin_src emacs-lisp
+(add-hook 'rust-mode-hook #'lsp)
+#+end_src
+
+** Octave mode
+[[https://www.gnu.org/software/emacs/manual/html_mono/octave-mode.html][octave-mode]] is a build in mode in Emacs.
+#+begin_src elisp :tangle yes
+(add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
+#+end_src
+
+*** TODO Octave or Matlab LSP
 ** YAML/JSON/TOML/etc
 * Projects with projectile
+
+#+begin_src elisp :tangle yes
+  (use-package projectile
+    :after general
+    :init
+    (projectile-mode +1)
+    ;; (setq projectile-project-search-path '("~/repos/"))
+    (setq projectile-switch-project-action #'projectile-dired)
+    (leader-def "p" '(projectile-command-map :wk "[P]rojects")))
+#+end_src
+
+Projectile consult integration:
+
+#+begin_src elisp :tangle yes
+  (use-package consult-projectile)
+#+end_src
+  
+* Dired
+
+#+begin_src elisp :tangle yes
+(use-package peep-dired
+  :after dired
+  :hook (evil-normalize-keymaps . peep-dired-hook)
+  :config
+  ;; (general-evil-define-key 'normal dired-mode-map "h" 'dired-up-directory)
+  ;; (general-evil-define-key 'normal dired-mode-map "l" 'dired-find-file) ;; replace with dired-find-file once we install dired-open
+  (general-evil-define-key 'normal peep-dired-mode-map "h" 'peep-dired-prev-file)
+  (general-evil-define-key 'normal peep-dired-mode-map "l" 'peep-dired-next-file)
+  )
+#+end_src
+
+Auto-refresh dired buffer on file change:
+
+#+begin_src emacs-lisp
+(add-hook 'dired-mode-hook 'auto-revert-mode)
+#+end_src
+
