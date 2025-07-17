@@ -74,7 +74,7 @@
     experimental-features = "nix-command flakes";
     # Deduplicate and optimize nix store
     auto-optimise-store = true;
-
+    max-jobs = 12;
   };
 
   nix.optimise = {
@@ -182,7 +182,7 @@
     #
     # Configure keymap in X11
     xkb = {
-      layout = "us";
+      layout = "eu";
       variant = "";
     };
   };

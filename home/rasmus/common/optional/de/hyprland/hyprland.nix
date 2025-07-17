@@ -1,4 +1,13 @@
-{ pkgs, config, lib, userSettings, inputs, osConfig, ... }: {
+{
+  pkgs,
+  config,
+  lib,
+  userSettings,
+  inputs,
+  osConfig,
+  ...
+}:
+{
   imports = [
     # inputs.split-monitor-workspaces.homeManagerModules.default
     ./hyprland-tools/hyprland-tools.nix
@@ -66,10 +75,11 @@
         # ];
 
         input = {
-          kb_layout = "us, dk";
+          # kb_layout = "us, dk";
+          kb_layout = "eu";
           # kb_variant =
           # kb_model =
-          kb_options = "grp:alt_shift_toggle"; # ,caps:swapescape";
+          # kb_options = "grp:alt_shift_toggle"; # ,caps:swapescape";
           # kb_rules =
 
           follow_mouse = 1;
@@ -102,9 +112,13 @@
         };
 
         # This is because I cannot find the place where "col.shadow" is added
-        debug = { suppress_errors = false; };
+        debug = {
+          suppress_errors = false;
+        };
 
-        misc = { disable_hyprland_logo = true; };
+        misc = {
+          disable_hyprland_logo = true;
+        };
 
         animations = {
           enabled = "yes";
