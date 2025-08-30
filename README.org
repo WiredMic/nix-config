@@ -14,6 +14,7 @@ This is not a diagram of my config. It is a picture of how I would like my diagr
 In this configuration I use the distributions Doom Emacs and NvChad. These distributions need to be able to download and manage themselves. Therefore, they cannot be managed by home manager. They need to be download separately.
 
 
+
 * TODO list
 ** TODO Firefox
 ./home/core/optional/firefox

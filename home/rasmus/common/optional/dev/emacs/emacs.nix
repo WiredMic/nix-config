@@ -15,7 +15,7 @@
     my.emacs.enable = lib.mkEnableOption "enables emacs";
   };
 
-  config = lib.mkIf config.my.direnv.enable {
+  config = lib.mkIf config.my.emacs.enable {
 
     programs.emacs = {
       enable = true;
@@ -61,6 +61,17 @@
         # which defaults `:tangle` to `yes`.
         alwaysTangle = true;
 
+        # Override to include custom packages
+        override =
+          epkgs:
+          epkgs
+          // {
+            org-modern-indent = pkgs.callPackage ./externalPackages/org-modern-indent.nix {
+              inherit (pkgs) fetchFromGitHub;
+              inherit (epkgs) trivialBuild compat;
+            };
+          };
+
         # Optionally provide extra packages not in the configuration file.
         extraEmacsPackages =
           epkgs:
@@ -69,11 +80,70 @@
             # packages from melpa (pre-requisites)
             # TODO can I just move them into config.el?
             treesit-grammars.with-all-grammars
-            nerd-icons
-            # emacsql-sqlite
+            use-package
+            general
+            evil
+            evil-collection
+            evil-commentary
+            evil-surround
+            which-key
 
-            # custom built packages
-            # lsp-install-servers # TODO <- this does not seem to work
+            # UI packages
+            doom-themes
+            doom-modeline
+            catppuccin-theme
+            dashboard
+            ligature
+            nerd-icons
+
+            # Completion
+            vertico
+            consult
+            marginalia
+            embark
+            embark-consult
+            orderless
+
+            # Development
+            lsp-mode
+            lsp-ui
+            dap-mode
+            company
+            company-box
+            flycheck
+            flycheck-popup-tip
+            format-all
+            direnv
+            projectile
+            consult-projectile
+
+            # Language support
+            nix-mode
+            rust-mode
+
+            # Org mode extensions
+            org-modern
+            org-modern-indent
+            org-download
+            toc-org
+            evil-org
+            org-roam
+            org-roam-ui
+            websocket
+            olivetti
+            org-appear
+            org-transclusion
+
+            ## Agenda
+            org-fancy-priorities
+
+            # Other utilities
+            no-littering
+            exec-path-from-shell
+            clipetty
+            peep-dired
+            pdf-tools
+
           ]
           # workaround for making stylix work with emacs-overlay
           ++ (config.programs.emacs.extraPackages epkgs);
@@ -152,10 +222,10 @@
       texlivePackages.latexindent # LaTeX
       nixfmt-rfc-style # nix
       # rPackages.lintr # R
+      typstyle
 
       # lsp
-      nil # nix
-      # nixd # nix
+      nixd # nix
       shfmt # sh
       clang-tools # c/cpp/objc
       ccls
@@ -163,6 +233,8 @@
       # rPackages.languageserver # R
       openscad-lsp # openSCAD
       nodejs_24
+      tinymist # typst
+      matlab-language-server
 
       # Python
       black

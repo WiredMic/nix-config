@@ -6,7 +6,7 @@ default:
 
 rebuild-pre: update-nix-secrets
   git add **
-  nix flake check
+  sudo nix flake check
 
 rebuild-post:
   just check-sops

@@ -32,7 +32,7 @@
     autosuggestion.enable = true;
     enableCompletion = true;
 
-    shellAliases = {
+    shellAliases = rec {
       ls = "eza -a --icons --group-directories-first";
       ll = "eza -a --icons --group-directories-first -l";
       rm = "rm -I";
@@ -40,6 +40,8 @@
       tree = "eza --tree";
       cat = "bat -p --color=always -P";
       wget = "wget --hsts-file=${config.xdg.dataHome}/wget-hsts";
+      matlab = ''octave -q --eval "PS1('matlab:\#> ')" --persist'';
+      matlab-cli = "matlab";
     };
 
     # Manual lines in .zshrc file

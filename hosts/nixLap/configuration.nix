@@ -222,6 +222,7 @@
     sshfs
     nfs-utils
     cifs-utils
+    progress
 
     inkscape
     # kicad

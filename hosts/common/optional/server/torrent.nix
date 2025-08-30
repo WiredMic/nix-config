@@ -1,10 +1,15 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
 
-  imports = [ ./qbittorrent-nox.nix ];
-
-  options = { my.torrent.enable = lib.mkEnableOption "enables torrent"; };
+  options = {
+    my.torrent.enable = lib.mkEnableOption "enables torrent";
+  };
 
   config = lib.mkIf config.my.torrent.enable {
     users.groups.torrent = { };
@@ -33,11 +38,12 @@
       listenPort = 6767;
     };
     # qbittorrent ( the torrent manager )
-    services.qbittorrent = { # find temp password in systemctl status
-      enable = true;
+    services.qbittorrent = {
+      # find temp password in systemctl status
+      enable = lib.mkDefault true;
       group = "torrent";
       openFirewall = true;
-      port = 5656;
+      webuiPort = 5656;
     };
     services.jellyseerr = {
       enable = true;

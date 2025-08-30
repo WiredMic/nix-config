@@ -50,7 +50,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    waveforms.url = "github:liff/waveforms-flake";
+    # waveforms.url = "github:liff/waveforms-flake";
 
     # Emacs
     emacs-overlay = {
@@ -79,7 +79,7 @@
       nix-index-database,
       solaar,
       sops-nix,
-      waveforms,
+      # waveforms,
       emacs-overlay,
       ...
     }@inputs:
@@ -190,7 +190,7 @@
             solaar.nixosModules.default
             # nixos-hardware.nixosModules.lenovo-legion-15ich
             "${nixos-hardware}/lenovo/legion/15ich"
-            waveforms.nixosModule
+            # waveforms.nixosModule
             {
               home-manager = {
                 useGlobalPkgs = true;
