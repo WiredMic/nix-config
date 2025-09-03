@@ -5,12 +5,14 @@
 
 * Table of Contents :toc:
 - [[#general-setup][General Setup]]
+  - [[#eary-load-of-org-mode][Eary load of Org-mode]]
   - [[#garbage-collection][Garbage Collection]]
   - [[#initialize-package-sources][Initialize package sources]]
   - [[#mis][mis]]
 - [[#ui-and-theming][UI and Theming]]
   - [[#ui-elements][UI Elements]]
-  - [[#theme-and-fonts][Theme and Fonts]]
+  - [[#theme][Theme]]
+  - [[#fonts-and-ligatures][Fonts and Ligatures]]
   - [[#line-numbering][Line Numbering]]
   - [[#modeline][Modeline]]
   - [[#dashboard][Dashboard]]
@@ -41,7 +43,9 @@
   - [[#toc-org][toc-org]]
   - [[#evil-org][evil-org]]
   - [[#org-roam][org-roam]]
+  - [[#valign][valign]]
   - [[#org-latex-preview][org-latex-preview]]
+  - [[#company-org-block][company-org-block]]
   - [[#org-agenda][org-agenda]]
   - [[#org-transclusion][org-transclusion]]
 - [[#pdf][PDF]]
@@ -79,6 +83,20 @@ I should also try to steal from [[https://github.com/emacs-tw/awesome-emacs][awe
 ;;; -*- lexical-binding: t; -*-
 #+end_src
 
+** Eary load of Org-mode
+CRITICAL: Load custom Org FIRST, before anything else
+#+begin_src emacs-lisp :tangle yes :results none
+;; Prevent built-in Org from loading
+(eval-and-compile
+  (setq load-path
+        (delete (expand-file-name "org" data-directory) load-path))
+  (setq load-path
+        (delete (expand-file-name "org-loaddefs.el" data-directory) load-path)))
+
+;; Load the custom org version immediately
+(require 'org)
+
+#+end_src
 ** Garbage Collection
 Set a higher garbage collection limit (50MB), and log the startup time on the splash screen:
 #+begin_src emacs-lisp :tangle yes :results none
@@ -159,7 +177,7 @@ Disable all unnecessary UI elements such as tool bar, menu bar, scroll bar, etc.
 (set-fringe-mode 10) ; Give some breathing room
 #+end_src
 
-** Theme and Fonts
+** Theme
 
 Theming and fonts is managed by [[https://github.com/nix-community/stylix][stylix]].
 #+begin_src emacs-lisp :tangle yes :results none
@@ -188,43 +206,16 @@ Theming and fonts is managed by [[https://github.com/nix-community/stylix][styli
     (doom-themes-org-config))
 #+end_src
 
-
+** Fonts and Ligatures
+[[https://protesilaos.com/codelog/2020-09-05-emacs-note-mixed-font-heights/]]
 Set fonts
- * mono space
- * veriable picth
+ * default pitch
+ * fixed pitch  
+ * variable pitch
 #+begin_src emacs-lisp :tangle yes :results none
-  (add-to-list 'default-frame-alist '(font . "JetBrains Mono 16"))
-  ;; (set-face-attribute 'default t :font "JetBrains Mono 16" )
-
-  ;; (set-face-attribute 'default nil :font "JetBrains Mono 16")
-  ;; (set-frame-font "JetBrains Mono 16" nil t)
-#+end_src
-
-
-We still have to enable ligatures:
-#+begin_src emacs-lisp :tangle yes :results none
-  (use-package ligature
-    :config
-    ;; Enable the "www" ligature in every possible major mode
-    (ligature-set-ligatures 't '("www"))
-    ;; Enable traditional ligature support in eww-mode, if the
-    ;; `variable-pitch' face supports it
-    (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-    ;; Enable all Cascadia Code ligatures in programming modes
-    (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
-                                        ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
-                                        "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
-                                        "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
-                                        "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
-                                        "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
-                                        "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
-                                        "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
-                                        ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
-                                        "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
-                                        "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
-                                        "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-                                        "\\\\" "://"))
-    (global-ligature-mode t))
+  (set-face-attribute 'default nil :family "Jetbrains Mono" :height 170)
+  (set-face-attribute 'fixed-pitch nil :family "Jetbrains Mono" :height 1.0)
+  (set-face-attribute 'variable-pitch nil :family "FiraGO" :height 1.0)
 #+end_src
 
 We simply enable italics for commented text and keywords:
@@ -233,9 +224,49 @@ We simply enable italics for commented text and keywords:
 (set-face-attribute 'font-lock-keyword-face nil :slant 'italic)
 #+end_src
 
+We still have to enable [[https://github.com/mickeynp/ligature.el][ligatures]]:
+#+begin_src emacs-lisp :tangle yes :results none
+  (use-package ligature
+    :config
+    ;; Enable the "www" ligature in every possible major mode
+    (ligature-set-ligatures 't '("www"))
+    ;; Enable traditional ligature support in eww-mode, if the
+    ;; `variable-pitch' face supports it
+    (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+    ;; Enable all Jetbrains Mono ligatures in programming modes
+    (ligature-set-ligatures 'prog-mode '("--" "---" "==" "===" "!=" "!==" "=!="
+  				       "=:=" "=/=" "<=" ">=" "&&" "&&&" "&="
+  				       "++" "+++" "***" ";;" "!!" "??" "???"
+  				       "?:" "?." "?=" "<:" ":<"
+  				       ":>" ">:" "<:<" "<>" "<<<" ">>>"
+  				       "<<" ">>" "||" "-|" "_|_" "|-" "||-"
+  				       "|=" "||=" "##" "###" "####"
+  				       "#{" "#[" "]#" "#(" "#?" "#_" "#_("
+  				       "#:" "#!" "#=" "^=" "<$>" "<$"
+  				       "$>" "<+>" "<+" "+>" "<*>" "<*" "*>"
+  				       "</" "</>" "/>" "<!--" "<#--"
+  				       "-->" "->" "->>" "<<-" "<-" "<=<" "=<<"
+  				       "<<=" "<==" "<=>" "<==>"
+  				       "==>" "=>" "=>>" ">=>" ">>=" ">>-" ">-"
+  				       "-<" "-<<" ">->" "<-<" "<-|"
+  				       "<=|" "|=>" "|->" "<->" "<~~" "<~"
+  				       "<~>" "~~" "~~>" "~>" "~-" "-~"
+  				       "~@" "[||]" "|]" "[|" "|}" "{|" "[<"
+  				       ">]" "|>" "<|" "||>" "<||"
+  				       "|||>" "<|||" "<|>" "..." ".." ".="
+  				       "..<" ".?" "::" ":::" ":=" "::="
+  				       ":?" ":?>" "//" "///" "/*" "*/" "/="
+  				       "//=" "/==" "@_" "__" "???"
+  				       "<:<" ";;;"
+  				       )
+  			  )
+    (global-ligature-mode t))
+#+end_src
+
+
 Let’s also adjust the line height (mostly for org-modern to work correctly):
 #+begin_src emacs-lisp :tangle yes :results none
-(setq-default line-spacing 0.15)
+  (setq-default line-spacing 0.15)
 #+end_src
 
 Last, we enable nerd-icons.el:
@@ -288,6 +319,7 @@ On the dashboard (splash screen), we want to:
 We the use dashboard.el package for this:
 #+begin_src emacs-lisp :tangle yes :results none
   (use-package dashboard
+    :defer 1
     :init
     (setq initial-buffer-choice 'dashboard-open)
     (setq dashboard-set-heading-icons t)
@@ -660,12 +692,12 @@ Integrate Embark with Consult with [[https://github.com/oantolin/embark/blob/mas
 
 * Org-mode
 
+https://github.com/AntheaLiles/research-org-mode
+
 #+begin_src emacs-lisp :results none :tangle yes
   (use-package org
     :init
     (setq org-directory "~/Org/")
-    :hook
-    (org-mode . company-mode)
     )
 #+end_src
 
@@ -674,6 +706,96 @@ Add a keycombination.
 #+begin_src emacs-lisp :tangle yes
   (leader-def
     "o" '(:ignore t :wk "[O]rg"))
+#+end_src
+
+*** Doom Fun
+[[https://github.com/doomemacs/doomemacs/tree/master/modules/lang/org]]
+
+~Doom Emacs~ has some nice keybind behaver that I want in my config.
+This make ~tab~ in ~insert mode~  headings become smaller and ~s-tab~ makes headings bigger.
+#+begin_src emacs-lisp :tangle yes :results none
+  (defun +org-indent-maybe-h ()
+    "Indent the current item (header or item), if possible.
+  Made for `org-tab-first-hook' in evil-mode."
+    (interactive)
+    (cond ((not (and (bound-and-true-p evil-local-mode)
+                     (evil-insert-state-p)))
+           nil)
+          ((and (bound-and-true-p org-cdlatex-mode)
+                (or (org-inside-LaTeX-fragment-p)
+                    (org-inside-latex-macro-p)))
+           nil)
+          ((org-at-item-p)
+           (if (eq this-command 'org-shifttab)
+               (org-outdent-item-tree)
+             (org-indent-item-tree))
+           t)
+          ((org-at-heading-p)
+           (ignore-errors
+             (if (eq this-command 'org-shifttab)
+                 (org-promote)
+               (org-demote)))
+           t)
+          ((org-in-src-block-p t)
+           (save-window-excursion
+             (org-babel-do-in-edit-buffer
+              (call-interactively #'indent-for-tab-command)))
+           t)
+          ((and (save-excursion
+                  (skip-chars-backward " \t")
+                  (bolp))
+                (org-in-subtree-not-table-p))
+           (call-interactively #'tab-to-tab-stop)
+           t)))
+#+end_src
+
+#+begin_src emacs-lisp :tangle yes :results none
+(defun +org-cycle-only-current-subtree-h (&optional arg)
+  "Toggle the local fold at the point, and no deeper.
+`org-cycle's standard behavior is to cycle between three levels: collapsed,
+subtree and whole document. This is slow, especially in larger org buffer. Most
+of the time I just want to peek into the current subtree -- at most, expand
+*only* the current subtree.
+
+All my (performant) foldings needs are met between this and `org-show-subtree'
+(on zO for evil users), and `org-cycle' on shift-TAB if I need it."
+  (interactive "P")
+  (unless (or (eq this-command 'org-shifttab)
+              (and (bound-and-true-p org-cdlatex-mode)
+                   (or (org-inside-LaTeX-fragment-p)
+                       (org-inside-latex-macro-p))))
+    (save-excursion
+      (org-beginning-of-line)
+      (let (invisible-p)
+        (when (and (org-at-heading-p)
+                   (or org-cycle-open-archived-trees
+                       (not (member org-archive-tag (org-get-tags))))
+                   (or (not arg)
+                       (setq invisible-p
+                             (memq (get-char-property (line-end-position)
+                                                      'invisible)
+                                   '(outline org-fold-outline)))))
+          (unless invisible-p
+            (setq org-cycle-subtree-status 'subtree))
+          (org-cycle-internal-local)
+          t)))))
+#+end_src
+
+
+#+begin_src emacs-lisp :tangle yes :results none
+  (use-package org
+    :config
+    (add-hook 'org-tab-first-hook
+               ;; #'+org-yas-expand-maybe-h
+               #'+org-indent-maybe-h)
+    (add-hook 'org-tab-first-hook
+  	     #'+org-cycle-only-current-subtree-h)
+    )
+#+end_src
+
+
+
+#+begin_src emacs-lisp :tangle yes :results none
 #+end_src
 
 ** UI
@@ -750,6 +872,7 @@ These are the different highlights:
     (org-mode . org-indent-mode)
     (org-mode . variable-pitch-mode)
     (org-mode . visual-line-mode)
+    (org-mode-hook . pixel-scroll-precision-mode)
     (org-mode . (lambda () (display-line-numbers-mode 0)))
     )
 #+end_src
@@ -838,6 +961,14 @@ Use [[https://github.com/minad/org-modern][org-modern]] to give a very slick mod
     ;; Headings Starts
     (setq org-modern-replace-stars "◉○◈◇✳")
 
+    ;; Lists
+    (setq org-modern-list 
+  	'(
+  	  (?- . "–") ;; -
+  	  (?* . "•") ;; *
+  	  (?+ . "‣") ;; +
+  	  )
+  	)
     ;; TODO
     (setq  org-modern-todo t
   	   org-todo-keywords '((sequence "TODO" "DONE")))
@@ -871,28 +1002,34 @@ Extra ~org-modern~ settings
 #+end_src
 
 **** Test Org-modern
-# ***** TODO Blocks
-# # #+begin_src emacs-lisp :tangle yes :results none
-# # #+end_src
+***** TODO Blocks
+#+begin_src emacs-lisp :tangle yes :results none
+#+end_src
 
-# #+begin_quote 
-# #+end_quote
+#+begin_quote 
+#+end_quote
+***** Checkboxes
+- [X]  
+- [ ]  
+- [-] 
 
-# ***** Checkboxes
-# - [X]  
-# - [ ]  
-# - [-] 
+***** [#A] Prio
 
-# ***** [#A] Prio
-
-# ***** Progress
-# - [0/12] 
-
+***** Progress
+- [0/12] 
+  
+***** Lists
+- dash
++ plus
+ * dot
+ 
 *** org-modern-indent
 When [[https://github.com/jdtsmith/org-modern-indent][org-modern-indent]] is added to ~MELPA~ then I can use it here.
 #+begin_src emacs-lisp :tangle yes :results none
   (use-package org-modern-indent
     :after org-modern
+    :config
+  (set-face-attribute 'org-modern-indent-bracket-line nil :family "Jetbrains Mono" :height 1.1)
     :hook
     (org-modern-mode . org-modern-indent-mode)
     )
@@ -1062,14 +1199,97 @@ The buffer in org roam can be used
 #+end_src
 
 *** [[HTTPo://www.orgroam.com/manual.html#The-Templating-System][org-roam templates]]
-** org-latex-preview
-[[https://abode.karthinks.com/org-latex-preview/][org-latex-preview]]
-#+begin_src emacs-lisp :results none :tangle yes
-  ;; (use-package org
-  ;;   :defer
-  ;;   :ensure `(org :repo "https://code.tecosaur.net/tec/org-mode.git/"
-  ;;                 :branch "dev"))
+** valign
+#+begin_src emacs-lisp :tangle yes :results none
+  (use-package valign
+    :after org
+    :hook
+    (org-mode . valign-mode)
+    )
 #+end_src
+
+| Hello    | this  | is a table | a  |
+| it keeps | going | a          | aa |
+
+** org-latex-preview 
+[[https://abode.karthinks.com/org-latex-preview/][org-latex-preview]] is a new way of generating LaTaX preview.
+#+begin_src emacs-lisp :results none :tangle yes
+  (use-package org-latex-preview
+    :ensure nil
+    :config
+    ;; Increase preview width
+    (plist-put org-latex-preview-appearance-options
+               :page-width 0.8)
+
+    ;; Use dvisvgm to generate previews
+    ;; You don't need this, it's the default:
+    (setq org-latex-preview-process-default 'dvisvgm)
+
+    ;; Enable consistent equation numbering
+    (setq org-latex-preview-numbered t)
+
+    (setq org-latex-preview-cache 'persist)
+    ;; Bonus: Turn on live previews.  This shows you a live preview of a LaTeX
+    ;; fragment and updates the preview in real-time as you edit it.
+    ;; To preview only environments, set it to '(block edit-special) instead
+    (setq org-latex-preview-mode-display-live t)
+
+    ;; More immediate live-previews -- the default delay is 1 second
+    (setq org-latex-preview-mode-update-delay 0.25)
+
+    :hook
+    (org-mode-hook . org-latex-preview-mode)
+    )
+#+end_src
+
+#+begin_src emacs-lisp :tangle yes :results none
+  (use-package org-latex-preview
+    :ensure nil
+    :config
+    (setq org-latex-preview-preamble
+  	"\\documentclass{article}
+  [DEFAULT-PACKAGES]
+  [PACKAGES]
+  \\usepackage{xcolor}"
+  	)
+    
+    (add-to-list 'org-latex-packages-alist'("" "amsmath" t) t)
+    (add-to-list 'org-latex-packages-alist'("" "amssymb" t) t)
+    (add-to-list 'org-latex-packages-alist'("" "siunitx" t) t)
+    (add-to-list 'org-latex-packages-alist'("" "tikz" t) t)
+    (add-to-list 'org-latex-packages-alist '"\\usetikzlibrary{snakes,calc,patterns,angles,quotes,math,decorations.pathmorphing,decorations.text,decorations.pathreplacing,decorations.markings,automata,arrows.meta,positioning,external}" t)
+    (add-to-list 'org-latex-packages-alist'("european,siunitx" "circuitikz" t) t)
+    (add-to-list 'org-latex-packages-alist'("" "tikz-3dplot" t) t)
+    (add-to-list 'org-latex-packages-alist'("" "pgfplots" t) t)
+    (add-to-list 'org-latex-packages-alist'("" "derivative" t) t)
+    (add-to-list 'org-latex-packages-alist'("" "upgreek" t) t)
+    
+    )
+#+end_src
+
+**** Test org-latex-preview
+\[\alpha = \frac{1}{2}\]
+\begin{equation}
+\pdv{y}{x} = 4
+\end{equation}
+\begin{equation}
+2 = 4
+\end{equation}
+
+** company-org-block
+[[https://github.com/xenodium/company-org-block][company-org-block]]
+#+begin_src emacs-lisp :tangle yes :results none
+  (use-package company-org-block
+  :custom
+  (company-org-block-edit-style 'auto) ;; 'auto, 'prompt, or 'inline
+  :hook
+  (org-mode . (lambda ()
+                       (setq-local company-backends '(company-org-block))
+                       ))
+  (org-mode . company-mode)
+  )
+#+end_src
+
 ** org-agenda
 #+begin_src emacs-lisp :results none :tangle yes
   (with-eval-after-load 'org

@@ -1,1 +1,2 @@
-*.el
+# filter out the tangled README file
+README.el

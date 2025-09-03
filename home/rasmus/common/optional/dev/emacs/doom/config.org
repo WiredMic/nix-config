@@ -1,13 +1,63 @@
+#+title: Doom Emacs
+#+PROPERTY: header-args :tangle config.el
+#+auto_tangle: t
+#+STARTUP: overview
+#+AUTHOR: Rasmus Enevoldsen
+
+* Table :toc:
+- [[#doom-emacs-config][DOOM Emacs config]]
+- [[#name--email][Name & Email]]
+- [[#fonts][Fonts]]
+  - [[#ligature][Ligature]]
+- [[#theme][Theme]]
+- [[#completion][Completion]]
+  - [[#vertico][Vertico]]
+  - [[#consult][Consult]]
+  - [[#marginalia][Marginalia]]
+  - [[#embark][Embark]]
+- [[#format][Format]]
+  - [[#latex][LaTeX]]
+- [[#lsp][LSP]]
+  - [[#nixd][nixd]]
+  - [[#rust-analyzer][rust-analyzer]]
+  - [[#clangd][Clangd]]
+  - [[#projectile][Projectile]]
+- [[#org-mode][Org-mode]]
+  - [[#directories][Directories]]
+  - [[#ui][UI]]
+  - [[#org-roam][org-roam]]
+  - [[#hyper-links][Hyper Links]]
+  - [[#latex-1][LaTeX]]
+  - [[#anki][Anki]]
+  - [[#org-roam-1][Org-roam]]
+  - [[#org-auto-tangle][Org-auto-tangle]]
+  - [[#org-download][Org-download]]
+  - [[#org-transclusion][org-transclusion]]
+  - [[#images][Images]]
+- [[#modes][Modes]]
+  - [[#octave-mode][Octave mode]]
+  - [[#openscad-mode][OpenSCAD Mode]]
+
+* DOOM Emacs config
+To Tangle a document press =
+
+#+begin_src elisp :tangle yes
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
+#+end_src
 
+* Name & Email                    
+#+begin_src elisp :tangle yes
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets. It is optional.
 (setq user-full-name "Rasmus Enevoldsen"
       user-mail-address "rasmus@enev.dk")
+#+end_src
 
+* Fonts
+#+begin_src elisp :tangle yes
 ;; Doom exposes five (optional) variables for controlling fonts in Doom:
 ;;
 ;; - `doom-font' -- the primary font to use
@@ -21,12 +71,20 @@
 ;; accept. For example:
 ;;
 (setq doom-font (font-spec :family "JetBrains Mono" :size 20)
-     doom-variable-pitch-font (font-spec :family "Fira Sans" :size 21)
+     doom-variable-pitch-font (font-spec :family "FiraGO" :size 21)
      doom-symbol-font (font-spec :family "Nerd Font" :size 21)
      doom-serif-font (font-spec :family "JetBrains Mono" :size 20))
 
-;; https://docs.doomemacs.org/v21.12/#/configuration/setting-ligatures
+#+end_src
 
+** Ligature
+
+#+begin_src elisp :tangle yes
+;; https://docs.doomemacs.org/v21.12/#/configuration/setting-ligatures
+#+end_src
+
+* Theme
+#+begin_src elisp :tangle yes
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
 ;; refresh your font settings. If Emacs still can't find your font, it likely
@@ -82,23 +140,206 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
+
+#+end_src
+
+* Completion
+https://midirus.com/blog/from-ivy-to-vertico#the-vertco-stack
+
+Here we setup all the grepping and completion in Emacs using the powerful Consult/Vertico/Embark/Corfu ecosystem.
+Note that these packages supersede the older (but more established) Ivy/Counsel/etc ecosystem.
+** Vertico
+
+[[https://github.com/minad/vertico][vertico.el]] is a package that offers a vertical completion interface, simplifying navigation and selection within the minibuffer.
+
+Let’s activate vertico-mode like so:
+#+begin_src emacs-lisp :tangle yes :results none
+  (use-package! vertico
+    :init
+    (vertico-mode)
+    (vertico-multiform-mode)
+    :config
+    (setq vertico-multiform-categories
+  	'((file reverse) ;; this is for finding files
+  	  (command reverse) ;; this is for M-x
+  	  (minor-mode reverse)
+  	  (imenu buffer)
+  	  (t reverse)))
+    (setq vertico-multiform-commands
+          '(
+  	  ;; projectile
+  	  (projectile-find-file reverse)
+            (projectile-find-dir reverse)
+            (projectile-switch-project reverse)
+            (projectile-switch-to-buffer unobtrusive)
+            ;; org-roam
+  	  (org-roam-node-find reverse)
+  	  (org-roam-node-insert reverse)
+  	  )))
+#+end_src
+
+
+A few extra config options taken directly from the Vertico github page:
+#+begin_src emacs-lisp :tangle yes :results none
+  ;; Emacs minibuffer configurations.
+  ;; (use-package! emacs
+    ;; :custom
+    ;; ;; Enable context menu. `vertico-multiform-mode' adds a menu in the minibuffer
+    ;; ;; to switch display modes.
+    ;; (context-menu-mode t)
+    ;; ;; Support opening new minibuffers from inside existing minibuffers.
+    ;; (enable-recursive-minibuffers t)
+    ;; ;; Hide commands in M-x which do not work in the current mode.  Vertico
+    ;; ;; commands are hidden in normal buffers. This setting is useful beyond
+    ;; ;; Vertico.
+    ;; (read-extended-command-predicate #'command-completion-default-include-p)
+    ;; ;; Do not allow the cursor in the minibuffer prompt
+    ;; (minibuffer-prompt-properties
+    ;;     '(read-only t cursor-intangible t face minibuffer-prompt)))
+#+end_src
+
+#+begin_src emacs-lisp :tangle yes :results none
+  ;; (use-package! orderless
+  ;;   :ensure t
+  ;;   :custom
+  ;;   (completion-styles '(orderless basic))
+  ;;   (completion-category-overrides '((file (styles basic partial-completion)))))
+#+end_src
+
+Delete whole words in minibuffers like ~find-file~ or ~M-x~.
+#+begin_src emacs-lisp :tangle yes :results none
+  ;; (define-key minibuffer-local-map (kbd "<backspace>") 'backward-kill-word)
+  ;; (define-key minibuffer-local-map (kbd "DEL") 'backward-kill-word)
+#+end_src
+
+** Consult
+[[https://github.com/minad/consult][consult.el]] is an Emacs package that enhances search and navigation capabilities within Emacs.
+It offers a set of interactive commands and utilities that enable users to perform efficient searches
+across different types of data, such as buffers, files, and bookmarks.
+Consult provides features like incremental search, fuzzy matching, and filtering, making it easier
+for users to find and navigate to specific locations or items within their Emacs environment.
+
+Note that there are alternatives, most prominently Ivy and Helm.
+However, those packages are older, less actively maintained, and less leightweight.
+
+# A minium config of consult looks like this:
+# #+begin_src emacs-lisp :tangle no
+# (use-package consult
+#   ;; Enable automatic preview at point in the *Completions* buffer. This is
+#   ;; relevant when you use the default completion UI.
+#   :hook (completion-list-mode . consult-preview-at-point-mode)
+
+#   :custom
+#   ;; set consult project root
+#   (setq consult-project-function #'projectile-project-root)
+
+#   :config
+#   (setq consult-narrow-key "<") ;; "C-+"
+# )
+# #+end_src
+
+** Marginalia
+
+[[https://github.com/minad/marginalia][marginalia.el]] is a package that enhances the minibuffer completion experience by providing rich contextual
+annotations for candidates, helping users make more informed selections.
+
+# A minimal config looks like this:
+# #+begin_src emacs-lisp :tangle no
+# (use-package marginalia
+#   ;; The :init section is always executed.
+#   :init
+
+#   ;; Marginalia must be activated in the :init section of use-package such that
+#   ;; the mode gets enabled right away. Note that this forces loading the
+#   ;; package.
+#   (marginalia-mode))
+# #+end_src
+
+** Embark
+
+[[https://github.com/oantolin/embark][embark]] makes it easy to choose a command to run based on what is near point, both during a minibuffer
+completion session (in a way familiar to Helm or Counsel users) and in normal buffers.
+# #+begin_src emacs-lisp :tangle no
+# (use-package embark
+#   :bind
+#   (("C-." . embark-act)         ;; pick some comfortable binding
+#    ("C-;" . embark-dwim))        ;; good alternative: M-.
+#   ;; ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+
+#   :init
+
+#   ;; Optionally replace the key help with a completing-read interface
+#   (setq prefix-help-command #'embark-prefix-help-command)
+
+#   ;; Show the Embark target at point via Eldoc.  You may adjust the Eldoc
+#   ;; strategy, if you want to see the documentation from multiple providers.
+#   (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+#   ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+
+#   :config
+
+#   ;; Hide the mode line of the Embark live/completions buffers
+#   (add-to-list 'display-buffer-alist
+#                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+#                  nil
+#                  (window-parameters (mode-line-format . none)))))
+# #+end_src
+
+Integrate Embark with Consult with [[https://github.com/oantolin/embark/blob/master/embark-consult.el][embark-consult.el]]:
+# #+begin_src emacs-lisp :tangle yes
+# (use-package embark-consult
+#   :hook
+#   (embark-collect-mode . consult-preview-at-point-mode))
+# #+end_src
+
+* Format
+#+begin_src elisp :tangle yes
 (setq +format-on-save-enabled-modes
       '(not emacs-lisp-mode  ; elisp's mechanisms are good enough
 	sql-mode         ; sqlformat is currently broken
 	;; tex-mode         ; latexindent is broken
 	;; latex-mode
         ))
+#+end_src
 
+** LaTeX
+
+#+begin_src elisp :tangle no
+;; (setq-hook! 'latex-mode-hook +format-with 'tex-fmt)
+
+(setq +format-on-save-enabled-modes
+      '(tex-mode
+        latex-mode))
+
+(set-formatter! 'tex-fmt
+  '("tex-fmt"
+    ("-s -t 2"))
+
+  :modes
+  '((latex-mode ".tex")
+    (latex-mode ".bib")
+    (latex-mode ".sty")
+    (latex-mode ".cls")))
+#+end_src
+
+* LSP
+#+begin_src elisp :tangle yes
 (setq lsp-inlay-hint-enable t
       lsp-inlay-hints-mod t)
+#+end_src
 
+** nixd
+#+begin_src elisp :tangle yes
 ;; (with-eval-after-load 'lsp-mode
 ;;   (lsp-register-client
 ;;     (make-lsp-client :new-connection (lsp-stdio-connection "nixd")
 ;;                      :major-modes '(nix-mode)
 ;;                      :priority 0
 ;;                      :server-id 'nixd)))
+#+end_src
 
+** rust-analyzer
+#+begin_src elisp :tangle yes
 (setq lsp-inlay-hint-enable t)
 (setq lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
 (setq lsp-rust-analyzer-display-chaining-hints t)
@@ -107,106 +348,421 @@
 (setq lsp-rust-analyzer-display-parameter-hints t)
 (setq lsp-rust-analyzer-display-reborrow-hints t)
 (setq lsp-rust-all-features t)
+#+end_src
 
-(after! ccls
-  (setq ccls-initialization-options '(:index (:comments 2)
-                                      :compilationDatabaseDirectory "." ;; Look in the current directory
-                                      :completion (:detailedLabel t)))
-  (set-lsp-priority! 'ccls 2)) ; optional as ccls is the default in Doom
-
+** Clangd
+#+begin_src elisp :tangle yes
+(setq lsp-clients-clangd-args '("-j=3"
+				"--background-index"
+				"--clang-tidy"
+				"--completion-style=detailed"
+				"--header-insertion=never"
+				"--header-insertion-decorators=0"))
+(after! lsp-clangd (set-lsp-priority! 'clangd 2))
+#+end_src
+** Projectile
+#+begin_src elisp :tangle yes
 (after! projectile
   (add-to-list 'projectile-project-root-files "platformio.ini"))
+#+end_src
 
-(setq org-directory "~/OneDrive/Org/"
-      org-roam-directory "~/OneDrive/Org/Roam")
+* Org-mode
+** Directories
 
-(defun my/text-scale-adjust-latex-previews ()
-  "Adjust the size of latex preview fragments when changing the
-buffer's text scale."
-  (pcase major-mode
-    ('latex-mode
-     (dolist (ov (overlays-in (point-min) (point-max)))
-       (if (eq (overlay-get ov 'category)
-               'preview-overlay)
-           (my/text-scale--resize-fragment ov))))
-    ('org-mode
-     (dolist (ov (overlays-in (point-min) (point-max)))
-       (if (eq (overlay-get ov 'org-overlay-type)
-               'org-latex-overlay)
-           (my/text-scale--resize-fragment ov))))))
+#+begin_src elisp :tangle yes
+  (use-package! org
+    :init
+    (setq org-directory "~/Org/")
+    )
+#+end_src
 
-(defun my/text-scale--resize-fragment (ov)
-  (overlay-put
-   ov 'display
-   (cons 'image
-         (plist-put
-          (cdr (overlay-get ov 'display))
-          :scale (+ 1.0 (* 0.25 text-scale-mode-amount))))))
-
-(add-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews)
-
-(setq org-preview-latex-default-process 'dvisvgm)
-
-(setq org-modern-checkbox
-      '((?X . "󰱒")
-        (?\s . ""))
-)
-
-;; https://github.com/minad/org-modern
-;; Minimal UI
-(package-initialize)
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
+** UI
+[[https://sophiebos.io/posts/prettifying-emacs-org-mode/#theme][Prettifying Emacs Org-mode]]
+*** Fonts
+We also want to set font-sizes for different levels in org:
+#+begin_src emacs-lisp :results none :tangle yes
+  (use-package! org
+    :config
+    (dolist (face '((org-level-1 . 1.3)
+  		  (org-level-2 . 1.25)
+  		  (org-level-3 . 1.15)
+  		  (org-level-4 . 1.1)
+  		  (org-level-5 . 1.1)
+  		  (org-level-6 . 1.1)
+  		  (org-level-7 . 1.1)
+  		  (org-level-8 . 1.1)))
+      (set-face-attribute (car face) nil
+  			:weight 'semi-bold
+  			:height (cdr face)))
+    )
+#+end_src
 
 
-(setq
-;; Edit settings
-org-auto-align-tags nil
-org-tags-column 0
-org-fold-catch-invisible-edits 'show-and-error
-org-special-ctrl-a/e t
-org-insert-heading-respect-content t
+#+begin_src emacs-lisp :tangle yes :results none
+  (use-package org
+    :config
+    (require 'org-indent)
+    (set-face-attribute 'org-indent nil
+  		      :inherit '(org-hide fixed-pitch))
+    )
+#+end_src
 
-;; Org styling, hide markup etc.
-org-hide-emphasis-markers t
-org-pretty-entities t
-org-ellipsis "…"
-)
+#+begin_src emacs-lisp :tangle yes :results none
+  (use-package org
+    :config
+    (set-face-attribute 'org-block nil
+  		      ;; :foreground nil
+  		      :inherit 'fixed-pitch
+  		      :height 0.9)
+    (set-face-attribute 'org-code nil
+  		      :inherit '(shadow fixed-pitch)
+  		      :height 0.9)
+    (set-face-attribute 'org-indent nil
+  		      :inherit '(org-hide fixed-pitch)
+                        :height 0.85)
+    (set-face-attribute 'org-verbatim nil
+  		      :inherit '(shadow fixed-pitch)
+  		      :height 0.85)
+    (set-face-attribute 'org-special-keyword nil
+  		      :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil
+  		      :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil
+  		      :inherit 'fixed-pitch)
+    )
+#+end_src
 
-(global-org-modern-mode)
+These are the different highlights:
+~code~
+=verbatim=
+:TAG:
 
-(defun my-org-faces ()
-    (set-face-attribute 'org-todo nil :height 0.8)
-    (set-face-attribute 'org-level-1 nil :height 1.2)
-    (set-face-attribute 'org-level-2 nil :height 1.1))
+*** Modes
+~Emacs~ already has some inbuilt modes that can make ~Org-mode~ look alot prettier.
+- ~org-indent-mode~ indents the different headers and blocks.
+- ~visual-line-mode~ allows lines to wrap around when they get to long.
+- ~variable-picth-mode~ make all the text variable pitched.
+- ~display-line-number-mode 0~ removes line numbers in ~Org~ files.
 
-(add-hook 'org-mode-hook #'my-org-faces)
+#+begin_src emacs-lisp :results none :tangle yes
+  (use-package! org
+    :hook
+    (org-mode . org-indent-mode)
+    (org-mode . variable-pitch-mode)
+    (org-mode . visual-line-mode)
+    (org-mode-hook . pixel-scroll-precision-mode)
+    (org-mode . (lambda () (display-line-numbers-mode 0)))
+    )
+#+end_src
 
+*** Declutter
+Remove emphasis markers (for italics, bold, etc.):
+- ~org-pretty-entities~ gives LaTeX codes special chars (\alpha)
+- ~org-hide-leading-stars~ hide the stars in headings.
+-
+
+#+begin_src emacs-lisp :results none :tangle yes
+  (use-package! org
+    :config
+    (setq org-pretty-entities            t
+  	org-use-sub-superscripts       "{}"
+  	org-hide-leading-stars         t
+          org-ellipsis                   " ▼"
+          org-startup-indented           t ;; TODO should not be here
+          org-startup-with-inline-images t
+  	)
+    )
+#+end_src
+
+[[https://github.com/awth13/org-appear][org-appear]] makes it easier to edit text that has been emphasised.
+#+begin_src emacs-lisp :results none :tangle yes
+  (use-package! org-appear
+    :commands (org-appear-mode)
+    :hook     (org-mode . org-appear-mode)
+    :config
+    (setq org-hide-emphasis-markers t)  ; Must be activated for org-appear to work
+    (setq org-appear-autoemphasis   t   ; Show bold, italics, verbatim, etc.
+          org-appear-autolinks      t   ; Show links
+  	org-appear-autosubmarkers t ; Show sub- and superscripts
+  	)
+    )
+#+end_src
+
+TODO and other tags.
+#+begin_src emacs-lisp :results none :tangle yes
+  (setq org-log-done                       t
+        org-auto-align-tags                t
+        org-tags-column                    -80
+        org-fold-catch-invisible-edits     'show-and-error
+        org-special-ctrl-a/e               t
+        org-insert-heading-respect-content t
+        )
+#+end_src
+
+*** org-modern
+Use [[https://github.com/minad/org-modern][org-modern]] to give a very slick modern UI to ~org-mode~.
+#+begin_src emacs-lisp :tangle yes :results none
+  (use-package! org-modern
+    :ensure t
+    :after (org)
+    :hook
+    (org-mode . global-org-modern-mode)
+    :config
+    (setq org-modern-star 'replace)
+
+    ;; (setq org-modern-keyword
+    ;;     '(
+    ;;       ("begin_src" . "≫")
+    ;;       ("end_src" . "≪")
+    ;;       ("begin_quote" . "❝")
+    ;;       ("end_quote" . "❞")
+    ;;         (t . t)
+    ;;       )
+    ;;     )
+
+    (setq org-modern-checkbox
+  	'(
+  	  (88 . "")
+  	  (45 . "")
+  	  (32 . "")
+  	  )
+  	)
+
+    (setq org-modern-priority
+  	'(
+  	  (?A . "🟥")
+            (?B . "🟨")
+            (?C . "🟩")
+  	  )
+  	)
+
+    ;; Headings Starts
+    (setq org-modern-replace-stars "◉○◈◇✳")
+
+    ;; Lists
+    (setq org-modern-list
+  	'(
+  	  (?- . "–") ;; -
+  	  (?* . "•") ;; *
+  	  (?+ . "‣") ;; +
+  	  )
+  	)
+    ;; TODO
+    (setq  org-modern-todo t
+  	   org-todo-keywords '((sequence "TODO" "DONE")))
+    (setq org-modern-todo-faces
+  	'(
+  	  ("TODO"
+  	   :background "gold"
+  	   :foreground "black"
+  	   :width 'extra-expanded
+  	   :weight 'ultra-bold
+  	   :height 1.3
+  	   :box (:line-width (0.1 . 0.1) :color "gold")
+  	   )
+  	  )
+  	)
+
+    )
+#+end_src
+
+Extra ~org-modern~ settings
+#+begin_src emacs-lisp :tangle yes :results none
+  (with-eval-after-load 'org
+    (setq org-auto-align-tags nil
+          org-tags-column 0
+          org-fold-catch-invisible-edits 'show-and-error
+          org-special-ctrl-a/e t
+          org-insert-heading-respect-content t
+  	)
+    (setq org-modern-hide-stars nil)
+    )
+#+end_src
+
+**** Test Org-modern
+***** TODO Blocks
+#+begin_src emacs-lisp :tangle yes :results none
+#+end_src
+
+#+begin_quote
+#+end_quote
+***** Checkboxes
+- [X]
+- [ ]
+- [-]
+
+***** [#A] Prio
+
+***** Progress
+- [0/12]
+
+***** Lists
+- dash
++ plus
+ * dot
+
+*** org-modern-indent
+When [[https://github.com/jdtsmith/org-modern-indent][org-modern-indent]] is added to ~MELPA~ then I can use it here.
+#+begin_src emacs-lisp :tangle yes :results none
+  (use-package! org-modern-indent
+    :after org-modern
+    :config
+  (set-face-attribute 'org-modern-indent-bracket-line nil :family "Jetbrains Mono" :height 1.1)
+    :hook
+    (org-modern-mode . org-modern-indent-mode)
+    )
+#+end_src
+
+*** Prettify Tags & Keywords
+
+#+begin_src emacs-lisp :results none :tangle yes
+  ;; (defun my/prettify-symbols-setup ()
+
+  ;;   ;; Drawers
+  ;;   (push '(":PROPERTIES:" . "") prettify-symbols-alist)
+
+  ;;   ;; Tags
+  ;;   (push '(":projects:" . "") prettify-symbols-alist)
+  ;;   (push '(":work:"     . "") prettify-symbols-alist)
+  ;;   (push '(":inbox:"    . "") prettify-symbols-alist)
+  ;;   (push '(":task:"     . "") prettify-symbols-alist)
+  ;;   (push '(":thesis:"   . "") prettify-symbols-alist)
+  ;;   (push '(":emacs:"    . "") prettify-symbols-alist)
+  ;;   (push '(":learn:"    . "") prettify-symbols-alist)
+  ;;   (push '(":code:"     . "") prettify-symbols-alist)
+
+  ;;   (prettify-symbols-mode)
+  ;;   )
+
+  ;; (add-hook 'org-mode-hook        #'my/prettify-symbols-setup)
+  ;; (add-hook 'org-agenda-mode-hook #'my/prettify-symbols-setup)
+#+end_src
+
+*** Olivetti
+[[https://github.com/rnkn/olivetti][Olivetti]]
+#+begin_src emacs-lisp :tangle yes :results none
+  (use-package! olivetti
+    :after org
+    :hook
+    (org-mode . olivetti-mode)
+    :config
+    (setq olivetti-body-width 100)
+    )
+#+end_src
+
+*** Valign
+
+#+begin_src elisp :tangle yes
+(use-package! valign
+    :after org)
+(add-hook 'org-mode-hook #'valign-mode)
+#+end_src
+
+** org-roam
+[[https://www.orgroam.com/][org-roam]] is a way to keep track of notes.
+*** Basic configuration
+#+begin_src emacs-lisp :tangle yes :results results
+  (use-package! org-roam
+    :after org
+    :init
+    (setq org-roam-v2-ack t)
+    :custom
+    (org-roam-directory (expand-file-name "Roam" org-directory))
+    (org-roam-completion-everywhere t)
+    (setq org-roam-mode-sections
+  	(list #'org-roam-backlinks-insert-section
+                #'org-roam-reflinks-insert-section
+                #'org-roam-unlinked-references-insert-section))
+    :config
+    (org-roam-db-autosync-enable)
+    (org-roam-setup))
+#+end_src
+
+*** org-roam-ui
+[[https://github.com/org-roam/org-roam-ui][org-roam-ui]] is a web interface to look and interact with the ~org-roam~ database.
+
+#+begin_src emacs-lisp :tangle yes :results none
+(use-package! websocket
+    :after org-roam)
+
+(use-package! org-roam-ui
+    :after (org-roam websocket)
+    :config
+        (setq org-roam-ui-sync-theme t
+              org-roam-ui-follow t
+              org-roam-ui-update-on-save t
+              org-roam-ui-open-on-start nil))
+#+end_src
+
+Add a keycombination.
+#+begin_src emacs-lisp :tangle yes :results none
+  (map! :leader
+        :desc  "Show graph ui"
+    "n r g" #'org-roam-ui-open)
+#+end_src
+
+*** [[https://www.orgroam.com/manual.html#The-Org_002droam-Buffer][org-roam Buffer]]
+The buffer in org roam can be used
+- BacklinksView (preview of) nodes that link to this node
+- Reference LinksNodes that reference this node (see Refs)
+- Unlinked referencesView nodes that contain text that match the nodes title/alias but are not linked
+
+#+begin_src emacs-lisp :tangle yes :results none
+(setq org-roam-mode-sections
+      (list #'org-roam-backlinks-section
+            #'org-roam-reflinks-section
+            #'org-roam-unlinked-references-section
+            ))
+#+end_src
+
+*** [[HTTPo://www.orgroam.com/manual.html#The-Templating-System][org-roam templates]]
+** Hyper Links
+#+begin_src elisp :tangle yes
 (org-add-link-type "local-html" (lambda (path) (browse-url-xdg-open path)))
+#+end_src
 
-;; set Compiler
-(setq org-latex-compiler "lualatex")
+** LaTeX
+*** preview Compiler
+This slows down the preview process
+# #+begin_src elisp :tangle yes
+# ;; set Compiler
+# (setq org-latex-compiler "lualatex")
 
-;; lualatex preview
-(setq org-latex-pdf-process
-  '("lualatex -shell-escape -interaction nonstopmode %f"
-    "lualatex -shell-escape -interaction nonstopmode %f"))
+# ;; lualatex preview
+# (setq org-latex-pdf-process
+#   '("lualatex -shell-escape -interaction nonstopmode %f"
+#     "lualatex -shell-escape -interaction nonstopmode %f"))
 
-(setq luamagick '(luamagick :programs ("lualatex" "convert")
-       :description "pdf > png"
-       :message "you need to install lualatex and imagemagick."
-       :use-xcolor t
-       :image-input-type "pdf"
-       :image-output-type "png"
-       :image-size-adjust (1.0 . 1.0)
-       :latex-compiler ("lualatex -interaction nonstopmode -output-directory %o %f")
-       :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))
+# (setq luamagick '(luamagick :programs ("lualatex" "convert")
+#        :description "pdf > png"
+#        :message "you need to install lualatex and imagemagick."
+#        :use-xcolor t
+#        :image-input-type "pdf"
+#        :image-output-type "png"
+#        :image-size-adjust (1.0 . 1.0)
+#        :latex-compiler ("lualatex -interaction nonstopmode -output-directory %o %f")
+#        :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))
 
-(add-to-list 'org-preview-latex-process-alist luamagick)
+# (add-to-list 'org-preview-latex-process-alist luamagick)
 
-(setq org-preview-latex-default-process 'luamagick)
+# (setq org-preview-latex-default-process 'luamagick)
+# #+end_src
 
+*** Unicode Font
+This only works with LuaLaTeX
+
+# #+begin_src elisp :tangle yes
+#
+# (add-to-list 'org-latex-packages-alist '("math-style=ISO,bold-style=ISO,mathrm=sym,mathup=sym,mathit=sym,mathsf=sym,mathbf=sym,mathtt=sym," "unicode-math" t) t)
+# (add-to-list 'org-latex-packages-alist '"\\setmainfont{XITS}" t)
+# (add-to-list 'org-latex-packages-alist '"\\setmathfont{XITS Math}" t)
+# (add-to-list 'org-latex-packages-alist '"\\setmonofont{JetBrainsMonoNerdFont}[Scale=0.85, Contextuals = Alternate, Ligatures=TeX, UprightFont =*-Regular, BoldFont = *-Bold, ItalicFont = *-Italic, BoldItalicFont = *-BoldItalic, ]" t)
+#
+# #+end_src
+
+*** preview packages
+
+#+begin_src elisp :tangle yes
 ;; (add-to-list 'org-latex-packages-alist'("" "amsmath" t) t)
 ;; (add-to-list 'org-latex-packages-alist'("" "amssymb" t) t)
 (add-to-list 'org-latex-packages-alist'("" "siunitx" t) t)
@@ -217,11 +773,20 @@ org-ellipsis "…"
 (add-to-list 'org-latex-packages-alist'("" "pgfplots" t) t)
 (add-to-list 'org-latex-packages-alist'("" "derivative" t) t)
 (add-to-list 'org-latex-packages-alist'("" "upgreek" t) t)
+#+end_src
 
+This is my own LaTeX commands
+#+begin_src elisp :tangle yes
 (add-to-list 'org-latex-packages-alist'("" "mysty9" t) t)
 ;; (add-to-list 'org-latex-packages-alist'             t)
 
-(use-package org-latex-preview
+#+end_src
+
+*** org-latex-preview
+[[https://abode.karthinks.com/org-latex-preview/]]
+
+#+begin_src elisp :tangle yes :results none
+(use-package! org-latex-preview
   :config
   ;; Increase preview width
   (plist-put org-latex-preview-appearance-options
@@ -234,10 +799,6 @@ org-ellipsis "…"
   ;; Use dvisvgm to generate previews
   ;; You don't need this, it's the default:
   (setq org-latex-preview-process-default 'dvisvgm)
-
-  ;; Turn on auto-mode, it's built into Org and much faster/more featured than
-  ;; org-fragtog. (Remember to turn off/uninstall org-fragtog.)
-  (add-hook 'org-mode-hook 'org-latex-preview-auto-mode)
 
   ;; Block C-n, C-p etc from opening up previews when using auto-mode
   (setq org-latex-preview-auto-ignored-commands
@@ -253,13 +814,16 @@ org-ellipsis "…"
   (setq org-latex-preview-live t)
 
   ;; More immediate live-previews -- the default delay is 1 second
-  (setq org-latex-preview-live-debounce 0.25))
+  (setq org-latex-preview-live-debounce 0.25)
 
-(add-to-list 'org-latex-packages-alist '("math-style=ISO,bold-style=ISO,mathrm=sym,mathup=sym,mathit=sym,mathsf=sym,mathbf=sym,mathtt=sym," "unicode-math" t) t)
-(add-to-list 'org-latex-packages-alist '"\\setmainfont{XITS}" t)
-(add-to-list 'org-latex-packages-alist '"\\setmathfont{XITS Math}" t)
-(add-to-list 'org-latex-packages-alist '"\\setmonofont{JetBrainsMonoNerdFont}[Scale=0.85, Contextuals = Alternate, Ligatures=TeX, UprightFont =*-Regular, BoldFont = *-Bold, ItalicFont = *-Italic, BoldItalicFont = *-BoldItalic, ]" t)
+  :hook
+  (org-mode-hook . org-latex-preview-mode)
+  )
+#+end_src
 
+*** Org Code Block LaTeX Export
+
+#+begin_src elisp :tangle yes
 ;; (require 'ox-latex)
 ;; (add-to-list 'org-latex-packages-alist '"\\lstset{ basicstyle=\\footnotesize\\ttfamily}")
 (setq org-latex-src-block-backend "listings")
@@ -325,10 +889,16 @@ org-ellipsis "…"
         ("rulecolor" "\\color{solarized@base2}")
         ("rulesepcolor" "\\color{solarized@base2}")
         ))
+#+end_src
+                                         "\\makeatletter"
+                                         "\\renewcommand*\\verbatim@nolig@list{}"
+                                         "\\makeatother"
 
-;; (add-hook 'centaur-tabs-mode)
-
-(use-package anki-editor
+** Anki
+https://rgoswami.me/posts/anki-decks-orgmode/
+https://doubleloop.net/2020/08/02/adding-flashcards-to-your-digital-garden-with-org-roam-and-anki/
+#+begin_src elisp :tangle yes
+(use-package! anki-editor
   :after org
   ;; (map! :leader
   ;;     :desc "Show graph ui"
@@ -365,19 +935,16 @@ org-ellipsis "…"
     (anki-editor-reset-cloze-number))
   ;; Initialize
   (anki-editor-reset-cloze-number))
+#+end_src
 
-(use-package! valign
-    :after org)
-(add-hook 'org-mode-hook #'valign-mode)
-
-(add-hook 'org-mode-hook #'pixel-scroll-precision-mode)
-
-(setq org-roam-v2-ack t)
+** [[https://www.orgroam.com/manual.html][Org-roam]]
+#+begin_src elisp :tangle yes
 
 (use-package! org-roam
   :after org
-  :config
+  :init
   (setq org-roam-v2-ack t)
+  :config
   (setq org-roam-completion-everywhere t)
   (setq org-roam-mode-sections
   (list #'org-roam-backlinks-insert-section
@@ -385,15 +952,32 @@ org-ellipsis "…"
         #'org-roam-unlinked-references-insert-section))
   (org-roam-db-autosync-enable))
 
+#+end_src
+
+*** [[https://www.orgroam.com/manual.html#The-Org_002droam-Buffer][Org-roam Buffer]]
+The buffer in org roam can be used
+- BacklinksView (preview of) nodes that link to this node
+- Reference LinksNodes that reference this node (see Refs)
+- Unlinked referencesView nodes that contain text that match the nodes title/alias but are not linked
+
+#+begin_src elisp :tangle yes
 (setq org-roam-mode-sections
       (list #'org-roam-backlinks-section
             #'org-roam-reflinks-section
             #'org-roam-unlinked-references-section
             ))
+#+end_src
 
+*** [[https://www.orgroam.com/manual.html#The-Templating-System][Org-roam templates]]
+
+*** Org Bable
+#+begin_src elisp :tangle yes
 (org-babel-do-load-languages
  'org-babel-load-languages '((C . t)))
+#+end_src
 
+*** Org-roam-ui
+#+begin_src elisp :tangle yes
 (use-package! websocket
     :after org-roam)
 
@@ -413,17 +997,30 @@ org-ellipsis "…"
       :desc "Show graph ui"
       "n r g" #'org-roam-ui-open)
 )
+#+end_src
 
+*** Org-roam-id-heading
+#+begin_src elisp :tangle yes
 (map! :after org-roam
       :leader
       :desc "Give ID to a Heading"
       "n r h" #'org-id-get-create)
+#+end_src
 
-(use-package! org-auto-tangle
-  :defer t
-  :hook (org-mode . org-auto-tangle-mode)
-  :config (setq org-auto-tangle-default t))
+** Org-auto-tangle
+# #+begin_src elisp :tangle yes
+# (use-package! org-auto-tangle
+#   :defer t
+#   :hook (org-mode . org-auto-tangle-mode)
+#   :config (setq org-auto-tangle-default t))
 
+# #+end_src
+
+** Org-download
+
+:TODO: Look into =org-download-image-attr-list=
+
+#+begin_src elisp :tangle yes
 (require 'org-download)
 
 ;; Drag-and-drop to `dired`
@@ -431,7 +1028,26 @@ org-ellipsis "…"
 (setq org-download-image-html-width '450
       org-download-image-latex-width '7
       org-download-image-org-width '450)
+#+end_src
 
+** org-transclusion
+
+[[https://github.com/nobiot/org-transclusion][org-transclusion]]
+#+begin_src emacs-lisp :tangle yes :results none
+  ;; (use-package org-transclusion
+  ;;   :after org
+  ;;   ;; :init
+  ;;   ;; (map!
+  ;;   ;;  :map global-map "<f12>" #'org-transclusion-add
+  ;;   ;;  :leader
+  ;;   ;;  :prefix "n"
+  ;;   ;;  :desc "Org Transclusion Mode" "t" #'org-transclusion-mode)
+  ;;   )
+#+end_src
+** Images
+When Using images in org-mode they can have a lot of attributes. This function folds them together if I encapsulate them in =:IMAGE_INFO:= and =:END:.=
+
+#+begin_src elisp :tangle yes
 ;; (defun unpack-image-drawers (&rest r)
 ;;   "Replace drawers named \"IMAGE_INFO\" with their contents."
 ;;   (let* ((drawer-name "IMAGE_INFO")
@@ -476,9 +1092,21 @@ org-ellipsis "…"
 
 ;; (advice-add #'org-display-inline-images :around #'apply-with-image-drawers-unpacked)
 ;; (add-hook 'org-export-before-processing-hook 'unpack-image-drawers)
+#+end_src
 
+
+#+ATTR_ORG: :width 100 :center yes
+[[file:Org-mode/2024-03-20_16-57-44_screenshot.png]]
+
+* Modes
+** Octave mode
+#+begin_src elisp :tangle yes
 (add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
+#+end_src
 
+** OpenSCAD Mode
+
+#+begin_src elisp :tangle yes
 ;;; scad-mode.el --- A major mode for editing OpenSCAD code -*- lexical-binding: t -*-
 
 ;; Author: Len Trigg, Łukasz Stelmach, zk_phi, Daniel Mendler
@@ -977,7 +1605,9 @@ Options are .stl, .off, .amf, .3mf, .csg, .dxf, .svg, .pdf, .png,
 
 (provide 'scad-mode)
 ;;; scad-mode.el ends here
+#+end_src
 
+#+begin_src elisp :tangle yes
 (use-package! scad-mode
   :config
   ;; (when (modulep! +lsp
@@ -988,3 +1618,4 @@ Options are .stl, .off, .amf, .3mf, .csg, .dxf, .svg, .pdf, .png,
                "e" #'scad-export
                "o" #'scad-open
                "p" #'scad-preview))))
+#+end_src

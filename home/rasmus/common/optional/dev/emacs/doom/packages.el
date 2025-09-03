@@ -49,6 +49,8 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
 
+
+
 ;; This is for org-latex-preview
 ;; https://abode.karthinks.com/org-latex-preview/
 (package! org :recipe
@@ -78,13 +80,17 @@
 (unpin! org)
 
 (package! org-modern)
+(package! org-modern-indent
+  :recipe (:host github :repo "jdtsmith/org-modern-indent"))
 (package! org-roam-ui)
 (package! org-auto-tangle)
 (package! org-download)
 (package! anki-editor)
 (package! engrave-faces)
+(package! olivetti)
+(package! org-appear)
 
-;;; org mode and pdf
+;;;  pdf
 (package! pdf-tools)
 (package! org-noter)
 (package! valign)
