@@ -192,10 +192,40 @@
 
     programs.emacs = {
       enable = true;
-      package = pkgs.emacs.override {
-        withPgtk = true;
-        withTreeSitter = true;
-      };
+      package =
+        # (pkgs.emacsPackagesFor (
+        #   pkgs.emacs.override {
+        #     withPgtk = true;
+        #     withTreeSitter = true;
+        #   }
+        # )).emacsWithPackages
+        #   (
+        #     epkgs: with epkgs; [
+        #       base16-theme
+        #       (treesit-grammars.with-grammars (
+        #         grammars: with grammars; [
+        #           tree-sitter-typst
+        #           tree-sitter-nix
+        #           # tree-sitter-python
+        #           # add other grammars you need
+        #         ]
+        #       ))
+        #     ]
+        #   );
+
+        pkgs.emacs.override {
+          withPgtk = true;
+          withTreeSitter = true;
+        };
+      extraPackages =
+        epkgs: with epkgs; [
+          (treesit-grammars.with-grammars (
+            grammars: with grammars; [
+              tree-sitter-typst
+              tree-sitter-nix
+            ]
+          ))
+        ];
     };
 
     services.emacs = {
@@ -234,7 +264,6 @@
       texlivePackages.latexindent # LaTeX
       nixfmt-rfc-style # nix
       # rPackages.lintr # R
-      typstyle
 
       # lsp
       nixd # nix
@@ -245,8 +274,14 @@
       # rPackages.languageserver # R
       openscad-lsp # openSCAD
       nodejs_24
-      tinymist # typst
       matlab-language-server
+      vhdl-ls # vhdl
+      emacs-lsp-booster # speed up lsp
+
+      # Typst
+      # tree-sitter-grammars.tree-sitter-typst # tree-sitter
+      tinymist # lsp
+      typstyle # formatter
 
       # Python
       black

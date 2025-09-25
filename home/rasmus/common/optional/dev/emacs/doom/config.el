@@ -130,43 +130,6 @@
   ;; (define-key minibuffer-local-map (kbd "<backspace>") 'backward-kill-word)
   ;; (define-key minibuffer-local-map (kbd "DEL") 'backward-kill-word)
 
-(setq +format-on-save-enabled-modes
-      '(not emacs-lisp-mode  ; elisp's mechanisms are good enough
-	sql-mode         ; sqlformat is currently broken
-	;; tex-mode         ; latexindent is broken
-	;; latex-mode
-        ))
-
-(setq lsp-inlay-hint-enable t
-      lsp-inlay-hints-mod t)
-
-;; (with-eval-after-load 'lsp-mode
-;;   (lsp-register-client
-;;     (make-lsp-client :new-connection (lsp-stdio-connection "nixd")
-;;                      :major-modes '(nix-mode)
-;;                      :priority 0
-;;                      :server-id 'nixd)))
-
-(setq lsp-inlay-hint-enable t)
-(setq lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
-(setq lsp-rust-analyzer-display-chaining-hints t)
-(setq lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t)
-(setq lsp-rust-analyzer-display-closure-return-type-hints t)
-(setq lsp-rust-analyzer-display-parameter-hints t)
-(setq lsp-rust-analyzer-display-reborrow-hints t)
-(setq lsp-rust-all-features t)
-
-(setq lsp-clients-clangd-args '("-j=3"
-				"--background-index"
-				"--clang-tidy"
-				"--completion-style=detailed"
-				"--header-insertion=never"
-				"--header-insertion-decorators=0"))
-(after! lsp-clangd (set-lsp-priority! 'clangd 2))
-
-(after! projectile
-  (add-to-list 'projectile-project-root-files "platformio.ini"))
-
   (use-package! org
     :init
     (setq org-directory "~/Org/")
@@ -422,7 +385,6 @@
 (add-to-list 'org-latex-packages-alist'("" "upgreek" t) t)
 
 (add-to-list 'org-latex-packages-alist'("" "mysty9" t) t)
-;; (add-to-list 'org-latex-packages-alist'             t)
 
 (use-package! org-latex-preview
   :config
@@ -457,72 +419,6 @@
   :hook
   (org-mode-hook . org-latex-preview-mode)
   )
-
-;; (require 'ox-latex)
-;; (add-to-list 'org-latex-packages-alist '"\\lstset{ basicstyle=\\footnotesize\\ttfamily}")
-(setq org-latex-src-block-backend "listings")
-(add-to-list 'org-latex-packages-alist '("" "xcolor" t) t)
-(add-to-list 'org-latex-packages-alist '("" "listings" t) t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@base03}{HTML}{002B36}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@base03}{HTML}{002B36}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@base02}{HTML}{073642}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@base01}{HTML}{586e75}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@base00}{HTML}{657b83}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@base0}{HTML}{839496}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@base1}{HTML}{93a1a1}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@base2}{HTML}{EEE8D5}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@base3}{HTML}{FDF6E3}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@yellow}{HTML}{B58900}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@orange}{HTML}{CB4B16}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@red}{HTML}{DC322F}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@magenta}{HTML}{D33682}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@violet}{HTML}{6C71C4}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@blue}{HTML}{268BD2}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@cyan}{HTML}{2AA198}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@green}{HTML}{859900}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@base02}{HTML}{073642}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@base01}{HTML}{586e75}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@base00}{HTML}{657b83}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@base0}{HTML}{839496}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@base1}{HTML}{93a1a1}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@base2}{HTML}{EEE8D5}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@base3}{HTML}{FDF6E3}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@yellow}{HTML}{B58900}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@orange}{HTML}{CB4B16}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@red}{HTML}{DC322F}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@magenta}{HTML}{D33682}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@violet}{HTML}{6C71C4}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@blue}{HTML}{268BD2}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@cyan}{HTML}{2AA198}" t)
-(add-to-list 'org-latex-packages-alist '"\\definecolor{solarized@green}{HTML}{859900}" t)
-
-;; Ligatures in code blocks
-(add-to-list 'org-latex-packages-alist '"\\makeatletter \\renewcommand*\\verbatim@nolig@list{} \\makeatother" t)
-
-(setq org-latex-listings-options
-      '(("basicstyle" "\\footnotesize\\ttfamily")
-        ("captionpos" "b")
-        ("columns" "flexible")
-        ("breakatwhitespace" "false")
-        ("breaklines" "true")
-        ("keepspaces" "true")
-        ("numbers" "left")
-        ("numberstyle" "\\footnotesize")
-        ("numbersep" "5pt")
-        ("showspaces" "false")
-        ("showstringspaces" "false")
-        ("showtabs" "false")
-        ("tabsize" "4")
-        ("frame" "single")
-        ("numberstyle" "\\tiny\\color{solarized@base01}")
-        ("keywordstyle" "\\color{solarized@green}")
-        ("stringstyle" "\\color{solarized@cyan}\\ttfamily")
-        ("identifierstyle" "\\color{solarized@blue}")
-        ("commentstyle" "\\color{solarized@base01}")
-        ("emphstyle" "\\color{solarized@red}")
-        ("rulecolor" "\\color{solarized@base2}")
-        ("rulesepcolor" "\\color{solarized@base2}")
-        ))
 
 (use-package! anki-editor
   :after org
@@ -608,6 +504,11 @@
       :desc "Give ID to a Heading"
       "n r h" #'org-id-get-create)
 
+(use-package! org-auto-tangle
+  :defer t
+  :hook (org-mode . org-auto-tangle-mode)
+  :config (setq org-auto-tangle-default t))
+
 (require 'org-download)
 
 ;; Drag-and-drop to `dired`
@@ -671,7 +572,64 @@
 ;; (advice-add #'org-display-inline-images :around #'apply-with-image-drawers-unpacked)
 ;; (add-hook 'org-export-before-processing-hook 'unpack-image-drawers)
 
-(add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
+(setq +format-on-save-enabled-modes
+      '(not emacs-lisp-mode  ; elisp's mechanisms are good enough
+	sql-mode         ; sqlformat is currently broken
+	;; tex-mode         ; latexindent is broken
+	;; latex-mode
+        ))
+
+(setq lsp-inlay-hint-enable t
+      lsp-inlay-hints-mod t)
+
+;; (with-eval-after-load 'lsp-mode
+;;   (lsp-register-client
+;;     (make-lsp-client :new-connection (lsp-stdio-connection "nixd")
+;;                      :major-modes '(nix-mode)
+;;                      :priority 0
+;;                      :server-id 'nixd)))
+(use-package! nix-mode)
+
+(use-package! rust-mode
+  :config
+  (setq lsp-inlay-hint-enable t)
+  (setq lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+  (setq lsp-rust-analyzer-display-chaining-hints t)
+  (setq lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t)
+  (setq lsp-rust-analyzer-display-closure-return-type-hints t)
+  (setq lsp-rust-analyzer-display-parameter-hints t)
+  (setq lsp-rust-analyzer-display-reborrow-hints t)
+  (setq lsp-rust-all-features t)
+  )
+
+(setq lsp-clients-clangd-args '("-j=3"
+				"--background-index"
+				"--clang-tidy"
+				"--completion-style=detailed"
+				"--header-insertion=never"
+				"--header-insertion-decorators=0"))
+(after! lsp-clangd (set-lsp-priority! 'clangd 2))
+
+  ;; Explicitly remove objective-c association and add octave
+  (setq auto-mode-alist
+        (rassq-delete-all 'objc-mode auto-mode-alist))
+(add-to-list 'auto-mode-alist '("\\.m\\'" . octave-mode))
+
+(use-package! octave
+  ;; :ensure nil
+  :after lsp
+  ;; :init
+  :mode "\\.m\\'"
+  :hook (octave-mode . lsp-deferred)
+  :config
+  ;; (add-to-list 'lsp-language-id-configuration '(".*\\.m$" . "octave"))
+  (add-to-list 'lsp-language-id-configuration '(octave-mode . "octave"))
+  (lsp-register-client (make-lsp-client
+                        :new-connection (lsp-stdio-connection "matlab-language-server")
+                        :major-modes 'octave-mode
+                        ;; :activation-fn (lsp-activate-on "octave")
+                        :server-id 'matlab-language-server))
+  )
 
 ;;; scad-mode.el --- A major mode for editing OpenSCAD code -*- lexical-binding: t -*-
 
@@ -1182,3 +1140,148 @@ Options are .stl, .off, .amf, .3mf, .csg, .dxf, .svg, .pdf, .png,
                "e" #'scad-export
                "o" #'scad-open
                "p" #'scad-preview))))
+
+(use-package! vhdl-mode
+  ;; :mode "\\.vhd\\'"
+  :hook
+  (vhdl-mode . lsp-deferred)
+  :config
+  (setq lsp-vhdl-server 'vhdl-ls
+        lsp-vhdl-server-path "vhdl_ls")
+
+  ;; ligatures
+  (set-ligatures! 'vhdl-mode
+    nil
+    )
+  )
+
+(use-package! vhdl-ts-mode
+  :mode (("\\.\\(vhd\\(?:l?\\)?\\)" . vhdl-ts-mode))
+  :when (and (treesit-available-p)
+             (treesit-language-available-p 'vhdl) ; vhdl-ts-install-grammar
+             (treesit-ready-p 'vhdl t))
+  :bind
+  (:map vhdl-ts-mode-map
+        ("C-c C-b" . nil) ; vhdl-ts-beautify-buffer
+        ("C-M-u" . #'vhdl-ts-find-entity-instance-bwd))
+  :custom
+  (vhdl-ts-indent-level 2)
+  (vhdl-ts-imenu-style 'tree-group)
+  (vhdl-ts-beautify-align-ports-and-params t)
+  :hook
+  (vhdl-mode . lsp-deferred)
+  (vhdl-ts-mode . (lambda ()
+                    (vhdl-ext-mode)
+                    (require 'fpga)
+                    (superword-mode -1)
+                    (subword-mode t)
+                    (when outline-minor-mode
+                      (setq-local
+                       outline-regexp
+                       "^\\s-*--\\s-\\([*]\\{1,8\\}\\)\\s-\\(.*\\)$"))
+                    ;; otherwise, I’m unable to make imenu work properly
+                    (setq-local eglot-stay-out-of (list 'imenu))))
+  :config
+  (setq lsp-vhdl-server 'vhdl-ls
+        lsp-vhdl-server-path "vhdl_ls")
+
+  ;; format on sav
+  (set-formatter! 'vhdl-beautify
+    (lambda (&rest args)
+      (let ((scratch (plist-get args :scratch))
+            (callback (plist-get args :callback)))
+        ;; Switch to the scratch buffer and beautify it
+        (with-current-buffer scratch
+          (let ((vhdl-mode-hook nil)) ; Avoid running hooks
+            ;; Temporarily set the major mode to vhdl-mode for beautify function
+            (let ((original-mode major-mode))
+              (vhdl-mode)
+              ;; Run the beautify function
+              (vhdl-beautify-region (point-min) (point-max))
+              ;; Restore original mode if different
+              (unless (eq original-mode 'vhdl-mode)
+                (funcall original-mode)))))
+        ;; Call the success callback
+        (funcall callback nil)))
+    :modes '(vhdl-mode))
+
+  ;; Does not Run on save
+  (set-formatter! 'vhdl-ts-beautify
+    (lambda (&rest args)
+      (let ((scratch (plist-get args :scratch))
+            (callback (plist-get args :callback)))
+        ;; Switch to the scratch buffer and beautify it
+        (with-current-buffer scratch
+          (let ((vhdl-mode-hook nil)) ; Avoid running hooks
+            ;; Temporarily set the major mode to vhdl-mode for beautify function
+            (let ((original-mode major-mode))
+              (vhdl-mode)
+              ;; Run the beautify function
+              (vhdl-beautify-region (point-min) (point-max))
+              ;; Restore original mode if different
+              (unless (eq original-mode 'vhdl-ts-mode)
+                (funcall original-mode)))))
+        ;; Call the success callback
+        (funcall callback nil)))
+    :modes '(vhdl-ts-mode))
+
+  ;; ligatures
+  (set-ligatures! 'vhdl-ts-mode
+    nil
+    )
+  )
+
+(use-package! vhdl-ext
+  :hook ((vhdl-mode . vhdl-ext-mode))
+  :hook ((vhdl-ts-mode . vhdl-ext-mode))
+  :init
+  ;; Can also be set through `M-x RET customize-group RET vhdl-ext':
+  ;; Comment out/remove the ones you do not need
+  (setq vhdl-ext-feature-list
+        '(
+          ;; font-lock
+          ;; xref
+          ;; capf
+          ;; hierarchy
+          ;; eglot
+          lsp
+          ;; lsp-bridge
+          ;; lspce
+          flycheck
+          beautify
+          ;; navigation
+          ;; template
+          ;; compilation
+          ;; imenu
+          ;; which-func
+          hideshow
+          ;; time-stamp
+          ;; ports
+          )
+        )
+  :config
+  (setq vhdl-modify-date-on-saving nil)
+  (vhdl-ext-mode-setup))
+
+(use-package! typst-ts-mode
+  :mode "\\.typ\\'"
+  :hook (typst-ts-mode . lsp-deferred)
+  :init
+  ;; Ensure tree-sitter grammar is available
+  (add-to-list 'treesit-language-source-alist
+               '(typst "https://github.com/uben0/tree-sitter-typst"))
+  :config
+  (after! lsp-mode
+    ;; Add language ID configuration
+    (add-to-list 'lsp-language-id-configuration '(typst-ts-mode . "typst"))
+
+    ;; Register tinymist LSP client
+    (lsp-register-client
+     (make-lsp-client
+      :new-connection (lsp-stdio-connection "tinymist")
+      :activation-fn (lsp-activate-on "typst")
+      :major-modes '(typst-ts-mode)
+      :server-id 'tinymist))))
+
+(after! projectile
+  (add-to-list 'projectile-project-root-files "platformio.ini"))

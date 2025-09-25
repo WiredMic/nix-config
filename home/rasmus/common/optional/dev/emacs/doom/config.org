@@ -15,28 +15,23 @@
   - [[#consult][Consult]]
   - [[#marginalia][Marginalia]]
   - [[#embark][Embark]]
-- [[#format][Format]]
-  - [[#latex][LaTeX]]
-- [[#lsp][LSP]]
-  - [[#nixd][nixd]]
-  - [[#rust-analyzer][rust-analyzer]]
-  - [[#clangd][Clangd]]
-  - [[#projectile][Projectile]]
 - [[#org-mode][Org-mode]]
   - [[#directories][Directories]]
   - [[#ui][UI]]
   - [[#org-roam][org-roam]]
   - [[#hyper-links][Hyper Links]]
-  - [[#latex-1][LaTeX]]
+  - [[#latex][LaTeX]]
   - [[#anki][Anki]]
   - [[#org-roam-1][Org-roam]]
   - [[#org-auto-tangle][Org-auto-tangle]]
   - [[#org-download][Org-download]]
   - [[#org-transclusion][org-transclusion]]
   - [[#images][Images]]
-- [[#modes][Modes]]
-  - [[#octave-mode][Octave mode]]
-  - [[#openscad-mode][OpenSCAD Mode]]
+- [[#programming-setup][Programming Setup]]
+  - [[#format][Format]]
+  - [[#lsp][LSP]]
+  - [[#languages][Languages]]
+  - [[#projectile][Projectile]]
 
 * DOOM Emacs config
 To Tangle a document press =
@@ -82,6 +77,8 @@ To Tangle a document press =
 #+begin_src elisp :tangle yes
 ;; https://docs.doomemacs.org/v21.12/#/configuration/setting-ligatures
 #+end_src
+
+#+RESULTS:
 
 * Theme
 #+begin_src elisp :tangle yes
@@ -291,80 +288,6 @@ Integrate Embark with Consult with [[https://github.com/oantolin/embark/blob/mas
 #   :hook
 #   (embark-collect-mode . consult-preview-at-point-mode))
 # #+end_src
-
-* Format
-#+begin_src elisp :tangle yes
-(setq +format-on-save-enabled-modes
-      '(not emacs-lisp-mode  ; elisp's mechanisms are good enough
-	sql-mode         ; sqlformat is currently broken
-	;; tex-mode         ; latexindent is broken
-	;; latex-mode
-        ))
-#+end_src
-
-** LaTeX
-
-#+begin_src elisp :tangle no
-;; (setq-hook! 'latex-mode-hook +format-with 'tex-fmt)
-
-(setq +format-on-save-enabled-modes
-      '(tex-mode
-        latex-mode))
-
-(set-formatter! 'tex-fmt
-  '("tex-fmt"
-    ("-s -t 2"))
-
-  :modes
-  '((latex-mode ".tex")
-    (latex-mode ".bib")
-    (latex-mode ".sty")
-    (latex-mode ".cls")))
-#+end_src
-
-* LSP
-#+begin_src elisp :tangle yes
-(setq lsp-inlay-hint-enable t
-      lsp-inlay-hints-mod t)
-#+end_src
-
-** nixd
-#+begin_src elisp :tangle yes
-;; (with-eval-after-load 'lsp-mode
-;;   (lsp-register-client
-;;     (make-lsp-client :new-connection (lsp-stdio-connection "nixd")
-;;                      :major-modes '(nix-mode)
-;;                      :priority 0
-;;                      :server-id 'nixd)))
-#+end_src
-
-** rust-analyzer
-#+begin_src elisp :tangle yes
-(setq lsp-inlay-hint-enable t)
-(setq lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
-(setq lsp-rust-analyzer-display-chaining-hints t)
-(setq lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t)
-(setq lsp-rust-analyzer-display-closure-return-type-hints t)
-(setq lsp-rust-analyzer-display-parameter-hints t)
-(setq lsp-rust-analyzer-display-reborrow-hints t)
-(setq lsp-rust-all-features t)
-#+end_src
-
-** Clangd
-#+begin_src elisp :tangle yes
-(setq lsp-clients-clangd-args '("-j=3"
-				"--background-index"
-				"--clang-tidy"
-				"--completion-style=detailed"
-				"--header-insertion=never"
-				"--header-insertion-decorators=0"))
-(after! lsp-clangd (set-lsp-priority! 'clangd 2))
-#+end_src
-** Projectile
-#+begin_src elisp :tangle yes
-(after! projectile
-  (add-to-list 'projectile-project-root-files "platformio.ini"))
-#+end_src
 
 * Org-mode
 ** Directories
@@ -778,8 +701,6 @@ This only works with LuaLaTeX
 This is my own LaTeX commands
 #+begin_src elisp :tangle yes
 (add-to-list 'org-latex-packages-alist'("" "mysty9" t) t)
-;; (add-to-list 'org-latex-packages-alist'             t)
-
 #+end_src
 
 *** org-latex-preview
@@ -823,7 +744,7 @@ This is my own LaTeX commands
 
 *** Org Code Block LaTeX Export
 
-#+begin_src elisp :tangle yes
+#+begin_src elisp :tangle no
 ;; (require 'ox-latex)
 ;; (add-to-list 'org-latex-packages-alist '"\\lstset{ basicstyle=\\footnotesize\\ttfamily}")
 (setq org-latex-src-block-backend "listings")
@@ -1008,13 +929,13 @@ The buffer in org roam can be used
 #+end_src
 
 ** Org-auto-tangle
-# #+begin_src elisp :tangle yes
-# (use-package! org-auto-tangle
-#   :defer t
-#   :hook (org-mode . org-auto-tangle-mode)
-#   :config (setq org-auto-tangle-default t))
+#+begin_src elisp :tangle yes
+(use-package! org-auto-tangle
+  :defer t
+  :hook (org-mode . org-auto-tangle-mode)
+  :config (setq org-auto-tangle-default t))
 
-# #+end_src
+#+end_src
 
 ** Org-download
 
@@ -1098,13 +1019,165 @@ When Using images in org-mode they can have a lot of attributes. This function f
 #+ATTR_ORG: :width 100 :center yes
 [[file:Org-mode/2024-03-20_16-57-44_screenshot.png]]
 
-* Modes
-** Octave mode
+* Programming Setup
+** Format
 #+begin_src elisp :tangle yes
-(add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
+(setq +format-on-save-enabled-modes
+      '(not emacs-lisp-mode  ; elisp's mechanisms are good enough
+	sql-mode         ; sqlformat is currently broken
+	;; tex-mode         ; latexindent is broken
+	;; latex-mode
+        ))
 #+end_src
 
-** OpenSCAD Mode
+*** LaTeX
+
+#+begin_src elisp :tangle no
+;; (setq-hook! 'latex-mode-hook +format-with 'tex-fmt)
+
+(setq +format-on-save-enabled-modes
+      '(tex-mode
+        latex-mode))
+
+(set-formatter! 'tex-fmt
+  '("tex-fmt"
+    ("-s -t 2"))
+
+  :modes
+  '((latex-mode ".tex")
+    (latex-mode ".bib")
+    (latex-mode ".sty")
+    (latex-mode ".cls")))
+#+end_src
+
+** LSP
+#+begin_src elisp :tangle yes
+(setq lsp-inlay-hint-enable t
+      lsp-inlay-hints-mod t)
+#+end_src
+
+*** lsp-booster
+
+Does not work
+#+begin_src emacs-lisp :tangle no :results none
+(use-package lsp-mode
+      :preface
+      (defun lsp-booster--advice-json-parse (old-fn &rest args)
+        "Try to parse bytecode instead of json."
+        (or
+         (when (equal (following-char) ?#)
+
+           (let ((bytecode (read (current-buffer))))
+             (when (byte-code-function-p bytecode)
+               (funcall bytecode))))
+         (apply old-fn args)))
+      (defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
+        "Prepend emacs-lsp-booster command to lsp CMD."
+        (let ((orig-result (funcall old-fn cmd test?)))
+          (if (and (not test?)                             ;; for check lsp-server-present?
+                   (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
+                   lsp-use-plists
+                   (not (functionp 'json-rpc-connection))  ;; native json-rpc
+                   (executable-find "emacs-lsp-booster"))
+              (progn
+                (message "Using emacs-lsp-booster for %s!" orig-result)
+                (cons "emacs-lsp-booster" orig-result))
+            orig-result)))
+      :init
+      (setq lsp-use-plists t)
+      ;; Initiate https://github.com/blahgeek/emacs-lsp-booster for performance
+      (advice-add (if (progn (require 'json)
+                             (fboundp 'json-parse-buffer))
+                      'json-parse-buffer
+                    'json-read)
+                  :around
+                  #'lsp-booster--advice-json-parse)
+      (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command))
+#+end_src
+
+** Languages
+*** Nix
+#+begin_src elisp :tangle yes
+;; (with-eval-after-load 'lsp-mode
+;;   (lsp-register-client
+;;     (make-lsp-client :new-connection (lsp-stdio-connection "nixd")
+;;                      :major-modes '(nix-mode)
+;;                      :priority 0
+;;                      :server-id 'nixd)))
+(use-package! nix-mode)
+#+end_src
+
+*** Rust
+rust-analyzer
+#+begin_src elisp :tangle yes :results none
+(use-package! rust-mode
+  :config
+  (setq lsp-inlay-hint-enable t)
+  (setq lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+  (setq lsp-rust-analyzer-display-chaining-hints t)
+  (setq lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t)
+  (setq lsp-rust-analyzer-display-closure-return-type-hints t)
+  (setq lsp-rust-analyzer-display-parameter-hints t)
+  (setq lsp-rust-analyzer-display-reborrow-hints t)
+  (setq lsp-rust-all-features t)
+  )
+#+end_src
+
+*** C/C++
+
+Clangd
+#+begin_src elisp :tangle yes
+(setq lsp-clients-clangd-args '("-j=3"
+				"--background-index"
+				"--clang-tidy"
+				"--completion-style=detailed"
+				"--header-insertion=never"
+				"--header-insertion-decorators=0"))
+(after! lsp-clangd (set-lsp-priority! 'clangd 2))
+#+end_src
+
+*** Octave
+[[https://www.gnu.org/software/emacs/manual/html_mono/octave-mode.html][octave-mode]] is a build in mode in Emacs.
+
+~lsp-mode~ as a [[https://emacs-lsp.github.io/lsp-mode/page/lsp-matlab/][lsp-matlab]] configuration.
+https://emacs-lsp.github.io/lsp-mode/page/adding-new-language/
+
+#+begin_src emacs-lisp :tangle yes :results none
+  ;; Explicitly remove objective-c association and add octave
+  (setq auto-mode-alist
+        (rassq-delete-all 'objc-mode auto-mode-alist))
+(add-to-list 'auto-mode-alist '("\\.m\\'" . octave-mode))
+#+end_src
+
+#+begin_src emacs-lisp :tangle yes :results none
+(use-package! octave
+  ;; :ensure nil
+  :after lsp
+  ;; :init
+  :mode "\\.m\\'"
+  :hook (octave-mode . lsp-deferred)
+  :config
+  ;; (add-to-list 'lsp-language-id-configuration '(".*\\.m$" . "octave"))
+  (add-to-list 'lsp-language-id-configuration '(octave-mode . "octave"))
+  (lsp-register-client (make-lsp-client
+                        :new-connection (lsp-stdio-connection "matlab-language-server")
+                        :major-modes 'octave-mode
+                        ;; :activation-fn (lsp-activate-on "octave")
+                        :server-id 'matlab-language-server))
+  )
+#+end_src
+
+LSP :: There are no language servers supporting current mode `octave-mode' registered with `lsp-mode'.
+This issue might be caused by:
+1. The language you are trying to use does not have built-in support in `lsp-mode'. You must install the required support manually. Examples of this are `lsp-java' or `lsp-metals'.
+2. The language server that you expect to run is not configured to run for major mode `octave-mode'. You may check that by checking the `:major-modes' that are passed to `lsp-register-client'.
+3. The language server that you expect to run has an `:activation-fn` passed to `lsp-register-client` that prevents it supporting this buffer.
+4. `lsp-mode' doesn't have any integration for the language behind `octave-mode'. Refer to https://emacs-lsp.github.io/lsp-mode/page/languages and https://langserver.org/ .
+
+*** OpenSCAD
+[[https://openscad.org/]]
+
+[[https://emacs-lsp.github.io/lsp-mode/page/lsp-openscad/][lsp-openscad]]
 
 #+begin_src elisp :tangle yes
 ;;; scad-mode.el --- A major mode for editing OpenSCAD code -*- lexical-binding: t -*-
@@ -1619,3 +1692,170 @@ Options are .stl, .off, .amf, .3mf, .csg, .dxf, .svg, .pdf, .png,
                "o" #'scad-open
                "p" #'scad-preview))))
 #+end_src
+*** LaTeX
+*** VHDL
+[[https://emacs-lsp.github.io/lsp-mode/page/lsp-vhdl/][lsp-vhdl]]
+[[https://www.gnu.org/software/emacs/manual/html_mono/vhdl-mode.html][vhdl-mode]] is a build in mode in ~Emacs~.
+
+#+begin_src emacs-lisp :tangle yes :results none
+(use-package! vhdl-mode
+  ;; :mode "\\.vhd\\'"
+  :hook
+  (vhdl-mode . lsp-deferred)
+  :config
+  (setq lsp-vhdl-server 'vhdl-ls
+        lsp-vhdl-server-path "vhdl_ls")
+
+  ;; ligatures
+  (set-ligatures! 'vhdl-mode
+    nil
+    )
+  )
+
+(use-package! vhdl-ts-mode
+  :mode (("\\.\\(vhd\\(?:l?\\)?\\)" . vhdl-ts-mode))
+  :when (and (treesit-available-p)
+             (treesit-language-available-p 'vhdl) ; vhdl-ts-install-grammar
+             (treesit-ready-p 'vhdl t))
+  :bind
+  (:map vhdl-ts-mode-map
+        ("C-c C-b" . nil) ; vhdl-ts-beautify-buffer
+        ("C-M-u" . #'vhdl-ts-find-entity-instance-bwd))
+  :custom
+  (vhdl-ts-indent-level 2)
+  (vhdl-ts-imenu-style 'tree-group)
+  (vhdl-ts-beautify-align-ports-and-params t)
+  :hook
+  (vhdl-mode . lsp-deferred)
+  (vhdl-ts-mode . (lambda ()
+                    (vhdl-ext-mode)
+                    (require 'fpga)
+                    (superword-mode -1)
+                    (subword-mode t)
+                    (when outline-minor-mode
+                      (setq-local
+                       outline-regexp
+                       "^\\s-*--\\s-\\([*]\\{1,8\\}\\)\\s-\\(.*\\)$"))
+                    ;; otherwise, I’m unable to make imenu work properly
+                    (setq-local eglot-stay-out-of (list 'imenu))))
+  :config
+  (setq lsp-vhdl-server 'vhdl-ls
+        lsp-vhdl-server-path "vhdl_ls")
+
+  ;; format on sav
+  (set-formatter! 'vhdl-beautify
+    (lambda (&rest args)
+      (let ((scratch (plist-get args :scratch))
+            (callback (plist-get args :callback)))
+        ;; Switch to the scratch buffer and beautify it
+        (with-current-buffer scratch
+          (let ((vhdl-mode-hook nil)) ; Avoid running hooks
+            ;; Temporarily set the major mode to vhdl-mode for beautify function
+            (let ((original-mode major-mode))
+              (vhdl-mode)
+              ;; Run the beautify function
+              (vhdl-beautify-region (point-min) (point-max))
+              ;; Restore original mode if different
+              (unless (eq original-mode 'vhdl-mode)
+                (funcall original-mode)))))
+        ;; Call the success callback
+        (funcall callback nil)))
+    :modes '(vhdl-mode))
+
+  ;; Does not Run on save
+  (set-formatter! 'vhdl-ts-beautify
+    (lambda (&rest args)
+      (let ((scratch (plist-get args :scratch))
+            (callback (plist-get args :callback)))
+        ;; Switch to the scratch buffer and beautify it
+        (with-current-buffer scratch
+          (let ((vhdl-mode-hook nil)) ; Avoid running hooks
+            ;; Temporarily set the major mode to vhdl-mode for beautify function
+            (let ((original-mode major-mode))
+              (vhdl-mode)
+              ;; Run the beautify function
+              (vhdl-beautify-region (point-min) (point-max))
+              ;; Restore original mode if different
+              (unless (eq original-mode 'vhdl-ts-mode)
+                (funcall original-mode)))))
+        ;; Call the success callback
+        (funcall callback nil)))
+    :modes '(vhdl-ts-mode))
+
+  ;; ligatures
+  (set-ligatures! 'vhdl-ts-mode
+    nil
+    )
+  )
+#+end_src
+
+
+eval: Symbol’s function definition is void: :format [3 times]
+
+#+begin_src emacs-lisp :tangle yes :results none
+(use-package! vhdl-ext
+  :hook ((vhdl-mode . vhdl-ext-mode))
+  :hook ((vhdl-ts-mode . vhdl-ext-mode))
+  :init
+  ;; Can also be set through `M-x RET customize-group RET vhdl-ext':
+  ;; Comment out/remove the ones you do not need
+  (setq vhdl-ext-feature-list
+        '(
+          ;; font-lock
+          ;; xref
+          ;; capf
+          ;; hierarchy
+          ;; eglot
+          lsp
+          ;; lsp-bridge
+          ;; lspce
+          flycheck
+          beautify
+          ;; navigation
+          ;; template
+          ;; compilation
+          ;; imenu
+          ;; which-func
+          hideshow
+          ;; time-stamp
+          ;; ports
+          )
+        )
+  :config
+  (setq vhdl-modify-date-on-saving nil)
+  (vhdl-ext-mode-setup))
+
+#+end_src
+
+*** Typst
+Mode: [[https://codeberg.org/meow_king/typst-ts-mode][typst-ts-mode]]
+LSP: [[https://github.com/Myriad-Dreamin/tinymist][tinymist]]
+
+#+begin_src emacs-lisp :results none :tangle yes
+(use-package! typst-ts-mode
+  :mode "\\.typ\\'"
+  :hook (typst-ts-mode . lsp-deferred)
+  :init
+  ;; Ensure tree-sitter grammar is available
+  (add-to-list 'treesit-language-source-alist
+               '(typst "https://github.com/uben0/tree-sitter-typst"))
+  :config
+  (after! lsp-mode
+    ;; Add language ID configuration
+    (add-to-list 'lsp-language-id-configuration '(typst-ts-mode . "typst"))
+
+    ;; Register tinymist LSP client
+    (lsp-register-client
+     (make-lsp-client
+      :new-connection (lsp-stdio-connection "tinymist")
+      :activation-fn (lsp-activate-on "typst")
+      :major-modes '(typst-ts-mode)
+      :server-id 'tinymist))))
+#+end_src
+
+** Projectile
+#+begin_src elisp :tangle yes
+(after! projectile
+  (add-to-list 'projectile-project-root-files "platformio.ini"))
+#+end_src
+

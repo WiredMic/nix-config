@@ -90,7 +90,15 @@
 (package! olivetti)
 (package! org-appear)
 
-;;;  pdf
+;; vhdl
+(package! vhdl-ts-mode)
+(package! vhdl-ext)
+(package! fpga)
+
+;;typsts
+(package! typst-ts-mode)
+
+;;  pdf
 (package! pdf-tools)
 (package! org-noter)
 (package! valign)
