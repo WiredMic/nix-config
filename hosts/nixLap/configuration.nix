@@ -286,7 +286,10 @@
 
   services.solaar.enable = true;
 
-  my.vpn.enable = true;
+  my.vpn = {
+    enable = true;
+    role = "client";
+  };
 
   my.thunar.enable = true;
 

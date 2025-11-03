@@ -1,4 +1,11 @@
-{ lib, config, pkgs, userSettings, ... }: {
+{
+  lib,
+  config,
+  pkgs,
+  userSettings,
+  ...
+}:
+{
   imports = [
     # Here everything in the optional dir is imported.
 

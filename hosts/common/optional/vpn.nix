@@ -1,8 +1,28 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
 
-  options = { my.vpn.enable = lib.mkEnableOption "enables vpns"; };
+  options = {
+    my.vpn = {
+      enable = lib.mkEnableOption "enables vpns";
+      # Here should be the oneOf
+      role = lib.mkOption {
+        type = lib.types.enum [
+          "none"
+          "client"
+          "server"
+          "both"
+        ];
+        default = "none";
+        description = "A wrapper around tailscale, so that I can use this config for both my server and computers";
+      };
+    };
+  };
 
   config = lib.mkIf config.my.vpn.enable {
     # VPNs
@@ -21,9 +41,13 @@
       enable = true;
       package = pkgs.tailscale;
       port = 41641;
+      openFirewall = true;
+      useRoutingFeatures = config.my.vpn.role;
+      interfaceName = "tailscale0";
       # authKeyFile # use sops
     };
-
-    networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];
+    networking.firewall = {
+      checkReversePath = "loose";
+    };
   };
 }
