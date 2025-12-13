@@ -59,10 +59,11 @@
   de.kde.enable = lib.mkDefault userSettings.de.kde;
   de.hyprland.enable = lib.mkDefault userSettings.de.hyprland;
 
-  my.sddm.enable = if (config.de.kde.enable || config.de.hyprland.enable) then
-    lib.mkForce true
-  else
-    lib.mkDefault false;
+  my.sddm.enable =
+    if (config.de.kde.enable || config.de.hyprland.enable) then
+      lib.mkForce true
+    else
+      lib.mkDefault false;
 
   my.grub.efi.enable = lib.mkDefault false;
 
@@ -72,10 +73,11 @@
   my.emulation.enable = lib.mkDefault false;
 
   stylix.image = lib.mkDefault ./stylix/hong-kong-night.jpg;
-  my.stylix.enable = if (config.de.kde.enable || config.de.hyprland.enable) then
-    lib.mkForce true
-  else
-    lib.mkDefault false;
+  my.stylix.enable =
+    if (config.de.kde.enable || config.de.hyprland.enable) then
+      lib.mkForce true
+    else
+      lib.mkDefault false;
 
   my.distrobox.enable = lib.mkDefault false;
 

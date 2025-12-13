@@ -1,10 +1,14 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
 
   options = {
-    hyprland.wofi.enable =
-      lib.mkEnableOption "enables wofi as an app laucher in hyprland";
+    hyprland.wofi.enable = lib.mkEnableOption "enables wofi as an app laucher in hyprland";
   };
 
   config = lib.mkIf config.hyprland.wofi.enable {
@@ -17,7 +21,7 @@
       # style = { };
     };
 
-    stylix.targets.wofi.enable = true;
+    # stylix.targets.wofi.enable = true;
 
     wayland.windowManager.hyprland = {
       settings = {

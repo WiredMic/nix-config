@@ -1,4 +1,11 @@
-{ config, pkgs, lib, inputs, ... }: {
+{
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
+{
   imports = [ ];
   options = {
     de.hyprland.enable = lib.mkEnableOption "enables hyprland config";
@@ -9,7 +16,7 @@
 
     programs.hyprland = {
       enable = true;
-      package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+      package = pkgs.hyprland;
       # xwayland.enable = true;
       # package = inputs.hyprland.packages.${pkgs.system}.hyprland;
     };
@@ -30,8 +37,7 @@
         after = [ "graphical-session.target" ];
         serviceConfig = {
           Type = "simple";
-          ExecStart =
-            "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+          ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
           Restart = "on-failure";
           RestartSec = 1;
           TimeoutStopSec = 10;

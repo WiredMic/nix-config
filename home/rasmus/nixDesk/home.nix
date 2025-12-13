@@ -49,7 +49,6 @@
       vlc
       # gnome.gnome-software
       neofetch
-      pass
       nurl
       unzip
       gimp

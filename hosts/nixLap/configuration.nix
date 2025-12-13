@@ -205,9 +205,7 @@
 
     wtype # does not work on kde or gnome
     wev
-    miru
     # calibre
-    # davinci-resolve
     just
     fastfetch
     nmap
@@ -218,18 +216,21 @@
     wl-clipboard
     wl-clipboard-x11
 
+    protontricks
+
     pciutils
     sshfs
     nfs-utils
     cifs-utils
     progress
+    exfat
 
-    inkscape
-    # kicad
-    librepcb
     openscad
 
+    anki-bin
+
     kdePackages.okular
+
   ];
 
   # https://github.com/gmodena/nix-flatpak
@@ -284,8 +285,6 @@
   my.arduino.enable = true;
   my.ollama.enable = true;
 
-  services.solaar.enable = true;
-
   my.vpn = {
     enable = true;
     role = "client";
@@ -312,7 +311,7 @@
 
   # Cloud
   my.onedrive.enable = true;
-  my.syncthing.enable = true;
+  my.syncthing.enable = false;
 
   # NFS NAS share
   # https://nixos.wiki/wiki/NFS

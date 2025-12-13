@@ -376,6 +376,14 @@
 ;; (add-to-list 'org-latex-packages-alist'("" "amsmath" t) t)
 ;; (add-to-list 'org-latex-packages-alist'("" "amssymb" t) t)
 (add-to-list 'org-latex-packages-alist'("" "siunitx" t) t)
+(add-to-list 'org-latex-packages-alist'"\\sisetup{locale = US}" t)
+(add-to-list 'org-latex-packages-alist'"\\sisetup{output-decimal-marker={.}}" t)
+(add-to-list 'org-latex-packages-alist'"\\sisetup{group-minimum-digits = 3}" t)
+(add-to-list 'org-latex-packages-alist'"\\sisetup{exponent-product=\\ensuremath{\\cdot}}" t)
+(add-to-list 'org-latex-packages-alist'"\\sisetup{group-separator = {\\ensuremath{\\,}}}" t)
+(add-to-list 'org-latex-packages-alist'"\\sisetup{group-digits = {integer}}" t)
+(add-to-list 'org-latex-packages-alist'"\\sisetup{detect-all = true}" t)
+
 (add-to-list 'org-latex-packages-alist'("" "tikz" t) t)
 (add-to-list 'org-latex-packages-alist '"\\usetikzlibrary{snakes,calc,patterns,angles,quotes,math,decorations.pathmorphing,decorations.text,decorations.pathreplacing,decorations.markings,automata,arrows.meta,positioning,external}" t)
 (add-to-list 'org-latex-packages-alist'("european,siunitx" "circuitikz" t) t)
@@ -383,6 +391,8 @@
 (add-to-list 'org-latex-packages-alist'("" "pgfplots" t) t)
 (add-to-list 'org-latex-packages-alist'("" "derivative" t) t)
 (add-to-list 'org-latex-packages-alist'("" "upgreek" t) t)
+(add-to-list 'org-latex-packages-alist'("" "datetime2" t) t)
+(add-to-list 'org-latex-packages-alist'"\\DTMsettimestyle{iso}" t)
 
 (add-to-list 'org-latex-packages-alist'("" "mysty9" t) t)
 
@@ -1140,6 +1150,19 @@ Options are .stl, .off, .amf, .3mf, .csg, .dxf, .svg, .pdf, .png,
                "e" #'scad-export
                "o" #'scad-open
                "p" #'scad-preview))))
+
+(use-package! latex
+  :hook (LaTeX-mode . lsp-deferred)
+  :init
+  ;; Add LaTeX Tree-Sitter
+  (add-to-list 'treesit-language-source-alist
+               '(latex "https://github.com/latex-lsp/tree-sitter-latex"))
+  :config
+ (after! lsp-mode
+    ;; (setq lsp-tex-server 'texlab)
+    (setq lsp-tex-server 'digestif)
+    )
+  )
 
 (use-package! vhdl-mode
   ;; :mode "\\.vhd\\'"

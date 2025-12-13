@@ -29,6 +29,8 @@
 
     ./octave/octave.nix
 
+    # cloud
+    ./cloud/syncthing.nix
   ];
 
   my.common.hyprland.enable = lib.mkDefault userSettings.de.hyprland;
@@ -50,4 +52,6 @@
 
   my.octave.enable = lib.mkDefault false;
 
+  # cloud
+  my.syncthing.enable = lib.mkDefault false;
 }

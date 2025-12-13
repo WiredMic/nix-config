@@ -118,14 +118,6 @@
 
   hardware.amdgpu = {
     opencl.enable = true;
-    amdvlk = {
-      # enable = true; # does not work with gamescope
-      # package = [ pkgs.amdvlk ];
-    };
-    # support32Bit = {
-    #   enable = true;
-    #   package = with pkgs; [ driversi686Linux.amdvlk ];
-    # };
   };
 
   # AMD CPU
@@ -211,7 +203,6 @@
 
     wtype # does not work on kde or gnome
     wev
-    miru
     davinci-resolve
     just
     fastfetch

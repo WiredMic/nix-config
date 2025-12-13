@@ -40,6 +40,7 @@
     services.tailscale = {
       enable = true;
       package = pkgs.tailscale;
+      extraSetFlags = [ "--exit-node-allow-lan-access" ];
       port = 41641;
       openFirewall = true;
       useRoutingFeatures = config.my.vpn.role;

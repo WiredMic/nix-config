@@ -1,4 +1,10 @@
-{ pkgs, lib, config, ... }: {
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
+{
   imports = [ ];
 
   options = {
@@ -7,22 +13,27 @@
 
   config = lib.mkIf config.my.games.enable {
 
-    environment.systemPackages = with pkgs; [ lutris protonup-qt mangohud ];
+    environment.systemPackages = with pkgs; [
+      lutris
+      protonup-qt
+      mangohud
+      (heroic.override {
+        extraPkgs = pkgs: [
+          pkgs.gamescope
+        ];
+      })
+    ];
 
     programs.steam = {
       enable = true;
-      remotePlay.openFirewall =
-        true; # Open ports in the firewall for Steam Remote Play
-      dedicatedServer.openFirewall =
-        true; # Open ports in the firewall for Source Dedicated Server
-      localNetworkGameTransfers.openFirewall =
-        true; # Open ports in the firewall for Steam Local Network Game Transfers
+      remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+      dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+      localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
 
       gamescopeSession = {
         enable = true;
         env = { }; # enviromental variables
-        args =
-          [ ]; # arguments https://github.com/ValveSoftware/gamescope?tab=readme-ov-file#options
+        args = [ ]; # arguments https://github.com/ValveSoftware/gamescope?tab=readme-ov-file#options
       };
     };
 
@@ -41,10 +52,10 @@
       #   appId = "com.valvesoftware.Steam";
       #   origin = "flathub";
       # }
-      {
-        appId = "com.heroicgameslauncher.hgl";
-        origin = "flathub";
-      }
+      # {
+      #   appId = "com.heroicgameslauncher.hgl";
+      #   origin = "flathub";
+      # }
       {
         appId = "com.github.Matoking.protontricks";
         origin = "flathub";

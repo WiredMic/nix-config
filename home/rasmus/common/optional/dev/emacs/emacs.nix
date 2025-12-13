@@ -258,10 +258,8 @@
       ))
 
       # Format https://docs.doomemacs.org/latest/modules/editor/format/
-      texlivePackages.latexindent # LaTeX
       nodePackages.prettier # YAML, Markdown
       dockfmt # Dockerfile
-      texlivePackages.latexindent # LaTeX
       nixfmt-rfc-style # nix
       # rPackages.lintr # R
 
@@ -283,6 +281,9 @@
       tinymist # lsp
       typstyle # formatter
 
+      # LaTeX
+      texlab
+
       # Python
       black
       python313Packages.pyflakes
@@ -294,7 +295,7 @@
       # R
 
       # dependencies
-      anki
+      anki-bin
       ripgrep
       fd
       ispell
@@ -313,7 +314,7 @@
     #   tangleArgs = ".";
     #   extraBinPackages = with pkgs; [
     #     # dependencies
-    #     anki
+    #     anki-bin
     #     ripgrep
     #     fd
     #     ispell
