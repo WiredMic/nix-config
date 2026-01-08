@@ -19,7 +19,7 @@
     ./sddm/sddm.nix
 
     # boot manager
-    ./grub.nix
+    ./boot.nix
 
     # Dislexia help
     ./tts.nix
@@ -65,7 +65,7 @@
     else
       lib.mkDefault false;
 
-  my.grub.efi.enable = lib.mkDefault false;
+  my.boot.efi.enable = lib.mkDefault false;
 
   my.tts.enable = lib.mkDefault false;
 

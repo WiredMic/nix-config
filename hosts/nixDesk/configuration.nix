@@ -89,7 +89,7 @@
     options = "--delete-older-than 30d";
   };
 
-  my.grub.efi.enable = true;
+  my.boot.efi.enable = true;
 
   networking = {
     # Enable networking
