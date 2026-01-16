@@ -22,15 +22,13 @@
   - [[#hyper-links][Hyper Links]]
   - [[#latex][LaTeX]]
   - [[#anki][Anki]]
-  - [[#org-roam-1][Org-roam]]
   - [[#org-auto-tangle][Org-auto-tangle]]
   - [[#org-download][Org-download]]
   - [[#org-transclusion][org-transclusion]]
   - [[#images][Images]]
 - [[#programming-setup][Programming Setup]]
-  - [[#format][Format]]
-  - [[#lsp][LSP]]
   - [[#languages][Languages]]
+  - [[#tools][Tools]]
   - [[#projectile][Projectile]]
 
 * DOOM Emacs config
@@ -171,8 +169,7 @@ Let’s activate vertico-mode like so:
             (projectile-switch-to-buffer unobtrusive)
             ;; org-roam
   	  (org-roam-node-find reverse)
-  	  (org-roam-node-insert reverse)
-  	  )))
+  	  (org-roam-node-insert reverse))))
 #+end_src
 
 
@@ -221,7 +218,7 @@ However, those packages are older, less actively maintained, and less leightweig
 
 # A minium config of consult looks like this:
 # #+begin_src emacs-lisp :tangle no
-# (use-package consult
+# (use-package! consult
 #   ;; Enable automatic preview at point in the *Completions* buffer. This is
 #   ;; relevant when you use the default completion UI.
 #   :hook (completion-list-mode . consult-preview-at-point-mode)
@@ -231,8 +228,7 @@ However, those packages are older, less actively maintained, and less leightweig
 #   (setq consult-project-function #'projectile-project-root)
 
 #   :config
-#   (setq consult-narrow-key "<") ;; "C-+"
-# )
+#   (setq consult-narrow-key "<")) ;; "C-+"
 # #+end_src
 
 ** Marginalia
@@ -242,11 +238,11 @@ annotations for candidates, helping users make more informed selections.
 
 # A minimal config looks like this:
 # #+begin_src emacs-lisp :tangle no
-# (use-package marginalia
+# (use-package! marginalia
 #   ;; The :init section is always executed.
 #   :init
 
-#   ;; Marginalia must be activated in the :init section of use-package such that
+#   ;; Marginalia must be activated in the :init section of use-package! such that
 #   ;; the mode gets enabled right away. Note that this forces loading the
 #   ;; package.
 #   (marginalia-mode))
@@ -257,7 +253,7 @@ annotations for candidates, helping users make more informed selections.
 [[https://github.com/oantolin/embark][embark]] makes it easy to choose a command to run based on what is near point, both during a minibuffer
 completion session (in a way familiar to Helm or Counsel users) and in normal buffers.
 # #+begin_src emacs-lisp :tangle no
-# (use-package embark
+# (use-package! embark
 #   :bind
 #   (("C-." . embark-act)         ;; pick some comfortable binding
 #    ("C-;" . embark-dwim))        ;; good alternative: M-.
@@ -284,7 +280,7 @@ completion session (in a way familiar to Helm or Counsel users) and in normal bu
 
 Integrate Embark with Consult with [[https://github.com/oantolin/embark/blob/master/embark-consult.el][embark-consult.el]]:
 # #+begin_src emacs-lisp :tangle yes
-# (use-package embark-consult
+# (use-package! embark-consult
 #   :hook
 #   (embark-collect-mode . consult-preview-at-point-mode))
 # #+end_src
@@ -295,8 +291,7 @@ Integrate Embark with Consult with [[https://github.com/oantolin/embark/blob/mas
 #+begin_src elisp :tangle yes
   (use-package! org
     :init
-    (setq org-directory "~/Org/")
-    )
+    (setq org-directory "~/Org/"))
 #+end_src
 
 ** UI
@@ -316,22 +311,20 @@ We also want to set font-sizes for different levels in org:
   		  (org-level-8 . 1.1)))
       (set-face-attribute (car face) nil
   			:weight 'semi-bold
-  			:height (cdr face)))
-    )
+  			:height (cdr face))))
 #+end_src
 
 
 #+begin_src emacs-lisp :tangle yes :results none
-  (use-package org
+  (use-package! org
     :config
     (require 'org-indent)
     (set-face-attribute 'org-indent nil
-  		      :inherit '(org-hide fixed-pitch))
-    )
+  		      :inherit '(org-hide fixed-pitch)))
 #+end_src
 
 #+begin_src emacs-lisp :tangle yes :results none
-  (use-package org
+  (use-package! org
     :config
     (set-face-attribute 'org-block nil
   		      ;; :foreground nil
@@ -351,8 +344,7 @@ We also want to set font-sizes for different levels in org:
     (set-face-attribute 'org-meta-line nil
   		      :inherit '(font-lock-comment-face fixed-pitch))
     (set-face-attribute 'org-checkbox nil
-  		      :inherit 'fixed-pitch)
-    )
+  		      :inherit 'fixed-pitch))
 #+end_src
 
 These are the different highlights:
@@ -374,8 +366,7 @@ These are the different highlights:
     (org-mode . variable-pitch-mode)
     (org-mode . visual-line-mode)
     (org-mode-hook . pixel-scroll-precision-mode)
-    (org-mode . (lambda () (display-line-numbers-mode 0)))
-    )
+    (org-mode . (lambda () (display-line-numbers-mode 0))))
 #+end_src
 
 *** Declutter
@@ -392,9 +383,7 @@ Remove emphasis markers (for italics, bold, etc.):
   	org-hide-leading-stars         t
           org-ellipsis                   " ▼"
           org-startup-indented           t ;; TODO should not be here
-          org-startup-with-inline-images t
-  	)
-    )
+          org-startup-with-inline-images t))
 #+end_src
 
 [[https://github.com/awth13/org-appear][org-appear]] makes it easier to edit text that has been emphasised.
@@ -406,9 +395,7 @@ Remove emphasis markers (for italics, bold, etc.):
     (setq org-hide-emphasis-markers t)  ; Must be activated for org-appear to work
     (setq org-appear-autoemphasis   t   ; Show bold, italics, verbatim, etc.
           org-appear-autolinks      t   ; Show links
-  	org-appear-autosubmarkers t ; Show sub- and superscripts
-  	)
-    )
+  	org-appear-autosubmarkers t)) ; Show sub- and superscripts
 #+end_src
 
 TODO and other tags.
@@ -418,62 +405,54 @@ TODO and other tags.
         org-tags-column                    -80
         org-fold-catch-invisible-edits     'show-and-error
         org-special-ctrl-a/e               t
-        org-insert-heading-respect-content t
-        )
+        org-insert-heading-respect-content t)
 #+end_src
 
 *** org-modern
 Use [[https://github.com/minad/org-modern][org-modern]] to give a very slick modern UI to ~org-mode~.
 #+begin_src emacs-lisp :tangle yes :results none
-  (use-package! org-modern
-    :ensure t
-    :after (org)
-    :hook
-    (org-mode . global-org-modern-mode)
-    :config
-    (setq org-modern-star 'replace)
+(use-package! org-modern
+  :ensure t
+  :after (org)
+  :hook
+  (org-mode . global-org-modern-mode)
+  :config
+  (setq org-modern-star 'replace)
 
-    ;; (setq org-modern-keyword
-    ;;     '(
-    ;;       ("begin_src" . "≫")
-    ;;       ("end_src" . "≪")
-    ;;       ("begin_quote" . "❝")
-    ;;       ("end_quote" . "❞")
-    ;;         (t . t)
-    ;;       )
-    ;;     )
+  ;; (setq org-modern-keyword
+  ;;     '(
+  ;;       ("begin_src" . "≫")
+  ;;       ("end_src" . "≪")
+  ;;       ("begin_quote" . "❝")
+  ;;       ("end_quote" . "❞")
+  ;;         (t . t)
+  ;;       )
+  ;;     )
 
-    (setq org-modern-checkbox
-  	'(
-  	  (88 . "")
+  (setq org-modern-checkbox
+  	'((88 . "")
   	  (45 . "")
-  	  (32 . "")
-  	  )
-  	)
+  	  (32 . "")))
 
-    (setq org-modern-priority
-  	'(
-  	  (?A . "🟥")
-            (?B . "🟨")
-            (?C . "🟩")
-  	  )
-  	)
+  (setq org-modern-priority
+  	'( (?A . "🟥")
+           (?B . "🟨")
+           (?C . "🟩")))
 
-    ;; Headings Starts
-    (setq org-modern-replace-stars "◉○◈◇✳")
+  ;; Headings Starts
+  (setq org-modern-replace-stars "◉○◈◇✳")
 
-    ;; Lists
-    (setq org-modern-list
+  ;; Lists
+  (setq org-modern-list
   	'(
   	  (?- . "–") ;; -
   	  (?* . "•") ;; *
-  	  (?+ . "‣") ;; +
-  	  )
-  	)
-    ;; TODO
-    (setq  org-modern-todo t
-  	   org-todo-keywords '((sequence "TODO" "DONE")))
-    (setq org-modern-todo-faces
+  	  (?+ . "‣"))) ;; +
+  	  
+  ;; TODO
+  (setq  org-modern-todo t
+  	 org-todo-keywords '((sequence "TODO" "DONE")))
+  (setq org-modern-todo-faces
   	'(
   	  ("TODO"
   	   :background "gold"
@@ -481,12 +460,7 @@ Use [[https://github.com/minad/org-modern][org-modern]] to give a very slick mod
   	   :width 'extra-expanded
   	   :weight 'ultra-bold
   	   :height 1.3
-  	   :box (:line-width (0.1 . 0.1) :color "gold")
-  	   )
-  	  )
-  	)
-
-    )
+  	   :box (:line-width (0.1 . 0.1) :color "gold")))))
 #+end_src
 
 Extra ~org-modern~ settings
@@ -496,10 +470,8 @@ Extra ~org-modern~ settings
           org-tags-column 0
           org-fold-catch-invisible-edits 'show-and-error
           org-special-ctrl-a/e t
-          org-insert-heading-respect-content t
-  	)
-    (setq org-modern-hide-stars nil)
-    )
+          org-insert-heading-respect-content t)
+    (setq org-modern-hide-stars nil))
 #+end_src
 
 **** Test Org-modern
@@ -532,8 +504,7 @@ When [[https://github.com/jdtsmith/org-modern-indent][org-modern-indent]] is add
     :config
   (set-face-attribute 'org-modern-indent-bracket-line nil :family "Jetbrains Mono" :height 1.1)
     :hook
-    (org-modern-mode . org-modern-indent-mode)
-    )
+    (org-modern-mode . org-modern-indent-mode))
 #+end_src
 
 *** Prettify Tags & Keywords
@@ -569,8 +540,7 @@ When [[https://github.com/jdtsmith/org-modern-indent][org-modern-indent]] is add
     :hook
     (org-mode . olivetti-mode)
     :config
-    (setq olivetti-body-width 100)
-    )
+    (setq olivetti-body-width 100))
 #+end_src
 
 *** Valign
@@ -634,8 +604,7 @@ The buffer in org roam can be used
 (setq org-roam-mode-sections
       (list #'org-roam-backlinks-section
             #'org-roam-reflinks-section
-            #'org-roam-unlinked-references-section
-            ))
+            #'org-roam-unlinked-references-section))
 #+end_src
 
 *** [[HTTPo://www.orgroam.com/manual.html#The-Templating-System][org-roam templates]]
@@ -748,8 +717,7 @@ This is my own LaTeX commands
   (setq org-latex-preview-live-debounce 0.25)
 
   :hook
-  (org-mode-hook . org-latex-preview-mode)
-  )
+  (org-mode-hook . org-latex-preview-mode))
 #+end_src
 
 *** Org Code Block LaTeX Export
@@ -868,76 +836,6 @@ https://doubleloop.net/2020/08/02/adding-flashcards-to-your-digital-garden-with-
   (anki-editor-reset-cloze-number))
 #+end_src
 
-** [[https://www.orgroam.com/manual.html][Org-roam]]
-#+begin_src elisp :tangle yes
-
-(use-package! org-roam
-  :after org
-  :init
-  (setq org-roam-v2-ack t)
-  :config
-  (setq org-roam-completion-everywhere t)
-  (setq org-roam-mode-sections
-  (list #'org-roam-backlinks-insert-section
-        #'org-roam-reflinks-insert-section
-        #'org-roam-unlinked-references-insert-section))
-  (org-roam-db-autosync-enable))
-
-#+end_src
-
-*** [[https://www.orgroam.com/manual.html#The-Org_002droam-Buffer][Org-roam Buffer]]
-The buffer in org roam can be used
-- BacklinksView (preview of) nodes that link to this node
-- Reference LinksNodes that reference this node (see Refs)
-- Unlinked referencesView nodes that contain text that match the nodes title/alias but are not linked
-
-#+begin_src elisp :tangle yes
-(setq org-roam-mode-sections
-      (list #'org-roam-backlinks-section
-            #'org-roam-reflinks-section
-            #'org-roam-unlinked-references-section
-            ))
-#+end_src
-
-*** [[https://www.orgroam.com/manual.html#The-Templating-System][Org-roam templates]]
-
-*** Org Bable
-#+begin_src elisp :tangle yes
-(org-babel-do-load-languages
- 'org-babel-load-languages '((C . t)))
-#+end_src
-
-*** Org-roam-ui
-#+begin_src elisp :tangle yes
-(use-package! websocket
-    :after org-roam)
-
-(use-package! org-roam-ui
-    :after org-roam ;; or :after org
-;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
-;;         a hookable mode anymore, you're advised to pick something yourself
-;;         if you don't care about startup time, use
-;;  :hook (after-init . org-roam-ui-mode)
-    :config
-    (setq org-roam-ui-sync-theme t
-          org-roam-ui-follow t
-          org-roam-ui-update-on-save t
-          org-roam-ui-open-on-start nil)
-
-    (map! :leader
-      :desc "Show graph ui"
-      "n r g" #'org-roam-ui-open)
-)
-#+end_src
-
-*** Org-roam-id-heading
-#+begin_src elisp :tangle yes
-(map! :after org-roam
-      :leader
-      :desc "Give ID to a Heading"
-      "n r h" #'org-id-get-create)
-#+end_src
-
 ** Org-auto-tangle
 #+begin_src elisp :tangle yes
 (use-package! org-auto-tangle
@@ -965,7 +863,7 @@ The buffer in org roam can be used
 
 [[https://github.com/nobiot/org-transclusion][org-transclusion]]
 #+begin_src emacs-lisp :tangle yes :results none
-  ;; (use-package org-transclusion
+  ;; (use-package! org-transclusion
   ;;   :after org
   ;;   ;; :init
   ;;   ;; (map!
@@ -1030,91 +928,12 @@ When Using images in org-mode they can have a lot of attributes. This function f
 [[file:Org-mode/2024-03-20_16-57-44_screenshot.png]]
 
 * Programming Setup
-** Format
-#+begin_src elisp :tangle yes
-(setq +format-on-save-enabled-modes
-      '(not emacs-lisp-mode  ; elisp's mechanisms are good enough
-	sql-mode         ; sqlformat is currently broken
-	;; tex-mode         ; latexindent is broken
-	;; latex-mode
-        ))
-#+end_src
-
-*** LaTeX
-
-#+begin_src elisp :tangle no
-;; (setq-hook! 'latex-mode-hook +format-with 'tex-fmt)
-
-(setq +format-on-save-enabled-modes
-      '(tex-mode
-        latex-mode))
-
-(set-formatter! 'tex-fmt
-  '("tex-fmt"
-    ("-s -t 2"))
-
-  :modes
-  '((latex-mode ".tex")
-    (latex-mode ".bib")
-    (latex-mode ".sty")
-    (latex-mode ".cls")))
-#+end_src
-
-** LSP
-#+begin_src elisp :tangle yes
-(setq lsp-inlay-hint-enable t
-      lsp-inlay-hints-mod t)
-#+end_src
-
-*** lsp-booster
-
-Does not work
-#+begin_src emacs-lisp :tangle no :results none
-(use-package lsp-mode
-      :preface
-      (defun lsp-booster--advice-json-parse (old-fn &rest args)
-        "Try to parse bytecode instead of json."
-        (or
-         (when (equal (following-char) ?#)
-
-           (let ((bytecode (read (current-buffer))))
-             (when (byte-code-function-p bytecode)
-               (funcall bytecode))))
-         (apply old-fn args)))
-      (defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
-        "Prepend emacs-lsp-booster command to lsp CMD."
-        (let ((orig-result (funcall old-fn cmd test?)))
-          (if (and (not test?)                             ;; for check lsp-server-present?
-                   (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
-                   lsp-use-plists
-                   (not (functionp 'json-rpc-connection))  ;; native json-rpc
-                   (executable-find "emacs-lsp-booster"))
-              (progn
-                (message "Using emacs-lsp-booster for %s!" orig-result)
-                (cons "emacs-lsp-booster" orig-result))
-            orig-result)))
-      :init
-      (setq lsp-use-plists t)
-      ;; Initiate https://github.com/blahgeek/emacs-lsp-booster for performance
-      (advice-add (if (progn (require 'json)
-                             (fboundp 'json-parse-buffer))
-                      'json-parse-buffer
-                    'json-read)
-                  :around
-                  #'lsp-booster--advice-json-parse)
-      (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command))
-#+end_src
-
 ** Languages
 *** Nix
 #+begin_src elisp :tangle yes
-;; (with-eval-after-load 'lsp-mode
-;;   (lsp-register-client
-;;     (make-lsp-client :new-connection (lsp-stdio-connection "nixd")
-;;                      :major-modes '(nix-mode)
-;;                      :priority 0
-;;                      :server-id 'nixd)))
-(use-package! nix-mode)
+(use-package! nix-mode
+  :hook (nix-mode . lsp-deferred)
+  :mode "\\.nix\\'")
 #+end_src
 
 *** Rust
@@ -1134,7 +953,6 @@ rust-analyzer
 #+end_src
 
 *** C/C++
-
 Clangd
 #+begin_src elisp :tangle yes
 (setq lsp-clients-clangd-args '("-j=3"
@@ -1144,6 +962,16 @@ Clangd
 				"--header-insertion=never"
 				"--header-insertion-decorators=0"))
 (after! lsp-clangd (set-lsp-priority! 'clangd 2))
+#+end_src
+
+*** Pyhton
+#+begin_src emacs-lisp :tangle yes :results none
+(use-package! python
+  :hook (python-mode . lsp-deferred)
+  :config
+  (setq python-indent-offset 4)
+  (setq indent-tabs-mode nil)
+  )
 #+end_src
 
 *** Octave
@@ -1709,10 +1537,6 @@ LSP: [[https://github.com/latex-lsp/texlab][texlab]], [[https://emacs-lsp.github
 #+begin_src emacs-lisp :results none :tangle yes
 (use-package! latex
   :hook (LaTeX-mode . lsp-deferred)
-  :init
-  ;; Add LaTeX Tree-Sitter
-  (add-to-list 'treesit-language-source-alist
-               '(latex "https://github.com/latex-lsp/tree-sitter-latex"))
   :config
  (after! lsp-mode
     ;; (setq lsp-tex-server 'texlab)
@@ -1858,26 +1682,114 @@ eval: Symbol’s function definition is void: :format [3 times]
 Mode: [[https://codeberg.org/meow_king/typst-ts-mode][typst-ts-mode]]
 LSP: [[https://github.com/Myriad-Dreamin/tinymist][tinymist]]
 
+Setup tinymist
+
 #+begin_src emacs-lisp :results none :tangle yes
 (use-package! typst-ts-mode
   :mode "\\.typ\\'"
   :hook (typst-ts-mode . lsp-deferred)
   :init
+  (setq lsp-typst-project-resolution "lockDatabase"
+           lsp-typst-server-command   "tinymist"))
+#+end_src
+
+*** Toml
+#+begin_src emacs-lisp :results none :tangle yes
+(use-package! toml-ts-mode
+  :after (treesit)
+  :mode "\\.toml\\'"
+  :init
   ;; Ensure tree-sitter grammar is available
   (add-to-list 'treesit-language-source-alist
-               '(typst "https://github.com/uben0/tree-sitter-typst"))
+               '(toml "https://github.com/uben0/tree-sitter-toml"))
   :config
-  (after! lsp-mode
-    ;; Add language ID configuration
-    (add-to-list 'lsp-language-id-configuration '(typst-ts-mode . "typst"))
+  )
+#+end_src
+** Tools
+*** Treesitter
+#+begin_src emacs-lisp :results none :tangle yes
+(use-package! treesit
+  :config
+  (when-let ((grammar-dir (getenv "TREE_SITTER_GRAMMAR_DIR")))
+    (add-to-list 'treesit-extra-load-path grammar-dir))
+  )
+#+end_src
 
-    ;; Register tinymist LSP client
-    (lsp-register-client
-     (make-lsp-client
-      :new-connection (lsp-stdio-connection "tinymist")
-      :activation-fn (lsp-activate-on "typst")
-      :major-modes '(typst-ts-mode)
-      :server-id 'tinymist))))
+*** Format
+#+begin_src elisp :tangle yes
+(setq +format-on-save-enabled-modes
+      '(not emacs-lisp-mode  ; elisp's mechanisms are good enough
+	sql-mode         ; sqlformat is currently broken
+	;; tex-mode         ; latexindent is broken
+	;; latex-mode
+        ))
+#+end_src
+
+**** LaTeX
+
+#+begin_src elisp :tangle no
+;; (setq-hook! 'latex-mode-hook +format-with 'tex-fmt)
+
+(setq +format-on-save-enabled-modes
+      '(tex-mode
+        latex-mode))
+
+(set-formatter! 'tex-fmt
+  '("tex-fmt"
+    ("-s -t 2"))
+
+  :modes
+  '((latex-mode ".tex")
+    (latex-mode ".bib")
+    (latex-mode ".sty")
+    (latex-mode ".cls")))
+#+end_src
+
+*** LSP
+#+begin_src elisp :tangle yes
+(use-package! lsp-mode
+  :init
+  (setq lsp-inlay-hint-enable t
+        lsp-inlay-hints-mod t))
+#+end_src
+
+**** lsp-booster
+
+Does not work
+#+begin_src emacs-lisp :tangle no :results none
+(use-package! lsp-mode
+      :preface
+      (defun lsp-booster--advice-json-parse (old-fn &rest args)
+        "Try to parse bytecode instead of json."
+        (or
+         (when (equal (following-char) ?#)
+
+           (let ((bytecode (read (current-buffer))))
+             (when (byte-code-function-p bytecode)
+               (funcall bytecode))))
+         (apply old-fn args)))
+      (defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
+        "Prepend emacs-lsp-booster command to lsp CMD."
+        (let ((orig-result (funcall old-fn cmd test?)))
+          (if (and (not test?)                             ;; for check lsp-server-present?
+                   (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
+                   lsp-use-plists
+                   (not (functionp 'json-rpc-connection))  ;; native json-rpc
+                   (executable-find "emacs-lsp-booster"))
+              (progn
+                (message "Using emacs-lsp-booster for %s!" orig-result)
+                (cons "emacs-lsp-booster" orig-result))
+            orig-result)))
+      :init
+      (setq lsp-use-plists t)
+      ;; Initiate https://github.com/blahgeek/emacs-lsp-booster for performance
+      (advice-add (if (progn (require 'json)
+                             (fboundp 'json-parse-buffer))
+                      'json-parse-buffer
+                    'json-read)
+                  :around
+                  #'lsp-booster--advice-json-parse)
+      (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command))
 #+end_src
 
 ** Projectile
