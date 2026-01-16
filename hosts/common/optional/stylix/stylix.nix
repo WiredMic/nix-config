@@ -68,7 +68,5 @@ in
     };
 
     stylix.polarity = "dark"; # "light" or "either"
-
-    stylix.targets.grub.enable = true; # Change if another theme
   };
 }
