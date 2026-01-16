@@ -20,6 +20,7 @@
     ./dev/devenv.nix
     ./dev/neovim/neovim.nix
     ./dev/emacs/emacs.nix
+    ./dev/vscode.nix
     ./dev/rust.nix
     ./dev/latex/latex.nix
 
@@ -43,6 +44,7 @@
   my.direnv.enable = lib.mkDefault false;
   my.emacs.enable = lib.mkDefault false;
   my.neovim.enable = lib.mkDefault false;
+  my.vscode.enable = lib.mkDefault false;
   my.rust.enable = lib.mkDefault false;
   my.latex.enable = lib.mkDefault false;
 
