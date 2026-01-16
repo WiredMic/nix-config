@@ -34,7 +34,7 @@
     JUPYTER_CONFIG_DIR = "${config.xdg.configHome}/jupyter";
 
     HISTFILE = "${config.xdg.stateHome}/bash/history";
-    DOTNET_CLI_HOME = "${config.xdg.dataHome}}/dotnet";
+    DOTNET_CLI_HOME = "${config.xdg.dataHome}/dotnet";
   };
 
   xdg.configFile."python/pythonrc".text = ''
