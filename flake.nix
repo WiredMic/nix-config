@@ -4,7 +4,6 @@
   inputs = {
     # Nixpkgs
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
-    # nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     # Home manager
@@ -28,8 +27,8 @@
 
     stylix = {
       # url = "github:danth/stylix";
-      url = "github:danth/stylix/release-25.11";
-      # url = "github:danth/stylix/cfde343ff369c8aa898f263ed3dad8c5eb095491";
+      # url = "github:danth/stylix/release-25.11";
+      url = "github:danth/stylix/cfde343ff369c8aa898f263ed3dad8c5eb095491";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
