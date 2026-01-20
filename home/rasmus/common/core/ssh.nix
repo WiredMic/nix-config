@@ -36,5 +36,11 @@
         };
       };
     };
+    services.ssh-agent = {
+      enable = true;
+      package = pkgs.openssh;
+      enableZshIntegration = config.programs.zsh.enable;
+    };
+
   };
 }

@@ -278,8 +278,6 @@
 
   user.rasmus.enable = true;
 
-  programs.ssh.startAgent = true;
-
   my.distrobox.enable = true;
 
   my.arduino.enable = true;
