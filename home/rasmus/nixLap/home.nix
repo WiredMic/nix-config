@@ -47,6 +47,7 @@
   home.packages =
     (with pkgs; [
       xdg-ninja
+      rquickshare
 
       flatpak
       vlc
@@ -57,7 +58,6 @@
       zip
       unzip
 
-      gnome-calculator
       gnome-multi-writer
       tldr
       libation # audible libaretor
@@ -77,6 +77,8 @@
 
       nix-index
 
+      geogebra
+
       (rWrapper.override {
         packages = with rPackages; [
           languageserver # LSP
@@ -88,7 +90,13 @@
       # eza
     ]);
 
-  programs.kitty.enable = true;
+  programs.kitty = {
+    enable = true;
+    extraConfig = ''
+      background_opacity         0.8
+      dynamic_background_opacity yes
+    '';
+  };
 
   # Theme
   my.theme.enable = true;
@@ -97,6 +105,7 @@
   my.direnv.enable = true;
   my.emacs.enable = true;
   my.neovim.enable = true;
+  my.vscode.enable = true;
   my.rust.enable = true;
   my.latex.enable = true;
   my.octave.enable = true;
