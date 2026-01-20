@@ -12,6 +12,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    cosmic-manager = {
+      url = "github:HeitorAugustoLN/cosmic-manager";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        home-manager.follows = "home-manager";
+      };
+    };
+
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     # Bar for hyprland
@@ -56,6 +64,7 @@
       nixpkgs,
       nixpkgs-unstable,
       home-manager,
+      cosmic-manager,
       nix-flatpak,
       stylix,
       ags,
@@ -95,7 +104,7 @@
           hyprland = true;
           kde = false;
           gnome = false;
-          cosmic = false;
+          cosmic = true;
         };
         # deType = "wayland"; # x11 vs wayland
         # editor = "emacsclient -c -a ''";
@@ -140,7 +149,12 @@
                 useGlobalPkgs = true;
                 useUserPackages = true;
                 backupFileExtension = "bkp";
-                users.${userSettings.username} = import ./home/${userSettings.username}/nixDesk/home.nix;
+                users.${userSettings.username} = {
+                  imports = [
+                    ./home/${userSettings.username}/nixDesk/home.nix
+                    cosmic-manager.homeManagerModules.cosmic-manager
+                  ];
+                };
                 extraSpecialArgs = {
                   inherit inputs outputs;
                   inherit pkgs-unstable;
@@ -178,7 +192,12 @@
                 useGlobalPkgs = true;
                 useUserPackages = true;
                 backupFileExtension = "bkp2";
-                users.${userSettings.username} = import ./home/${userSettings.username}/nixLap/home.nix;
+                users.${userSettings.username} = {
+                  imports = [
+                    ./home/${userSettings.username}/nixLap/home.nix
+                    cosmic-manager.homeManagerModules.cosmic-manager
+                  ];
+                };
                 extraSpecialArgs = {
                   inherit inputs outputs;
                   inherit pkgs-unstable;
@@ -213,7 +232,12 @@
                 useGlobalPkgs = true;
                 useUserPackages = true;
                 backupFileExtension = "bkp";
-                users.${userSettings.username} = import ./home/${userSettings.username}/nixServer/home.nix;
+                users.${userSettings.username} = {
+                  imports = [
+                    ./home/${userSettings.username}/nixServer/home.nix
+                    cosmic-manager.homeManagerModules.cosmic-manager
+                  ];
+                };
                 extraSpecialArgs = {
                   inherit inputs outputs;
                   inherit pkgs-unstable;

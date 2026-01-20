@@ -9,6 +9,7 @@
   imports = [
     # de
     ./de/hyprland/hyprland.nix
+    ./de/cosmic/cosmic.nix
 
     # sddm
     ./sddm/sddm-icon.nix
@@ -34,6 +35,7 @@
     ./cloud/syncthing.nix
   ];
 
+  my.cosmic.enable = lib.mkDefault userSettings.de.cosmic;
   my.common.hyprland.enable = lib.mkDefault userSettings.de.hyprland;
   # my.common.hyprland.enable = false;
 
