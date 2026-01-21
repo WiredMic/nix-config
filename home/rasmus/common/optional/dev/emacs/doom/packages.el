@@ -91,12 +91,14 @@
 (package! org-appear)
 
 ;; vhdl
-(package! vhdl-ts-mode)
-(package! vhdl-ext)
+;; (package! vhdl-ext)
 (package! fpga)
 
-;;typsts
-(package! typst-ts-mode)
+
+;; Tree-sitter
+(package! ts-query-highlight
+  :recipe (:type git :host sourcehut :repo "meow_king/ts-query-highlight")
+  :pin "fea63ef4edd82665bbe962ece2fa98a75730bcf6")
 
 ;;  pdf
 (package! pdf-tools)
