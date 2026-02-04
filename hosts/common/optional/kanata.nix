@@ -22,6 +22,7 @@
           devices = [
             "/dev/input/by-path/platform-i8042-serio-0-event-kbd"
             "/dev/input/by-id/usb-413c_Dell_KB216_Wired_Keyboard-event-kbd"
+            "/dev/input/by-id/usb-AONE_Varmilo_Keyboard-event-kbd"
           ];
           extraDefCfg = "process-unmapped-keys yes";
           config = ''
