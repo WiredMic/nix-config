@@ -34,6 +34,15 @@
             PreferredAuthentications = "publickey";
           };
         };
+        "invent.kde.org" = {
+          host = "invent.kde.org";
+          hostname = "invent.kde.org";
+          identityFile = "~/.ssh/invent.kde.org";
+          extraOptions = {
+            PreferredAuthentications = "publickey";
+          };
+        };
+
       };
     };
     services.ssh-agent = {
