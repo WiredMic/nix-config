@@ -31,6 +31,8 @@
 
     ./octave/octave.nix
 
+    ./kitty.nix
+
     # cloud
     ./cloud/syncthing.nix
   ];
@@ -51,6 +53,7 @@
   my.latex.enable = lib.mkDefault false;
 
   my.pass.enable = lib.mkDefault false;
+  my.kitty.enable = lib.mkDefault false;
 
   my.cowsay-shell-script.enable = lib.mkDefault false;
 
