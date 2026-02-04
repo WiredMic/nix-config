@@ -105,7 +105,6 @@
 
   # Amd GPU
   # https://nixos.wiki/wiki/AMD_GPU
-  boot.initrd.kernelModules = [ "amdgpu" ];
   services.xserver.videoDrivers = [ "amdgpu" ];
 
   hardware.graphics = {
@@ -118,6 +117,7 @@
 
   hardware.amdgpu = {
     opencl.enable = true;
+    initrd.enable = true;
   };
 
   # AMD CPU
@@ -176,7 +176,7 @@
     #
     # Configure keymap in X11
     xkb = {
-      layout = "us";
+      layout = "eu";
       variant = "";
     };
   };
@@ -282,6 +282,8 @@
 
   programs.kdeconnect.enable = true;
 
+  virtualisation.waydroid.enable = true;
+
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = "25.05";
+  system.stateVersion = "25.11";
 }
