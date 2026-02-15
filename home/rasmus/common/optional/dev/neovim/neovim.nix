@@ -1,28 +1,121 @@
-{ pkgs, config, lib, fetchFromGitHub, ... }: {
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
+{
 
-
-  options = { my.neovim.enable = lib.mkEnableOption "enables neovim"; };
+  options = {
+    my.neovim.enable = lib.mkEnableOption "enables neovim";
+  };
 
   config = lib.mkIf config.my.neovim.enable {
-    # https://www.reddit.com/r/NixOS/comments/13uc87h/masonnvim_broke_on_nixos/
-    programs.neovim.enable = true;
+    # https://nvf.notashelf.dev/
+    programs.nvf = {
+      enable = true;
+      settings = {
+        vim = {
+          vimAlias = true;
+          theme = {
+            enable = true;
+            # name = "dracula";
+            # style = "dark";
+          };
 
-    xdg.configFile."nvim".source = pkgs.stdenv.mkDerivation {
-      name = "NvChad";
-      src = pkgs.fetchFromGitHub {
-        owner = "NvChad";
-        repo = "NvChad";
-        rev = "f17e83010f25784b58dea175c6480b3a8225a3e9";
-        hash = "sha256-P5TRjg603/7kOVNFC8nXfyciNRLsIeFvKsoRCIwFP3I=";
+          globals.mapleader = " ";
+
+          statusline.lualine.enable = true;
+          telescope = {
+            enable = true;
+            mappings = {
+              findFiles = "<leader>.";
+              findProjects = "<leader>pf";
+            };
+          };
+
+          snippets.luasnip.enable = true;
+
+          comments.comment-nvim = {
+            enable = true;
+          };
+
+          clipboard = {
+            enable = true;
+            registers = "unnamedplus";
+            providers.wl-copy.enable = true;
+          };
+
+          autopairs.nvim-autopairs.enable = true;
+
+          autocomplete.nvim-cmp = {
+            enable = true;
+            # Completion sources
+            sources = {
+              nvim-cmp-lsp = "[LSP]";
+              nvim-cmp-buffer = "[Buffer]";
+              nvim-cmp-path = "[Path]";
+              nvim-cmp-treesitter = "[TS]";
+              luasnip = "[LuaSnip]";
+            };
+
+          };
+
+          lsp = {
+            enable = true;
+            formatOnSave = false; # Like your Doom selective formatting
+
+            servers.tinymist = lib.mkForce {
+              enable = true;
+              cmd = [ (lib.getExe pkgs.tinymist) ];
+              filetypes = [ "typst" ];
+              root_markers = [ ".git" ];
+
+              # Add settings here
+              settings = {
+                projectResolution = "lockDatabase"; # or "singleFile"
+                formatterMode = "typstyle";
+                exportPdf = "onType"; # or "onSave" or "never"
+                semanticTokens = "disable";
+              };
+            };
+          };
+
+          languages = {
+            nix = {
+              enable = true;
+              lsp = {
+                enable = true;
+                servers = [ "nil" ];
+              };
+              treesitter = {
+                enable = true;
+              };
+            };
+
+            rust = {
+              enable = true;
+              lsp.enable = true;
+              treesitter = {
+                enable = true;
+              };
+            };
+
+            typst = {
+              enable = true;
+              lsp = {
+                enable = true;
+                servers = [ "tinymist" ];
+              };
+              treesitter = {
+                enable = true;
+                package = pkgs.vimPlugins.nvim-treesitter.builtGrammars.typst;
+              };
+            };
+          };
+        };
       };
-      installPhase = ''
-        mkdir -p $out
-        cp -r ./* $out/
-        cd $out/
-        cp -r ${./my_nvchad_config} $out/lua/custom
-      '';
     };
+
   };
-  # xdg.configFile."nvim/lua/custom/".source = ./my_nvchad_config;
-  # xdg.configFile."nvim/lua/custom/".recursive = true;
 }
