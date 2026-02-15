@@ -3,26 +3,13 @@
 
   inputs = {
     # Nixpkgs
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    # nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-
-    # Home manager
-    home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    cosmic-manager = {
-      url = "github:HeitorAugustoLN/cosmic-manager";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        home-manager.follows = "home-manager";
-      };
-    };
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
-    # Bar for hyprland
+            # Bar for hyprland
     ags.url = "github:Aylur/ags";
 
     # Secrets
@@ -47,6 +34,28 @@
 
     # waveforms.url = "github:liff/waveforms-flake";
 
+    # Home manager
+    home-manager = {
+      url = "github:nix-community/home-manager/release-25.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    cosmic-manager = {
+      url = "github:HeitorAugustoLN/cosmic-manager";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        home-manager.follows = "home-manager";
+      };
+    };
+    plasma-manager = {
+      url = "github:nix-community/plasma-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+
+    # Neovim
+    nvf.url = "github:notashelf/nvf";
+
     # Emacs
     emacs-overlay = {
       url = "github:nix-community/emacs-overlay/";
@@ -65,6 +74,7 @@
       nixpkgs-unstable,
       home-manager,
       cosmic-manager,
+      plasma-manager,
       nix-flatpak,
       stylix,
       ags,
@@ -73,6 +83,7 @@
       nix-index-database,
       sops-nix,
       # waveforms,
+      nvf,
       emacs-overlay,
       ...
     }@inputs:
@@ -102,9 +113,10 @@
         username = "rasmus";
         de = {
           hyprland = true;
-          kde = false;
+          kde = true;
           gnome = false;
           cosmic = true;
+          console = true;
         };
         # deType = "wayland"; # x11 vs wayland
         # editor = "emacsclient -c -a ''";
@@ -137,24 +149,25 @@
             inherit userSettings;
           };
           modules = [
-            # > Our main nixos configuration file <
-            ./hosts/nixDesk/configuration.nix
             # grub2-themes.nixosModules.default
             nix-flatpak.nixosModules.nix-flatpak
-            home-manager.nixosModules.home-manager
             stylix.nixosModules.stylix
-            # nix-ld.nixosModules.nix-ld
+
+            home-manager.nixosModules.home-manager
+
+            # Our main nixos configuration file <
+            ./hosts/nixDesk/configuration.nix
             {
               home-manager = {
                 useGlobalPkgs = true;
                 useUserPackages = true;
                 backupFileExtension = "bkp";
-                users.${userSettings.username} = {
-                  imports = [
-                    ./home/${userSettings.username}/nixDesk/home.nix
-                    cosmic-manager.homeManagerModules.cosmic-manager
-                  ];
-                };
+                sharedModules = [
+                  plasma-manager.homeModules.plasma-manager
+                  cosmic-manager.homeManagerModules.cosmic-manager
+                  nvf.homeManagerModules.default
+                ];
+                users.${userSettings.username} = import ./home/${userSettings.username}/nixDesk/home.nix;
                 extraSpecialArgs = {
                   inherit inputs outputs;
                   inherit pkgs-unstable;
@@ -176,28 +189,26 @@
             inherit userSettings;
           };
           modules = [
-            # > Our main nixos configuration file <
-            ./hosts/nixLap/configuration.nix
-            # grub2-themes.nixosModules.default
             nix-flatpak.nixosModules.nix-flatpak
-            home-manager.nixosModules.home-manager
             stylix.nixosModules.stylix
-            # nix-ld.nixosModules.nix-ld
             nix-index-database.nixosModules.nix-index
-            # nixos-hardware.nixosModules.lenovo-legion-15ich
             "${nixos-hardware}/lenovo/legion/15ich"
-            # waveforms.nixosModule
+
+            home-manager.nixosModules.home-manager
+
+            # Our main nixos configuration file <
+            ./hosts/nixLap/configuration.nix
             {
               home-manager = {
                 useGlobalPkgs = true;
                 useUserPackages = true;
-                backupFileExtension = "bkp2";
-                users.${userSettings.username} = {
-                  imports = [
-                    ./home/${userSettings.username}/nixLap/home.nix
-                    cosmic-manager.homeManagerModules.cosmic-manager
-                  ];
-                };
+                backupFileExtension = "bkp";
+                sharedModules = [
+                  plasma-manager.homeModules.plasma-manager
+                  cosmic-manager.homeManagerModules.cosmic-manager
+                  nvf.homeManagerModules.default
+                ];
+                users.${userSettings.username} = import ./home/${userSettings.username}/nixLap/home.nix;
                 extraSpecialArgs = {
                   inherit inputs outputs;
                   inherit pkgs-unstable;
@@ -219,11 +230,11 @@
             inherit userSettings;
           };
           modules = [
-            home-manager.nixosModules.home-manager
-
             # Must be here for the other configs
             nix-flatpak.nixosModules.nix-flatpak
             stylix.nixosModules.stylix
+
+            home-manager.nixosModules.home-manager
 
             # Our main nixos configuration file
             ./hosts/nixServer/configuration.nix
@@ -232,12 +243,12 @@
                 useGlobalPkgs = true;
                 useUserPackages = true;
                 backupFileExtension = "bkp";
-                users.${userSettings.username} = {
-                  imports = [
-                    ./home/${userSettings.username}/nixServer/home.nix
-                    cosmic-manager.homeManagerModules.cosmic-manager
-                  ];
-                };
+                sharedModules = [
+                  plasma-manager.homeModules.plasma-manager
+                  cosmic-manager.homeManagerModules.cosmic-manager
+                  nvf.homeManagerModules.default
+                ];
+                users.${userSettings.username} = import ./home/${userSettings.username}/nixServer/home.nix;
                 extraSpecialArgs = {
                   inherit inputs outputs;
                   inherit pkgs-unstable;
