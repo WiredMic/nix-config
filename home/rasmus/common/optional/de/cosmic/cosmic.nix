@@ -125,7 +125,41 @@
 
         }
       ];
-
+      shortcuts = [
+        {
+          action = cosmicLib.cosmic.mkRON "enum" {
+            value = [
+              "firefox"
+            ];
+            variant = "Spawn";
+          };
+          description = cosmicLib.cosmic.mkRON "optional" "Open Firefox";
+          key = "Super+B";
+        }
+        {
+          action = cosmicLib.cosmic.mkRON "enum" {
+            variant = "Spawn";
+            value = [ "cosmic-files" ]; # e.g. "nautilus", "thunar", "dolphin"
+          };
+          description = cosmicLib.cosmic.mkRON "optional" "Open File Manager";
+          key = "Super+F";
+        }
+        {
+          action = cosmicLib.cosmic.mkRON "enum" {
+            variant = "System";
+            value = [ (cosmicLib.cosmic.mkRON "enum" "Launcher") ];
+          };
+          key = "Super+Space";
+        }
+        {
+          action = cosmicLib.cosmic.mkRON "enum" {
+            variant = "Spawn";
+            value = [ "emacsclient -c -a \\\"emacs\\\"" ];
+          };
+          description = cosmicLib.cosmic.mkRON "optional" "Emacs (Client)";
+          key = "Super+E";
+        }
+      ];
     };
 
     programs.cosmic-applibrary.enable = false;
