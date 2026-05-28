@@ -21,10 +21,6 @@ let
 in
 {
 
-  imports = [
-    inputs.nix-doom-emacs-unstraightened.homeModule
-  ];
-
   options = {
     my.emacs.enable = lib.mkEnableOption "enables emacs";
   };
