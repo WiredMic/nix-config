@@ -15,8 +15,9 @@
     ./de/kde/kde.nix
     ./de/hyprland/hyprland.nix
 
-    # display manager
-    ./sddm/sddm.nix
+    # Display Manager
+    ./display_manager/sddm/sddm.nix
+    ./display_manager/ly.nix
 
     # boot manager
     ./boot.nix
@@ -61,11 +62,16 @@
   de.kde.enable = lib.mkDefault userSettings.de.kde;
   de.hyprland.enable = lib.mkDefault userSettings.de.hyprland;
 
-  my.sddm.enable =
-    if (config.de.kde.enable || config.de.hyprland.enable) then
-      lib.mkForce true
-    else
-      lib.mkDefault false;
+  # my.sddm.enable =
+  #   if (config.de.kde.enable || config.de.hyprland.enable) then
+  #     lib.mkForce true
+  #   else
+  #     lib.mkDefault false;
+
+  # services.displayManager.cosmic-greeter.enable = config.de.cosmic.enable;
+
+  # enable if GUI
+  my.ly.enable = lib.mkDefault true;
 
   my.boot.efi.enable = lib.mkDefault false;
 
