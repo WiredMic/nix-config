@@ -49,6 +49,12 @@
       #     patches = [ ./change-hello-to-hi.patch ];
       #   });
       # })
+
+      (_: prev: {
+        openldap = prev.openldap.overrideAttrs {
+          doCheck = !prev.stdenv.hostPlatform.isi686;
+        };
+      })
     ];
     # Configure your nixpkgs instance
     config = {

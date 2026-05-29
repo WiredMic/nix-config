@@ -47,6 +47,12 @@
       #     patches = [ ./change-hello-to-hi.patch ];
       #   });
       # })
+
+      (_: prev: {
+        openldap = prev.openldap.overrideAttrs {
+          doCheck = !prev.stdenv.hostPlatform.isi686;
+        };
+      })
     ];
     # Configure your nixpkgs instance
     config = {
@@ -74,7 +80,13 @@
     experimental-features = "nix-command flakes";
     # Deduplicate and optimize nix store
     auto-optimise-store = true;
-    max-jobs = 12;
+    max-jobs = 8;
+    substituters = [
+      "https://cache.nixos-cuda.org"
+    ];
+    trusted-public-keys = [
+      "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
+    ];
   };
 
   nix.optimise = {
@@ -103,16 +115,44 @@
   };
   my.aau-wifi-cert.enable = true;
 
-  hardware.graphics = {
-    enable = true;
-    extraPackages = with pkgs; [
-      rocmPackages.clr.icd # OpenCL
-    ];
-  };
-
   # INTEL CPU
   hardware.cpu.intel.updateMicrocode = lib.mkDefault true;
 
+  # NVIDIA GPU
+  nixpkgs.config = {
+    # cudaSupport = true;
+    cudaCapabilities = [ "6.1" ]; # GTX 1060 Mobile = Pascal = sm_61
+    cudaForwardCompat = false;
+  };
+
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  hardware.nvidia = {
+    modesetting.enable = true;
+    open = false; # set true only for RTX 30xx+ with open kernel modules
+    nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.legacy_535;
+
+    # Hybrid Intel + NVIDIA (Optimus)
+    prime = {
+      # Use offload unless you want NVIDIA always-on (sync)
+      offload = {
+        enable = true;
+        enableOffloadCmd = true;
+      };
+      # Replace with your actual bus IDs from lspci (format: PCI:bus:device:function)
+      intelBusId = "PCI:0:2:0";
+      nvidiaBusId = "PCI:1:0:0";
+    };
+  };
+
+  hardware.graphics = {
+    enable = true;
+    extraPackages = with pkgs; [
+    ];
+  };
+
+  boot.kernelModules = [ "btusb" ];
   hardware.bluetooth = {
     enable = true;
     settings = {
@@ -121,7 +161,6 @@
         ControllerMode = "dual";
         FastConnectable = "true";
         Experimental = "true";
-        enable = "Source,Sink,Media,Socket";
       };
       Policy = {
         AutoEnable = "true";

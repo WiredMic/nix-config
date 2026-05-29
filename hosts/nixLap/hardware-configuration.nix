@@ -39,24 +39,6 @@
     ];
   };
 
-  fileSystems."/mnt/share" = {
-    device = "192.168.86.101:/mnt/ZPOOL0/share/";
-    fsType = "nfs";
-    options = [
-      "x-systemd.automount"
-      "noauto"
-    ];
-  };
-
-  fileSystems."/mnt/pass" = {
-    device = "192.168.86.101:/mnt/ZPOOL0/pass/";
-    fsType = "nfs";
-    options = [
-      "x-systemd.automount"
-      "noauto"
-    ];
-  };
-
   swapDevices = [
     { device = "/dev/disk/by-uuid/c80c85c7-7783-42e3-a79d-bb4d5f38c855"; }
   ];

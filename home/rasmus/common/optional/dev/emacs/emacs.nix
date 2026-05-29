@@ -73,9 +73,9 @@ in
       ))
 
       # Format https://docs.doomemacs.org/latest/modules/editor/format/
-      nodePackages.prettier # YAML, Markdown
+      prettier # YAML, Markdown
       dockfmt # Dockerfile
-      nixfmt-rfc-style # nix
+      nixfmt # nix
       # rPackages.lintr # R
 
       # lsp
@@ -101,10 +101,10 @@ in
 
       # Python
       black
-      python313Packages.pyflakes
+      python3Packages.pyflakes
       isort
       pipenv
-      python313Packages.pytest
+      python3Packages.pytest
 
       ghdl
       # Programming languages
