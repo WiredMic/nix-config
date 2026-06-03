@@ -800,19 +800,23 @@ https://rgoswami.me/posts/anki-decks-orgmode/
 https://doubleloop.net/2020/08/02/adding-flashcards-to-your-digital-garden-with-org-roam-and-anki/
 #+begin_src elisp :tangle yes
 (use-package! anki-editor
-  :after org
-  ;; (map! :leader
-  ;;     :desc "Show graph ui"
-  ;;     "n r a " #'anki-editor-cloze-region-auto-incr
-  ;;     )
-  ;;     "n r a" #'anki-editor-cloze-region-dont-incr
-  ;;     "n r a" #'anki-editor-reset-cloze-number
-  ;;     "n r a" #'anki-editor-push-tree
-
+  :after org 
   :hook (org-capture-after-finalize . anki-editor-reset-cloze-number) ; Reset cloze-number after each capture.
   :config
+  (map! :after org
+        :map org-mode-map
+        :leader
+        :prefix ("n A" . "Anki")
+        "p" #'anki-editor-push-notes
+        "P" #'anki-editor-push-new-notes
+        "r" #'anki-editor-retry-failed-notes
+        "i" #'anki-editor-insert-note
+        "c" #'anki-editor-cloze-dwim
+        "t" #'anki-editor-push-tree)
+
   (setq anki-editor-create-decks t ;; Allow anki-editor to create a new deck if it doesn't exist
-        anki-editor-org-tags-as-anki-tags t)
+           anki-editor-org-tags-as-anki-tags t
+           anki-editor-break-consecutive-braces-in-latex t)
 
   (defun anki-editor-cloze-region-auto-incr (&optional arg)
     "Cloze region without hint and increase card number."
@@ -836,6 +840,20 @@ https://doubleloop.net/2020/08/02/adding-flashcards-to-your-digital-garden-with-
     (anki-editor-reset-cloze-number))
   ;; Initialize
   (anki-editor-reset-cloze-number))
+
+(with-eval-after-load 'ox
+  (advice-add 'org-export-get-all-feature-conditions
+              :around
+              (lambda (orig-fn &rest args)
+                (condition-case nil
+                    (apply orig-fn args)
+                  (args-out-of-range nil)))))
+
+(map! :after org
+      :map org-mode-map
+      :leader
+      :prefix ("n A" . "Anki")
+      "s" #'anki-editor-mode)
 #+end_src
 
 ** Org-auto-tangle

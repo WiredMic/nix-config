@@ -106,8 +106,10 @@ in
       # Programming languages
       # R
 
+      # Anki
+      curl
+
       # dependencies
-      anki-bin
       ripgrep
       fd
       ispell
@@ -117,6 +119,19 @@ in
       glslang
       gnumake
     ];
+
+    programs.anki = {
+      enable = true;
+      package = pkgs.anki;
+      addons = with pkgs.ankiAddons; [
+        anki-connect
+      ];
+      language = "en_US";
+    };
+
+    home.sessionVariables = {
+      ANKI_BASE = "${config.home.homeDirectory}/Org/Anki";
+    };
 
     home.sessionPath = [ "${config.xdg.configHome}/emacs/bin" ];
 
