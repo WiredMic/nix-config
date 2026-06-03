@@ -48,7 +48,7 @@
       flatpak
       vlc
       # gnome.gnome-software
-      neofetch
+      fastfetch
       nurl
       unzip
       gimp
@@ -93,14 +93,16 @@
 
   xdg.enable = true;
 
+  # AI
+  my.ollama.enable = true;
+  my.opencode.enable = true;
+  my.claude-code.enable = true;
+
   # Enable home-manager and git
   programs.home-manager.enable = true;
 
-  programs.kitty = {
-    enable = true;
-    shellIntegration.enableZshIntegration = true;
-    settings = { };
-  };
+
+  my.kitty.enable = true;
 
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";

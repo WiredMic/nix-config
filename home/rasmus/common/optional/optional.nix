@@ -36,6 +36,11 @@
 
     # cloud
     ./cloud/syncthing.nix
+
+    # llm
+    ./ai/claude-code.nix
+    ./ai/ollama.nix
+    ./ai/opencode.nix
   ];
 
   xdg.portal.enable = lib.mkForce false;
@@ -63,4 +68,8 @@
 
   # cloud
   my.syncthing.enable = lib.mkDefault false;
+
+  # AI
+  my.ollama.enable = lib.mkDefault false;
+  my.opencode.enable = lib.mkDefault false;
 }
