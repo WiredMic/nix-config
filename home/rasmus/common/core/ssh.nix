@@ -19,33 +19,29 @@
     programs.ssh = {
       enable = true;
       enableDefaultConfig = false;
-      matchBlocks = {
+      settings = {
         "*" = {
           compression = true;
           forwardAgent = true;
           addKeysToAgent = "yes";
         };
-
         "github.com" = {
           host = "github.com";
           hostname = "github.com";
           identityFile = "~/.ssh/github";
-          extraOptions = {
-            PreferredAuthentications = "publickey";
-          };
+          PreferredAuthentications = "publickey";
         };
         "invent.kde.org" = {
           host = "invent.kde.org";
           hostname = "invent.kde.org";
           identityFile = "~/.ssh/invent.kde.org";
-          extraOptions = {
-            PreferredAuthentications = "publickey";
-          };
+          PreferredAuthentications = "publickey";
         };
 
       };
     };
-    services.ssh-agent = {
+
+    services.ssh-agent = lib.mkIf (!config.services.gpg-agent.enableSshSupport) {
       enable = true;
       package = pkgs.openssh;
       enableZshIntegration = config.programs.zsh.enable;

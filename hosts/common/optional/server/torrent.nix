@@ -45,7 +45,7 @@
       openFirewall = true;
       webuiPort = 5656;
     };
-    services.jellyseerr = {
+    services.seerr = {
       enable = true;
       openFirewall = true;
       port = 5055;

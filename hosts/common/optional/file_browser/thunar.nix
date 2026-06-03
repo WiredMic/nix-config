@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
 
@@ -12,11 +17,16 @@
 
     programs.thunar = {
       enable = true;
-      plugins = with pkgs.xfce; [ thunar-volman thunar-archive-plugin ];
+      plugins = with pkgs; [
+        thunar-volman
+        thunar-archive-plugin
+      ];
     };
 
     programs.dconf.enable = true;
 
-    environment.sessionVariables = rec { FILE_BROWSER = "thunar"; };
+    environment.sessionVariables = rec {
+      FILE_BROWSER = "thunar";
+    };
   };
 }
