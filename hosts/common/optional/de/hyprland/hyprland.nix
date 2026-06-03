@@ -21,11 +21,6 @@
       # package = inputs.hyprland.packages.${pkgs.system}.hyprland;
     };
 
-    environment.systemPackages = with pkgs; [
-      xdg-desktop-portal-hyprland
-      xdg-desktop-portal-gtk
-    ];
-
     # Optional, hint electron apps to use wayland:
     environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
