@@ -10,6 +10,7 @@
     # de
     ./de/hyprland/hyprland.nix
     ./de/cosmic/cosmic.nix
+    ./de/kde/kde.nix
 
     # sddm
     ./sddm/sddm-icon.nix
@@ -40,7 +41,7 @@
   xdg.portal.enable = lib.mkForce false;
   my.cosmic.enable = lib.mkDefault userSettings.de.cosmic;
   my.common.hyprland.enable = lib.mkDefault userSettings.de.hyprland;
-  # my.common.hyprland.enable = false;
+  my.kde.enable = lib.mkDefault userSettings.de.kde;
 
   my.sddm-icon.enable = lib.mkDefault true;
 
