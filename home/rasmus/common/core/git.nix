@@ -26,6 +26,9 @@
         core = {
           editor = "${config.home.sessionVariables.EDITOR}";
         };
+        submodule = {
+          recurse = true;
+        };
       };
     };
   };
