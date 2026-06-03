@@ -101,6 +101,7 @@
   # Enable home-manager and git
   programs.home-manager.enable = true;
 
+  my.syncthing.enable = true;
 
   my.kitty.enable = true;
 
