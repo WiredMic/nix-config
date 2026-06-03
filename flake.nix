@@ -4,7 +4,6 @@
   inputs = {
     # Nixpkgs
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
-    # nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
@@ -23,7 +22,6 @@
     stylix = {
       url = "github:danth/stylix";
       # url = "github:danth/stylix/release-25.11";
-      # url = "github:danth/stylix/cfde343ff369c8aa898f263ed3dad8c5eb095491";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -49,13 +47,17 @@
     };
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        home-manager.follows = "home-manager";
+      };
     };
 
     # Neovim
-    nvf.url = "github:notashelf/nvf";
-
+    nvf = {
+      url = "github:notashelf/nvf";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
