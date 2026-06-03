@@ -37,6 +37,7 @@
     ./cloud/syncthing.nix
   ];
 
+  xdg.portal.enable = lib.mkForce false;
   my.cosmic.enable = lib.mkDefault userSettings.de.cosmic;
   my.common.hyprland.enable = lib.mkDefault userSettings.de.hyprland;
   # my.common.hyprland.enable = false;
