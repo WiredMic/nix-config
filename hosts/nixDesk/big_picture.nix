@@ -18,15 +18,6 @@
       libcec
     ];
 
-    programs.gamescope = {
-      enable = true;
-      capSysNice = true;
-    };
-
-    # CreateSwapchainHKR: Creating swapchain for non-Gamescope swapchain.
-    # Hooking has failed somewhere!
-    # You may have a bad Vulkan layer interfering.
-
     programs.steam = {
       enable = true;
       remotePlay.openFirewall = true;
@@ -60,36 +51,33 @@
     # https://wiki.archlinux.org/title/HDMI-CEC
     # SUBSYSTEM=="tty" ACTION=="add" ATTRS{manufacturer}=="Pulse-Eight" ATTRS{product}=="CEC Adapter" TAG+="systemd" ENV{SYSTEMD_WANTS}="pulse8-cec-attach@$devnode.service"
     # Udev rules for Pulse-Eight adapter
-    services.udev.extraRules = '''';
 
     programs.gamemode.enable = true;
 
-    boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_18;
-
     # Load PlayStation controller kernel module
-    boot.kernelModules = [ "hid_playstation" ];
+    boot.kernelModules = [
+      "hid-sony"
+      "hid_playstation"
+    ];
+
+    hardware.firmware = [ pkgs.linux-firmware ];
 
     hardware.bluetooth = {
       enable = true;
       powerOnBoot = true;
-      # The newer versions of bluetooth does not work with dualsence
-      package = lib.mkForce pkgs.bluez;
+      package = pkgs.bluez;
       settings = {
         General = {
-          ControllerMode = lib.mkForce "bredr";
+          ControllerMode = "dual";
           FastConnectable = "true";
           Experimental = "true";
-          # Enable Steam Controller support
-          Class = "0x000100";
         };
         Policy = {
           AutoEnable = "true";
+          ReconnectAttempts = 7;
+          ReconnectIntervals = "1,2,4,8,16,32,64";
         };
       };
     };
-
-    # Ensure bluetooth is accessible in gamescope session
-    services.blueman.enable = true;
-
   };
 }
