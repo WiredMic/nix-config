@@ -8,14 +8,6 @@
 {
   imports = [ ];
 
-  # XDG
-  xdg = {
-    cacheHome = "${config.home.homeDirectory}/.cache";
-    configHome = "${config.home.homeDirectory}/.config";
-    dataHome = "${config.home.homeDirectory}/.local/share";
-    stateHome = "${config.home.homeDirectory}/.local/state";
-  };
-
   # Environment Variables to always set at login
 
   home.sessionVariables = {
