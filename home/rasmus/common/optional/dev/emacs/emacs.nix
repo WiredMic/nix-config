@@ -106,6 +106,10 @@ in
       # Programming languages
       # R
 
+      # just
+      just-formatter
+      just-lsp
+
       # Anki
       curl
 

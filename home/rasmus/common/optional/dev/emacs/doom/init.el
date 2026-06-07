@@ -95,6 +95,7 @@
        ;;ein               ; tame Jupyter notebooks with emacs
        (eval +overlay)     ; run code, run (also, repls)
        lookup              ; navigate your code and its documentation
+       ;; (lsp +peek +eglot)               ; M-x vscode
        (lsp +peek)               ; M-x vscode
        magit             ; a git porcelain for Emacs
        ;;make              ; run make tasks from Emacs
@@ -140,6 +141,7 @@
        ;;(haskell +lsp)    ; a language that's lazier than I am
        ;;hy                ; readability of scheme w/ speed of python
        ;;idris             ; a language you can depend on
+       (just +tree-sitter +lsp)                ; the poor man's Makefile
        json              ; At least it ain't XML
        ;;(java +lsp)       ; the poster child for carpal tunnel syndrome
        ;;javascript        ; all(hope(abandon(ye(who(enter(here))))))
