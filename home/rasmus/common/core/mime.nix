@@ -20,6 +20,7 @@
         "x-scheme-handler/ftp" = "firefox.desktop";
         "text/html" = "firefox.desktop";
         "application/pdf" = "org.kde.okular.desktop";
+        "text/plain" = "emacsclient.desktop";
       };
     };
   };
