@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 # find in $HOME/.local/state/nix/profiles/home-manager-55-link/home-path/share/texmf/tex/latex/
 let
@@ -13,20 +18,28 @@ let
     passthru.tlType = "run";
   };
 
-  texlive-mysty = { pkgs = [ latex-mysty ]; };
+  texlive-mysty = {
+    pkgs = [ latex-mysty ];
+  };
 
   tex = pkgs.texlive.combine {
     inherit (pkgs.texlive) scheme-full;
     inherit texlive-mysty;
   };
-in {
+in
+{
   imports = [ ];
 
-  options = { my.latex.enable = lib.mkEnableOption "enables latex"; };
+  options = {
+    my.latex.enable = lib.mkEnableOption "enables latex";
+  };
 
   config = lib.mkIf config.my.rust.enable {
 
-    home.packages = with pkgs; [ tex zathura ];
+    home.packages = with pkgs; [
+      tex
+      zathura
+    ];
 
   };
 }

@@ -1,4 +1,10 @@
-{ config, lib, pkgs, inputs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
   imports = [ inputs.ags.homeManagerModules.default ];
@@ -14,7 +20,11 @@
       configDir = ./ags-config-dir;
 
       # additional packages to add to gjs's runtime
-      extraPackages = with pkgs; [ gtksourceview webkitgtk accountsservice ];
+      extraPackages = with pkgs; [
+        gtksourceview
+        webkitgtk
+        accountsservice
+      ];
     };
 
     wayland.windowManager.hyprland = {

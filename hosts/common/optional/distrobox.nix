@@ -1,10 +1,14 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
 
   options = {
-    my.distrobox.enable =
-      lib.mkEnableOption "enables distrobox with podman as backend";
+    my.distrobox.enable = lib.mkEnableOption "enables distrobox with podman as backend";
   };
 
   config = lib.mkIf config.my.distrobox.enable {
@@ -16,7 +20,9 @@
       dockerCompat = true;
     };
 
-    environment.variables = { DBX_CONTAINER_MANAGER = "podman"; };
+    environment.variables = {
+      DBX_CONTAINER_MANAGER = "podman";
+    };
 
   };
 }

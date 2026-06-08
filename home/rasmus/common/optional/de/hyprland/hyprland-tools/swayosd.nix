@@ -1,16 +1,19 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   options = {
-    hyprland.swayosd.enable =
-      lib.mkEnableOption "enables swayosd for sound and stuff in hyprland";
+    hyprland.swayosd.enable = lib.mkEnableOption "enables swayosd for sound and stuff in hyprland";
   };
 
   config = lib.mkIf config.hyprland.swayosd.enable {
-    home.packages = with pkgs;
-      [
-        # brightnessctl
-      ];
+    home.packages = with pkgs; [
+      # brightnessctl
+    ];
 
     # Notification daemon
     services.swayosd = {

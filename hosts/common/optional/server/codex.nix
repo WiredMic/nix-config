@@ -1,10 +1,14 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
 
   options = {
-    my.codex.enable =
-      lib.mkEnableOption "enables codex as a comic book manager";
+    my.codex.enable = lib.mkEnableOption "enables codex as a comic book manager";
   };
 
   config = lib.mkIf config.my.codex.enable {
@@ -17,7 +21,9 @@
       autoStart = true;
       image = "docker.io/ajslater/codex";
       ports = [ "9810:9810" ];
-      environment = { TZ = "Europe/Copenhagen"; };
+      environment = {
+        TZ = "Europe/Copenhagen";
+      };
       volumes = [
         "/media/Comics/codex-config:/config"
         # "/media/Comics:/comics:ro" # This does not work

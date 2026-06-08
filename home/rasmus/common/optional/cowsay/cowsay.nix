@@ -1,9 +1,13 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   options = {
-    my.cowsay-shell-script.enable =
-      lib.mkEnableOption "enables cowsay when starting a new shell";
+    my.cowsay-shell-script.enable = lib.mkEnableOption "enables cowsay when starting a new shell";
   };
 
   config = lib.mkIf config.my.cowsay-shell-script.enable {
@@ -26,9 +30,7 @@
         I chose you
         heyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
         EOF
-        ) | ${pkgs.cowsay}/bin/cowsay -f $(ls ${
-          ./cows
-        } | shuf -n 1) | ${pkgs.lolcat}/bin/lolcat 2> /dev/null
+        ) | ${pkgs.cowsay}/bin/cowsay -f $(ls ${./cows} | shuf -n 1) | ${pkgs.lolcat}/bin/lolcat 2> /dev/null
       '')
     ];
 

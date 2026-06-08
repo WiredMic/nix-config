@@ -1,7 +1,15 @@
-{ pkgs, lib, config, ... }: {
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
+{
   imports = [ ];
 
-  options = { my.direnv.enable = lib.mkEnableOption "enables direnv"; };
+  options = {
+    my.direnv.enable = lib.mkEnableOption "enables direnv";
+  };
 
   config = lib.mkIf config.my.direnv.enable {
     # use direnv to manage different nix shells

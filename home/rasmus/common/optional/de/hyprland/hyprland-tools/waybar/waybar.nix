@@ -1,10 +1,14 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
 
   options = {
-    hyprland.waybar.enable =
-      lib.mkEnableOption "enables waybar as a status bar for hyprland";
+    hyprland.waybar.enable = lib.mkEnableOption "enables waybar as a status bar for hyprland";
   };
 
   config = lib.mkIf config.hyprland.waybar.enable {
@@ -20,7 +24,9 @@
     home.packages = with pkgs; [ waybar ];
 
     wayland.windowManager.hyprland = {
-      settings = { exec-once = [ "waybar &" ]; };
+      settings = {
+        exec-once = [ "waybar &" ];
+      };
     };
 
     xdg.configFile."waybar" = {

@@ -36,5 +36,5 @@ pkgs.stdenv.mkDerivation rec {
     cp -r ${image} Background.png
     cp ${./where-is-my-sddm-theme-tree.conf} ./theme.conf
     # cp ./example_configs/tree.png ./Background.png
-   '';
+  '';
 }

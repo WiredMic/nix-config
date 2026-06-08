@@ -1,5 +1,5 @@
 {
-  pkgs ? import <nixpkgs> { }
+  pkgs ? import <nixpkgs> { },
 }:
 
 pkgs.stdenv.mkDerivation {
@@ -13,5 +13,5 @@ pkgs.stdenv.mkDerivation {
   installPhase = ''
     mkdir -p $out/etc/udev/rules.d
     cp -R ./*.rules $out/etc/udev/rules.d/.
-   '';
+  '';
 }

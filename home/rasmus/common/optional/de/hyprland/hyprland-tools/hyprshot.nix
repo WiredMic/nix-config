@@ -1,10 +1,14 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
 
   options = {
-    hyprland.hyprshot.enable =
-      lib.mkEnableOption "enables screenshot with hyprshor in hyprland";
+    hyprland.hyprshot.enable = lib.mkEnableOption "enables screenshot with hyprshor in hyprland";
   };
 
   config = lib.mkIf config.hyprland.hyprshot.enable {

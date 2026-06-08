@@ -1,4 +1,4 @@
-# sddm theme 
+# sddm theme
 # does not work for kde6
 {
   pkgs,
@@ -35,5 +35,5 @@ pkgs.stdenv.mkDerivation rec {
     cd $out/share/sddm/themes/sddm-sugar-dark
     rm Background.jpg
     cp -r ${image} Background.jpg
-   '';
+  '';
 }

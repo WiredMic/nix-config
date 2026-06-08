@@ -1,5 +1,13 @@
-{ pkgs, config, lib, ... }: {
-  options = { my.gpg.enable = lib.mkEnableOption "enables my gpg config"; };
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
+{
+  options = {
+    my.gpg.enable = lib.mkEnableOption "enables my gpg config";
+  };
 
   config = lib.mkIf config.my.gpg.enable {
     programs.gpg = {

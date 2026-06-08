@@ -6,6 +6,13 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    home-manager = {
+      url = "github:nix-community/home-manager/release-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    treefmt-nix.url = "github:numtide/treefmt-nix";
+
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     # Bar for hyprland
@@ -31,12 +38,6 @@
     };
 
     # waveforms.url = "github:liff/waveforms-flake";
-
-    # Home manager
-    home-manager = {
-      url = "github:nix-community/home-manager/release-26.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
 
     cosmic-manager = {
       url = "github:HeitorAugustoLN/cosmic-manager";
@@ -70,6 +71,7 @@
       plasma-manager,
       nix-flatpak,
       stylix,
+      treefmt-nix,
       ags,
       nixos-hardware,
       # nix-ld,
@@ -137,6 +139,11 @@
       # Reusable home-manager modules you might want to export
       # These are usually stuff you would upstream into home-manager
       homeManagerModules = import ./modules/home-manager;
+
+      formatter = forAllSystems (
+        system:
+        (treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${system} ./treefmt.nix).config.build.wrapper
+      );
 
       nixosConfigurations = {
         nixDesk = nixpkgs.lib.nixosSystem {

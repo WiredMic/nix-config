@@ -1,6 +1,13 @@
-{ pkgs, lib, config, userSettings, ... }: {
+{
+  pkgs,
+  lib,
+  config,
+  userSettings,
+  ...
+}:
+{
   imports = [
-    # de 
+    # de
     ./hyprland/hyprland.nix
 
   ];
