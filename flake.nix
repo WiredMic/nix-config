@@ -121,7 +121,13 @@
 
       # Your custom packages
       # Accessible through 'nix build', 'nix shell', etc
-      packages = forAllSystems (system: import ./pkgs nixpkgs.legacyPackages.${systemSettings.system});
+      packages = forAllSystems (
+        system:
+        let
+          pkgsFor = nixpkgs.legacyPackages.${system};
+        in
+        import ./pkgs pkgsFor pkgsFor # overlay form: final: prev:
+      );
 
       # Your custom packages and modifications, exported as overlays
       overlays = import ./overlays { inherit inputs; };
@@ -141,12 +147,14 @@
             inherit userSettings;
           };
           modules = [
-            # grub2-themes.nixosModules.default
+            { nixpkgs.overlays = [ (import ./pkgs) ]; }
             nix-flatpak.nixosModules.nix-flatpak
             stylix.nixosModules.stylix
 
-            home-manager.nixosModules.home-manager
+            # nix-ld.nixosModules.nix-ld
+            nix-index-database.nixosModules.nix-index
 
+            home-manager.nixosModules.home-manager
             # Our main nixos configuration file <
             ./hosts/nixDesk/configuration.nix
             {
@@ -179,6 +187,7 @@
             inherit userSettings;
           };
           modules = [
+            { nixpkgs.overlays = [ (import ./pkgs) ]; }
             nix-flatpak.nixosModules.nix-flatpak
             stylix.nixosModules.stylix
             nix-index-database.nixosModules.nix-index
@@ -219,6 +228,7 @@
           };
           modules = [
             # Must be here for the other configs
+            { nixpkgs.overlays = [ (import ./pkgs) ]; }
             nix-flatpak.nixosModules.nix-flatpak
             stylix.nixosModules.stylix
 
