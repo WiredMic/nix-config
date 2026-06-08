@@ -1032,22 +1032,6 @@ This issue might be caused by:
 3. The language server that you expect to run has an `:activation-fn` passed to `lsp-register-client` that prevents it supporting this buffer.
 4. `lsp-mode' doesn't have any integration for the language behind `octave-mode'. Refer to https://emacs-lsp.github.io/lsp-mode/page/languages and https://langserver.org/ .
 
-*** OpenSCAD
-[[https://openscad.org/]]
-
-[[https://emacs-lsp.github.io/lsp-mode/page/lsp-openscad/][lsp-openscad]]
-
-#+begin_src elisp :tangle yes
-(use-package! scad-mode
-  :mode "\\.scad\\'"
-  :hook (scad-mode . lsp-deferred)
-  :config
-  (map! (:localleader
-         (:map (scad-mode-map)
-               "e" #'scad-export
-               "o" #'scad-open
-               "p" #'scad-preview))))
-#+end_src
 *** LaTeX
 Mode: For now ([[https://www.gnu.org/s/auctex/][AUCTeX]])
 LSP: [[https://github.com/latex-lsp/texlab][texlab]], [[https://emacs-lsp.github.io/lsp-mode/page/lsp-latex/][lsp-mode]]

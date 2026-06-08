@@ -114,8 +114,3 @@
 ;; (package! llm-ollama)
 ;; (package! ellama)
 
-
-;; OpenSCAD
-(package! scad-mode
-  :recipe (:host github :repo "openscad/emacs-scad-mode")
-  :pin "44b4ac086bd01791ff2ccb25234b4e5d701bc10a")
