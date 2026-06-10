@@ -110,6 +110,11 @@ in
       just-formatter
       just-lsp
 
+      # PHP
+      # php
+      # phpPackages.composer
+      # Download in flake
+
       # Anki
       curl
 

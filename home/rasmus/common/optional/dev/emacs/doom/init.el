@@ -144,7 +144,7 @@
        (just +tree-sitter +lsp)                ; the poor man's Makefile
        json              ; At least it ain't XML
        ;;(java +lsp)       ; the poster child for carpal tunnel syndrome
-       ;;javascript        ; all(hope(abandon(ye(who(enter(here))))))
+       (javascript +tree-sitter)        ; all(hope(abandon(ye(who(enter(here))))))
        ;;julia             ; a better, faster MATLAB
        ;;kotlin            ; a better, slicker Java(Script)
        (latex +lsp +latexmk +fold +cdlatex)             ; writing papers in Emacs has never been so fun
@@ -156,7 +156,7 @@
        (nix +tree-sitter +lsp)               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
        (org +roam +pandoc)               ; organize your plain life in plain text
-       ;;php               ; perl's insecure younger brother
+       (php +tree-sitter +lsp)               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional
        (python +lsp +pyright)             ; beautiful is better than ugly
@@ -176,7 +176,7 @@
        ;;terra             ; Earth and Moon in alignment for performance.
        (typst +tree-sitter +lsp)
        (vhdl +tree-sitter +lsp)              ; Keep it syncronized stupid
-       ;;web               ; the tubes
+       (web +tree-sitter)               ; the tubes
        yaml              ; JSON, but readable
        ;;zig               ; C, but simpler
 
