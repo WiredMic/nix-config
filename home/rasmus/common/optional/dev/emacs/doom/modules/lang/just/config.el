@@ -12,7 +12,7 @@
   :risky t
   :type 'file)
 
-(defun +just-lsp-setup-h ()
+(defun +just-lsp-setup (mode)
   "Configure LSP for just modes."
   (when (modulep! +lsp)
     (if (modulep! :tools lsp -eglot)
@@ -20,31 +20,36 @@
           (require 'lsp-just)
           (when +just-lsp-server-path
             (setq lsp-just-executable (list +just-lsp-server-path))))
-      (set-eglot-client! major-mode
-                         (list +just-lsp-server-path)))
-    (lsp!)
-    (when (modulep! :editor format)
-      (set-formatter! 'lsp :modes (list major-mode)))))
+      (set-eglot-client! mode (list +just-lsp-server-path)))))
 
-(when (and (modulep! :editor format)
-           (not (modulep! +lsp)))
-  (after! apheleia
-    (set-formatter! 'just
-      '("just" "--unstable" "--dump"
-        "--indentation"
-        (if indent-tabs-mode
-            "\t"
-          (make-string tab-width ?\s))
-        "--justfile" filepath)
-      :modes '(just-mode just-ts-mode))))
+(when (modulep! :editor format)
+  (if (modulep! +lsp)
+      (set-formatter! 'lsp :modes '(just-mode just-ts-mode))
+    (after! apheleia
+      (set-formatter! 'just
+        '("just" "--unstable" "--dump"
+          "--indentation"
+          (if indent-tabs-mode
+              "\t"
+            (make-string tab-width ?\s))
+          "--justfile" filepath)
+        :modes '(just-mode just-ts-mode)))))
 
 (use-package! just-mode
   :when (not (modulep! +tree-sitter))
   :mode ("Justfile\\'" "justfile\\'" "\\.just\\'")
-  :hook (just-mode . +just-lsp-setup-h))
+  :hook (just-mode . (lambda () (when (modulep! +lsp) (lsp!))))
+  :config
+  (+just-lsp-setup 'just-mode))
 
 (use-package! just-ts-mode
   :when (modulep! +tree-sitter)
   :mode ("Justfile\\'" "justfile\\'" "\\.just\\'")
-  :hook (just-ts-mode . +just-lsp-setup-h))
+  :init
+  (set-tree-sitter! nil 'just-ts-mode
+    '((typst :url "https://github.com/casey/tree-sitter-just"
+       :commit "5685543a6e64f66335e25518c9ae8ffa1dae3d01")))
+  :hook (just-ts-mode . (lambda () (when (modulep! +lsp) (lsp!))))
+  :config
+  (+just-lsp-setup 'just-ts-mode))
 

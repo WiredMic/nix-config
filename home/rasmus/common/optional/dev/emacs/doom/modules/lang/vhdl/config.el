@@ -8,14 +8,14 @@
 ;; TODO ligatures: Differentiate between <= (logic) and <= (signal_assignment)
 
 
-(defgroup doom-vhdl nil
+(defgroup vhdl nil
   "VHDL language support for Doom Emacs."
   :group 'languages
   :group 'programming)
 
 (defcustom +vhdl-lsp-server 'vhdl-tool
   "Which LSP server to use for VHDL."
-  :group 'doom-vhdl
+  :group 'vhdl
   :type '(choice (const :tag "VHDL Tool (default)" vhdl-tool)
           (const :tag "HDL Checker" hdl-checker)
           (const :tag "VHDL LS" vhdl-ls)
@@ -23,7 +23,7 @@
 
 (defcustom +vhdl-lsp-server-path nil
   "Path to binary server file."
-  :group 'doom-vhdl
+  :group 'vhdl
   :risky t
   :type 'file)
 
@@ -71,6 +71,7 @@
           (vhdl-beautify-buffer))
         (funcall callback nil)))
     :modes '(vhdl-mode))
+
   :config
   (+vhdl-common-config 'vhdl-mode))
 
@@ -85,20 +86,13 @@
   (set-tree-sitter! 'vhdl-mode 'vhdl-ts-mode 'vhdl)
 
   (set-formatter! 'vhdl-ts-beautify
-    ;; Get a set of arguments form 'apheleia--run-formatter-function'
     (lambda (&rest args)
-      ;; Pick out the need
       (let ((scratch (plist-get args :scratch))
             (callback (plist-get args :callback)))
-        ;; Use the given buffer
         (with-current-buffer scratch
-          ;; Go into 'vhdl-ts-mode' (starts in 'fundamental-mode')
           (vhdl-ts-mode)
-          ;; beautify
           (vhdl-ts-beautify-buffer))
-        ;; return with nil errors
         (funcall callback nil)))
-    ;; This only works in 'vhdl-ts-mode'
     :modes '(vhdl-ts-mode))
   
   :config
