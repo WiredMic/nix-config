@@ -218,6 +218,12 @@
 
     wl-clipboard
     wl-clipboard-x11
+
+    wineWow64Packages.waylandFull
+
+    sshfs
+
+    kdePackages.okular
   ];
 
   # https://github.com/gmodena/nix-flatpak
@@ -254,7 +260,6 @@
 
   # Help to use the PC
   my.tts.enable = true; # TODO piper
-  programs.ydotool.enable = true; # TODO get it to work
   # TODO Spellcheck
 
   my.thunar.enable = true;
