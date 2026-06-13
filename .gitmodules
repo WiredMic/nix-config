@@ -1,0 +1,3 @@
+[submodule "home/rasmus/common/optional/dev/emacs/doom/sources/doom++"]
+	path = home/rasmus/common/optional/dev/emacs/doom/sources/doom++
+	url = https://github.com/doomemacs/modules-contrib.git
