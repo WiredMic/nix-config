@@ -69,7 +69,11 @@
       # texlive.combined.scheme-full
 
       gparted
-       
+
+      nix-update
+      gh
+      nixpkgs-review
+
       kdePackages.gwenview
       kdePackages.qtimageformats
     ])
