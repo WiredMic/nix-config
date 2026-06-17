@@ -69,6 +69,9 @@
       # texlive.combined.scheme-full
 
       gparted
+       
+      kdePackages.gwenview
+      kdePackages.qtimageformats
     ])
     ++ (with pkgs-unstable; [
       # eza

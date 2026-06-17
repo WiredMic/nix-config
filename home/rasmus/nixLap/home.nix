@@ -85,6 +85,9 @@
           lintr
         ];
       })
+
+      kdePackages.gwenview
+      kdePackages.qtimageformats
     ])
     ++ (with pkgs-unstable; [
       # eza
