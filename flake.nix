@@ -126,9 +126,13 @@
       packages = forAllSystems (
         system:
         let
-          pkgsFor = nixpkgs.legacyPackages.${system};
+          pkgsFor = import nixpkgs {
+            inherit system;
+            overlays = [ (import ./pkgs) ];
+          };
+          overlay = import ./pkgs pkgsFor pkgsFor;
         in
-        import ./pkgs pkgsFor pkgsFor # overlay form: final: prev:
+        overlay
       );
 
       # Your custom packages and modifications, exported as overlays
