@@ -28,8 +28,8 @@ in
     };
 
     stylix.cursor = {
-      package = pkgs.bibata-cursors;
-      name = "Bibata-Modern-Classic";
+      package = pkgs.kdePackages.breeze;
+      name = "breeze_cursors";
       size = 20;
     };
 
