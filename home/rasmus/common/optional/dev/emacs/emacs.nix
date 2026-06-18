@@ -3,6 +3,7 @@
   lib,
   config,
   inputs,
+  userSettings,
   ...
 }:
 let
@@ -35,19 +36,17 @@ in
         withNativeCompilation = true;
         withDbus = true;
       };
-      extraPackages = epkgs: with epkgs; [ ];
+      extraPackages =
+        epkgs: with epkgs; [
+          treesitterGrammars
+        ];
     };
 
     services.emacs = {
       enable = true;
-      package = if config.programs.emacs.enable then config.programs.emacs.package else pkgs.emacs;
+      defaultEditor = userSettings.editor == "emacs";
       socketActivation.enable = true;
-    };
-
-    home.sessionVariables = {
-      EDITOR = lib.mkForce "emacsclient";
-      VISUAL = lib.mkForce "emacsclient -nc";
-      TREE_SITTER_GRAMMAR_DIR = "${treesitterGrammars}/lib";
+      startWithUserSession = true;
     };
 
     fonts.fontconfig.enable = true;

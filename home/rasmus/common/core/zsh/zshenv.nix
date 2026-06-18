@@ -2,22 +2,18 @@
   config,
   lib,
   pkgs,
-  userSettings,
   ...
 }:
 {
   imports = [ ];
 
   # Environment Variables to always set at login
-
   home.sessionVariables = {
     # flatpak
     XDG_DATA_DIRS = "$XDG_DATA_DIRS:/usr/share:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share";
   };
 
   home.sessionVariables = {
-    EDITOR = "${userSettings.editor}";
-    VISUAL = "$EDITOR";
     PLATFORMIO_CORE_DIR = "${config.xdg.configHome}/platformio";
     TLDR_CACHE_DIR = "${config.xdg.configHome}/tldr";
 

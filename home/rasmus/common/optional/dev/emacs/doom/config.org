@@ -1132,13 +1132,9 @@ Setup tinymist
   )
 #+end_src
 ** Tools
-*** Treesitter
+*** Tree-sitter
 #+begin_src emacs-lisp :results none :tangle yes
-(use-package! treesit
-  :config
-  (when-let ((grammar-dir (getenv "TREE_SITTER_GRAMMAR_DIR")))
-    (add-to-list 'treesit-extra-load-path grammar-dir))
-  )
+;; (use-package! treesit)
 #+end_src
 
 **** ts-query-highlight
