@@ -125,23 +125,45 @@
 
         }
       ];
+      # https://github.com/samwhelp/popos-cosmic-adjustment/blob/main/sample/default-schema/Main/asset/overlay/usr/share/cosmic/com.system76.CosmicSettings.Shortcuts/v1/system_actions
+      systemActions = cosmicLib.cosmic.mkRON "map" [
+        {
+          key = cosmicLib.cosmic.mkRON "enum" "Terminal";
+          value = "kitty";
+        }
+        {
+          key = cosmicLib.cosmic.mkRON "enum" "WebBrowser";
+          value = "firefox";
+        }
+        {
+          key = cosmicLib.cosmic.mkRON "enum" "HomeFolder";
+          value = "cosmic-files";
+        }
+        {
+          key = cosmicLib.cosmic.mkRON "enum" "Launcher";
+          value = "cosmic-launcher";
+        }
+      ];
       shortcuts = [
         {
           action = cosmicLib.cosmic.mkRON "enum" {
-            value = [
-              "firefox"
-            ];
-            variant = "Spawn";
+            variant = "System";
+            value = [ (cosmicLib.cosmic.mkRON "enum" "Terminal") ];
           };
-          description = cosmicLib.cosmic.mkRON "optional" "Open Firefox";
+          key = "Super+T";
+        }
+        {
+          action = cosmicLib.cosmic.mkRON "enum" {
+            variant = "System";
+            value = [ (cosmicLib.cosmic.mkRON "enum" "WebBrowser") ];
+          };
           key = "Super+B";
         }
         {
           action = cosmicLib.cosmic.mkRON "enum" {
-            variant = "Spawn";
-            value = [ "cosmic-files" ]; # e.g. "nautilus", "thunar", "dolphin"
+            variant = "System";
+            value = [ (cosmicLib.cosmic.mkRON "enum" "HomeFolder") ];
           };
-          description = cosmicLib.cosmic.mkRON "optional" "Open File Manager";
           key = "Super+F";
         }
         {
