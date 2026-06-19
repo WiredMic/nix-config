@@ -3,6 +3,7 @@
   stdenv,
   fetchurl,
   symlinkJoin,
+  callPackage,
 
   # Dependencies
   speech-tools,
@@ -100,6 +101,16 @@ stdenv.mkDerivation (finalAttrs: {
     command = "${finalAttrs.pname} --version";
     version = finalAttrs.version;
   };
+
+  passthru.packages = callPackage ./festival-voices-packages.nix { };
+
+  passthru.withVoices =
+    voicesFn:
+    symlinkJoin {
+      name = "${finalAttrs.pname}-with-voices";
+      paths = [ finalAttrs.finalPackage ] ++ (voicesFn finalAttrs.passthru.packages);
+      meta = finalAttrs.meta;
+    };
 
   meta = {
     description = "Festival is a multi-lingual speech synthesis from the CMU";
