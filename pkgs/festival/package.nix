@@ -4,6 +4,7 @@
   fetchurl,
   symlinkJoin,
   callPackage,
+  makeWrapper,
 
   # Dependencies
   speech-tools,
@@ -52,7 +53,17 @@ stdenv.mkDerivation (finalAttrs: {
     "CXX=${stdenv.cc.targetPrefix}c++"
   ];
 
+  configureFlags = [
+    "--prefix=${placeholder "out"}"
+    "--libdir=${placeholder "out"}/lib"
+  ];
+
   preConfigure = ''
+    # Important: patch the compiled-in default path
+     substituteInPlace config/project.mak \
+       --replace-fail 'FTLIBDIR = $(FESTIVAL_HOME)/lib' \
+                      'FTLIBDIR = ${placeholder "out"}/lib'
+
     sed -e s@/usr/bin/@@g -i $( grep -rl '/usr/bin/' . )
     sed -re 's@/bin/(rm|printf|uname)@\1@g' -i $( grep -rl '/bin/' . )
 
@@ -110,6 +121,11 @@ stdenv.mkDerivation (finalAttrs: {
       name = "${finalAttrs.pname}-with-voices";
       paths = [ finalAttrs.finalPackage ] ++ (voicesFn finalAttrs.passthru.packages);
       meta = finalAttrs.meta;
+      nativeBuildInputs = [ makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/festival \
+          --set-default FESTLIBDIR "$out/lib"
+      '';
     };
 
   meta = {

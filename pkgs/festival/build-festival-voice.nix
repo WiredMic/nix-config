@@ -8,6 +8,7 @@
   pname,
   version,
   src,
+  voiceName ? pname, # name used inside festival's lib/voices/
   meta ? { },
   ...
 }@attrs:
