@@ -3,7 +3,7 @@
 FESTIVAL="./result/bin/festival"
 
 voices=$(echo '(mapcar (lambda (v) (format t "%s\n" v)) (voice.list))' |
-    "$FESTIVAL" 2>/dev/null)
+    "$FESTIVAL" 2>/dev/null | grep -E '^[a-zA-Z0-9_]+$')
 
 pass=0
 fail=0
@@ -14,15 +14,20 @@ echo $voices
 for voice in $voices; do
     echo -n "Testing $voice ... "
     tmpfile=$(mktemp /tmp/XXXXXX.wav)
-    echo "(voice_${voice})(utt.save.wave (utt.synth (Utterance Text \"hello world\")) \"$tmpfile\")" |
-        "$FESTIVAL" 2>&1
+    output=$("$FESTIVAL" 2>&1 <<<"(voice_${voice})(utt.save.wave (utt.synth (Utterance Text \"hello world\")) \"$tmpfile\")")
     size=$(stat -c%s "$tmpfile")
-    if [[ $size -gt 44 ]]; then
+    if [[ $size -gt 44 ]] && ! echo "$output" | grep -q "SIOD ERROR"; then
         echo "ok ($size bytes)"
         ((pass++))
     else
-        echo "FAIL (only $size bytes)"
+        echo "FAIL"
+        if echo "$output" | grep -q "SIOD ERROR"; then
+            echo "$output" | grep "SIOD ERROR" | head -1
+        else
+            echo "(only $size bytes)"
+        fi
         ((fail++))
+        errors+=("$voice")
     fi
     rm -f "$tmpfile"
 done

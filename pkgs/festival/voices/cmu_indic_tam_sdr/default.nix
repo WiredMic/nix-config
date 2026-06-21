@@ -16,7 +16,7 @@ buildFestivalVoice (finalAttrs: {
   };
 
   meta = with lib; {
-    description = "Festival voice ${finalAttrs.pname}";
+    description = "Festival Tamil voice ${finalAttrs.pname}";
     homepage = "http://festvox.org/";
     license = licenses.free;
     maintainers = with maintainers; [ WiredMic ];

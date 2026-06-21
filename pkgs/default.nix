@@ -5,8 +5,10 @@ final: prev: {
   festival = final.callPackage ./festival/package.nix {
     speech-tools = final.speech-tools;
   };
-  festivalVoices = final.lib.recurseIntoAttrs final.festival.packages;
+  # Should user be able to install a voice on their own
+  # festivalVoices = final.lib.recurseIntoAttrs final.festival.packages;
   speech-tools = final.callPackage ./speech-tools/package.nix { };
+  upc_ca_base = final.callPackage ./upc_ca_base/package.nix { };
   festivalFull = final.festival.withVoices (
     voices: with voices; [
       cmu_us_aew
@@ -45,14 +47,63 @@ final: prev: {
       us2_mbrola
       us3_mbrola
       en1_mbrola
+      upc_ca_bet_hts
+      upc_ca_eli_hts
+      upc_ca_eva_hts
+      upc_ca_jan_hts
+      upc_ca_mar_hts
+      upc_ca_ona_hts
+      upc_ca_pau_hts
+      upc_ca_pep_hts
+      upc_ca_pol_hts
+      upc_ca_teo_hts
+      upc_ca_uri_hts
+      upc_ca_pep_clunits
+      upc_ca_bet_clunits
+      upc_ca_teo_clunits
+      upc_ca_uri_clunits
+      upc_ca_ona_clunits
+      upc_ca_pau_clunits
+      upc_ca_eli_clunits
+      upc_ca_eva_clunits
+      upc_ca_mar_clunits
+      upc_ca_jan_clunits
+      upc_ca_pol_clunits
     ]
   );
+
   festivalMbrola = final.festival.withVoices (
     voices: with voices; [
       us1_mbrola
       us2_mbrola
       us3_mbrola
       en1_mbrola
+    ]
+  );
+  festivalCatalan = final.festival.withVoices (
+    voices: with voices; [
+      upc_ca_bet_hts
+      upc_ca_eli_hts
+      upc_ca_eva_hts
+      upc_ca_jan_hts
+      upc_ca_mar_hts
+      upc_ca_ona_hts
+      upc_ca_pau_hts
+      upc_ca_pep_hts
+      upc_ca_pol_hts
+      upc_ca_teo_hts
+      upc_ca_uri_hts
+      upc_ca_pep_clunits
+      upc_ca_bet_clunits
+      upc_ca_teo_clunits
+      upc_ca_uri_clunits
+      upc_ca_ona_clunits
+      upc_ca_pau_clunits
+      upc_ca_eli_clunits
+      upc_ca_eva_clunits
+      upc_ca_mar_clunits
+      upc_ca_jan_clunits
+      upc_ca_pol_clunits
     ]
   );
 

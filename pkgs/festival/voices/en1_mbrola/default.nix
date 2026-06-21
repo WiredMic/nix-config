@@ -1,11 +1,13 @@
 {
   lib,
   fetchurl,
-  buildFestivalMbrolaVoiceWrapper,
-  ...
-}:
+  buildFestivalVoice,
 
-buildFestivalMbrolaVoiceWrapper (finalAttrs: {
+  # Dependencies
+  mbrola-voices,
+  mbrola,
+}:
+buildFestivalVoice (finalAttrs: {
   voiceName = "en1";
   pname = "festvox-mbrola-${finalAttrs.voiceName}";
   version = "1.95";
@@ -15,8 +17,23 @@ buildFestivalMbrolaVoiceWrapper (finalAttrs: {
     hash = "sha256-pLtV056u8x62rYuRUDXDEQiyQnEIUS4cMBlB+/j2/7k=";
   };
 
+  installPhase = ''
+    runHook preInstall
+
+    mkdir -p "$out"
+    cp -r lib "$out/lib"
+
+    ln -s "${
+      mbrola-voices.override { languages = [ finalAttrs.voiceName ]; }
+    }/data/${finalAttrs.voiceName}"       "$out/lib/voices/english/${finalAttrs.voiceName}_mbrola/${finalAttrs.voiceName}"
+
+    runHook postInstall
+  '';
+
+  passthru.extraBinPath = [ mbrola ];
+
   meta = with lib; {
-    description = "Festival MBROLA voice ${finalAttrs.voiceName}";
+    description = "Festival MBROLA English (GB) voice ${finalAttrs.voiceName}";
     homepage = "http://festvox.org/";
     license = licenses.free;
     maintainers = with maintainers; [ WiredMic ];

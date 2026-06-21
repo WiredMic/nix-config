@@ -9,7 +9,7 @@ attrsOrFn:
 
 let
   attrs = if lib.isFunction attrsOrFn then lib.fix attrsOrFn else attrsOrFn;
-  voiceName = attrs.voiceName or attrs.pname;
+  voiceName = attrs.voiceName;
 in
 
 stdenv.mkDerivation (

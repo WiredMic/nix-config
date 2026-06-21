@@ -120,10 +120,11 @@ stdenv.mkDerivation (finalAttrs: {
     let
       selectedVoices = voicesFn finalAttrs.passthru.packages;
       extraBins = lib.concatMap (v: v.passthru.extraBinPath or [ ]) selectedVoices;
+      extraDeps = lib.concatMap (v: v.passthru.festivalDeps or [ ]) selectedVoices;
     in
     symlinkJoin {
       name = "${finalAttrs.pname}-with-voices";
-      paths = [ finalAttrs.finalPackage ] ++ selectedVoices;
+      paths = [ finalAttrs.finalPackage ] ++ selectedVoices ++ extraDeps;
       meta = finalAttrs.meta;
       nativeBuildInputs = [ makeWrapper ];
       postBuild = ''
@@ -138,6 +139,6 @@ stdenv.mkDerivation (finalAttrs: {
     homepage = "http://festvox.org/festival/";
     license = lib.licenses.free;
     mainProgram = "festival";
-    maintainers = [ ];
+    maintainers = with lib.maintainers; [ WiredMic ];
   };
 })

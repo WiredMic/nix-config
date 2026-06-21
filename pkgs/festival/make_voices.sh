@@ -1,46 +1,125 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-voices=(
-    cmu_us_aew cmu_us_ahw cmu_us_aup cmu_us_axb cmu_us_bdl cmu_us_clb
-    cmu_us_eey cmu_us_fem cmu_us_gka cmu_us_jmk cmu_us_ksp cmu_us_ljm
-    cmu_us_lnh cmu_us_rms cmu_us_rxr cmu_us_slp cmu_us_slt
-    cmu_indic_ben_rm cmu_indic_guj_ad cmu_indic_guj_dp cmu_indic_guj_kt
-    cmu_indic_hin_ab cmu_indic_kan_plv cmu_indic_mar_aup cmu_indic_mar_slp
-    cmu_indic_pan_amp cmu_indic_tam_sdr cmu_indic_tel_kpn cmu_indic_tel_sk
-    cmu_indic_tel_ss
+declare -A festvox_voice_lang=(
+    [cmu_us_aew]="English (US)"
+    [cmu_us_ahw]="English (US)"
+    [cmu_us_aup]="English (US)"
+    [cmu_us_axb]="English (US)"
+    [cmu_us_bdl]="English (US)"
+    [cmu_us_clb]="English (US)"
+    [cmu_us_eey]="English (US)"
+    [cmu_us_fem]="English (US)"
+    [cmu_us_gka]="English (US)"
+    [cmu_us_jmk]="English (US)"
+    [cmu_us_ksp]="English (US)"
+    [cmu_us_ljm]="English (US)"
+    [cmu_us_lnh]="English (US)"
+    [cmu_us_rms]="English (US)"
+    [cmu_us_rxr]="English (US)"
+    [cmu_us_slp]="English (US)"
+    [cmu_us_slt]="English (US)"
+    [cmu_indic_ben_rm]="Bengali"
+    [cmu_indic_guj_ad]="Gujarati"
+    [cmu_indic_guj_dp]="Gujarati"
+    [cmu_indic_guj_kt]="Gujarati"
+    [cmu_indic_hin_ab]="Hindi"
+    [cmu_indic_kan_plv]="Kannada"
+    [cmu_indic_mar_aup]="Marathi"
+    [cmu_indic_mar_slp]="Marathi"
+    [cmu_indic_pan_amp]="Punjabi"
+    [cmu_indic_tam_sdr]="Tamil"
+    [cmu_indic_tel_kpn]="Telugu"
+    [cmu_indic_tel_sk]="Telugu"
+    [cmu_indic_tel_ss]="Telugu"
 )
 
-special_voices=(
+festvox_voices=("${!festvox_voice_lang[@]}")
+
+festvox_voices_british=(
     kallpc16k rablpc16k
 )
 
-mbrola_voices=(us1 us2 us3 en1)
+declare -A mbrola_voice_lang=(
+    [us1]="English (US)"
+    [us2]="English (US)"
+    [us3]="English (US)"
+    [en1]="English (GB)"
+)
+mbrola_voices=("${!mbrola_voice_lang[@]}")
+
+catalan_voice_hts=(
+    upc_ca_bet_hts
+    upc_ca_eli_hts
+    upc_ca_eva_hts
+    upc_ca_jan_hts
+    upc_ca_mar_hts
+    upc_ca_ona_hts
+    upc_ca_pau_hts
+    upc_ca_pep_hts
+    upc_ca_pol_hts
+    upc_ca_teo_hts
+    upc_ca_uri_hts
+)
+# https://festcat.talp.cat/download/upc_ca_uri_hts-1.3.tgz
+
+catalan_voice_clunits=(
+    upc_ca_pep_clunits
+    upc_ca_bet_clunits
+    upc_ca_teo_clunits
+    upc_ca_uri_clunits
+    upc_ca_ona_clunits
+    upc_ca_pau_clunits
+    upc_ca_eli_clunits
+    upc_ca_eva_clunits
+    upc_ca_mar_clunits
+    upc_ca_jan_clunits
+    upc_ca_pol_clunits
+)
+# https://festcat.talp.cat/download/upc_ca_pep_clunits-1.2.tgz
 
 BASE_URL="http://festvox.org/packed/festival/2.5/voices"
 BASE_WRAPPER_URL="https://www.cstr.ed.ac.uk/downloads/festival/1.95/"
+BASE_URL_FESTCAT="https://festcat.talp.cat/download/"
 CACHE_DIR="/tmp/festival-voices-cache"
 mkdir -p "$CACHE_DIR"
 
 rm -rf voices/*
 
-for v in "${voices[@]}" "${special_voices[@]}" "${mbrola_voices[@]}"; do
+for v in "${festvox_voices[@]}" "${festvox_voices_british[@]}" "${mbrola_voices[@]}" "${catalan_voice_hts[@]}" "${catalan_voice_clunits[@]}"; do
 
     if [[ " ${mbrola_voices[*]} " =~ " ${v} " ]]; then
         tarname="festvox_${v}.tar.gz"
         url="$BASE_WRAPPER_URL/$tarname"
         outdir="voices/${v}_mbrola"
         cg_suffix=""
-    elif [[ " ${special_voices[*]} " =~ " ${v} " ]]; then
+        lang="${mbrola_voice_lang[$v]}"
+    elif [[ " ${catalan_voice_hts[*]} " =~ " ${v} " ]]; then
+        version="1.3"
+        tarname="${v}-${version}.tgz"
+        url="$BASE_URL_FESTCAT/$tarname"
+        outdir="voices/$v"
+        cg_suffix="-$version"
+        lang="Catalan"
+    elif [[ " ${catalan_voice_clunits[*]} " =~ " ${v} " ]]; then
+        version="1.2"
+        tarname="${v}-${version}.tgz"
+        url="$BASE_URL_FESTCAT/$tarname"
+        outdir="voices/$v"
+        cg_suffix="-$version"
+        lang="Catalan"
+    elif [[ " ${festvox_voices_british[*]} " =~ " ${v} " ]]; then
         tarname="festvox_${v}.tar.gz"
         url="$BASE_URL/$tarname"
         outdir="voices/$v"
         cg_suffix=""
+        lang="English (UK)"
     else
         tarname="festvox_${v}_cg.tar.gz"
         url="$BASE_URL/$tarname"
         outdir="voices/$v"
         cg_suffix="_cg"
+        lang="${festvox_voice_lang[$v]}"
     fi
 
     mkdir -p "$outdir"
@@ -57,16 +136,103 @@ for v in "${voices[@]}" "${special_voices[@]}" "${mbrola_voices[@]}"; do
     hash=$(nix hash file --type sha256 --sri "$cache_file")
     pname="festvox-$(echo "$v" | tr '_' '-')"
 
-    if [[ " ${mbrola_voices[*]} " =~ " ${v} " ]]; then
+    if [[ " ${catalan_voice_hts[*]} " =~ " ${v} " ]]; then
         cat >"$outdir/default.nix" <<-EOF
 {
   lib,
   fetchurl,
-  buildFestivalMbrolaVoiceWrapper,
+  buildFestivalVoice,
+  upc_ca_base,
   ...
 }:
 
-buildFestivalMbrolaVoiceWrapper (finalAttrs: {
+buildFestivalVoice (finalAttrs: {
+  voiceName = "$v";
+  pname = "$(echo "$v" | tr '_' '-')";
+  version = "${version}";
+
+  src = fetchurl {
+    url = "${BASE_URL_FESTCAT}/\${finalAttrs.voiceName}-\${finalAttrs.version}.tgz";
+    hash = "$hash";
+  };
+
+
+  installPhase = ''
+    runHook preInstall
+
+    mkdir -p "\$out/lib/voices/catalan/\${finalAttrs.voiceName}"
+    for d in festvox hts; do
+      [ -d "\$d" ] && cp -r "\$d" "\$out/lib/voices/catalan/\${finalAttrs.voiceName}/"
+    done
+
+    runHook postInstall
+  '';
+
+  passthru.festivalDeps = [ upc_ca_base ];
+
+  meta = with lib; {
+    description = "Festival Catalan voice \${finalAttrs.voiceName}";
+    homepage = "http://festvox.org/";
+    license = licenses.lgpl2;
+    maintainers = with maintainers; [ WiredMic ];
+  };
+})
+EOF
+    elif [[ " ${catalan_voice_clunits[*]} " =~ " ${v} " ]]; then
+        cat >"$outdir/default.nix" <<-EOF
+{
+  lib,
+  fetchurl,
+  buildFestivalVoice,
+  upc_ca_base,
+  ...
+}:
+
+buildFestivalVoice (finalAttrs: {
+  voiceName = "$v";
+  pname = "$(echo "$v" | tr '_' '-')";
+  version = "${version}";
+
+  src = fetchurl {
+    url = "${BASE_URL_FESTCAT}/\${finalAttrs.voiceName}-\${finalAttrs.version}.tgz";
+    hash = "$hash";
+  };
+
+
+  installPhase = ''
+    runHook preInstall
+
+    mkdir -p "\$out/lib/voices/catalan/\${finalAttrs.voiceName}"
+    for d in doc festival festvox mcep wav; do
+      [ -d "\$d" ] && cp -r "\$d" "\$out/lib/voices/catalan/\${finalAttrs.voiceName}/"
+    done
+
+    runHook postInstall
+  '';
+
+  passthru.festivalDeps = [ upc_ca_base ];
+
+  meta = with lib; {
+    description = "Festival Catalan voice \${finalAttrs.voiceName}";
+    homepage = "http://festvox.org/";
+    license = licenses.lgpl2;
+    maintainers = with maintainers; [ WiredMic ];
+  };
+})
+EOF
+
+    elif [[ " ${mbrola_voices[*]} " =~ " ${v} " ]]; then
+        cat >"$outdir/default.nix" <<-EOF
+{
+  lib,
+  fetchurl,
+  buildFestivalVoice,
+
+  # Dependencies
+  mbrola-voices,
+  mbrola,
+}:
+buildFestivalVoice (finalAttrs: {
   voiceName = "$v";
   pname = "festvox-mbrola-\${finalAttrs.voiceName}";
   version = "1.95";
@@ -76,8 +242,24 @@ buildFestivalMbrolaVoiceWrapper (finalAttrs: {
     hash = "$hash";
   };
 
+  installPhase = ''
+    runHook preInstall
+
+    mkdir -p "\$out"
+    cp -r lib "\$out/lib"
+
+    ln -s "\${
+      mbrola-voices.override { languages = [ finalAttrs.voiceName ]; }
+    }/data/\${finalAttrs.voiceName}" \
+      "\$out/lib/voices/english/\${finalAttrs.voiceName}_mbrola/\${finalAttrs.voiceName}"
+
+    runHook postInstall
+  '';
+
+  passthru.extraBinPath = [ mbrola ];
+
   meta = with lib; {
-    description = "Festival MBROLA voice \${finalAttrs.voiceName}";
+    description = "Festival MBROLA $lang voice \${finalAttrs.voiceName}";
     homepage = "http://festvox.org/";
     license = licenses.free;
     maintainers = with maintainers; [ WiredMic ];
@@ -104,7 +286,7 @@ buildFestivalVoice (finalAttrs: {
   };
 
   meta = with lib; {
-    description = "Festival voice \${finalAttrs.pname}";
+    description = "Festival $lang voice \${finalAttrs.pname}";
     homepage = "http://festvox.org/";
     license = licenses.free;
     maintainers = with maintainers; [ WiredMic ];
