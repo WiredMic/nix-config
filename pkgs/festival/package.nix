@@ -2,14 +2,19 @@
   lib,
   stdenv,
   fetchurl,
+  fetchFromGitHub,
   symlinkJoin,
   callPackage,
   makeWrapper,
+
+  # Toogles
+  withSpeechdSupport ? true,
 
   # Dependencies
   speech-tools,
   ncurses,
   alsa-lib,
+  glibc,
 
   # Tests
   testVersion,
@@ -37,6 +42,15 @@ stdenv.mkDerivation (finalAttrs: {
       hash = "sha256-58bjZC29Ww1klCvAFamG/dYkSnnlHsLoMJ5j1WnknqM=";
     })
   ];
+
+  freebsoftUtilsSrc = fetchFromGitHub {
+    owner = "brailcom";
+    repo = "festival-freebsoft-utils";
+    # current master, 2026-06-21
+    # it is a commit from February 11, 2013
+    rev = "a7ef791e640fc9ff63ccbc0ee18ff71b94ac5255";
+    hash = "sha256-C+JJfDuGEWN9VvlVUMkSknaJ8PJatsynPFZWpokZWCA=";
+  };
 
   sourceRoot = "${finalAttrs.pname}";
 
@@ -107,6 +121,10 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
+  postInstall = lib.optionalString withSpeechdSupport ''
+    cp ${finalAttrs.freebsoftUtilsSrc}/*.scm $out/lib/
+  '';
+
   passthru.tests.version = testVersion {
     package = finalAttrs.finalPackage;
     command = "${finalAttrs.pname} --version";
@@ -115,8 +133,10 @@ stdenv.mkDerivation (finalAttrs: {
 
   passthru.packages = callPackage ./festival-voices-packages.nix { };
 
-  passthru.withVoices =
-    voicesFn:
+  passthru.withVoices = voicesFn: finalAttrs.passthru.withDefaultVoice voicesFn null;
+
+  passthru.withDefaultVoice =
+    voicesFn: defaultVoice:
     let
       selectedVoices = voicesFn finalAttrs.passthru.packages;
       extraBins = lib.concatMap (v: v.passthru.extraBinPath or [ ]) selectedVoices;
@@ -130,14 +150,26 @@ stdenv.mkDerivation (finalAttrs: {
       postBuild = ''
         wrapProgram $out/bin/festival \
           --set-default FESTLIBDIR "$out/lib" \
-          ${lib.optionalString (extraBins != [ ]) ''--prefix PATH : "${lib.makeBinPath extraBins}"''}
+          --prefix PATH : "${lib.makeBinPath (lib.optional withSpeechdSupport glibc ++ extraBins)}"
+
+        ${lib.optionalString (defaultVoice != null) ''
+          cp --remove-destination $(realpath $out/lib/siteinit.scm) $out/lib/siteinit.scm
+          substituteInPlace $out/lib/siteinit.scm \
+            --replace-fail \
+              ';(set! voice_default' \
+              "(set! voice_default 'voice_${defaultVoice}) ;(set! voice_default"
+        ''}
       '';
     };
 
   meta = {
     description = "Festival is a multi-lingual speech synthesis from the CMU";
     homepage = "http://festvox.org/festival/";
-    license = lib.licenses.free;
+    license = with lib.licenses; [
+      free # the license should be `festvox`
+      # freebsoft-utils's license
+      gpl2Only
+    ];
     mainProgram = "festival";
     maintainers = with lib.maintainers; [ WiredMic ];
   };

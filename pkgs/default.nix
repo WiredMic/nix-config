@@ -2,6 +2,9 @@
 # You can build them using 'nix build .#example'
 final: prev: {
   scadformat = final.callPackage ./scadformat/package.nix { };
+
+  piper-tts = final.callPackage ./piper-tts/package.nix { };
+
   festival = final.callPackage ./festival/package.nix {
     speech-tools = final.speech-tools;
   };
