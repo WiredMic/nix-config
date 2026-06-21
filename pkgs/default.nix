@@ -7,7 +7,7 @@ final: prev: {
   };
   festivalVoices = final.lib.recurseIntoAttrs final.festival.packages;
   speech-tools = final.callPackage ./speech-tools/package.nix { };
-  festivalTest = final.festival.withVoices (
+  festivalFull = final.festival.withVoices (
     voices: with voices; [
       cmu_us_aew
       cmu_us_ahw
@@ -41,6 +41,19 @@ final: prev: {
       cmu_indic_tel_ss
       kallpc16k
       rablpc16k
+      us1_mbrola
+      us2_mbrola
+      us3_mbrola
+      en1_mbrola
     ]
   );
+  festivalMbrola = final.festival.withVoices (
+    voices: with voices; [
+      us1_mbrola
+      us2_mbrola
+      us3_mbrola
+      en1_mbrola
+    ]
+  );
+
 }

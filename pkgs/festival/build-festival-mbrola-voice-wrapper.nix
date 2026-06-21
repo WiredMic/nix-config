@@ -1,6 +1,8 @@
 {
   lib,
   stdenv,
+  mbrola,
+  mbrola-voices,
   runCommand,
   festival,
 }:
@@ -10,6 +12,7 @@ attrsOrFn:
 let
   attrs = if lib.isFunction attrsOrFn then lib.fix attrsOrFn else attrsOrFn;
   voiceName = attrs.voiceName or attrs.pname;
+  voiceData = mbrola-voices.override { languages = [ voiceName ]; };
 in
 
 stdenv.mkDerivation (
@@ -25,10 +28,14 @@ stdenv.mkDerivation (
       mkdir -p "$out"
       cp -r lib "$out/lib"
 
+      ln -s "${voiceData}/data/${voiceName}" \
+        "$out/lib/voices/english/${voiceName}_mbrola/${voiceName}"
+
       runHook postInstall
     '';
 
     passthru.isFestivalVoice = true;
+    passthru.extraBinPath = [ mbrola ];
 
     # Test to see if festival with the speciffic voice generates a wave file
     # that is bigger than the header size of a wave file (44 B)

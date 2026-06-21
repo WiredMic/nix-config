@@ -117,14 +117,19 @@ stdenv.mkDerivation (finalAttrs: {
 
   passthru.withVoices =
     voicesFn:
+    let
+      selectedVoices = voicesFn finalAttrs.passthru.packages;
+      extraBins = lib.concatMap (v: v.passthru.extraBinPath or [ ]) selectedVoices;
+    in
     symlinkJoin {
       name = "${finalAttrs.pname}-with-voices";
-      paths = [ finalAttrs.finalPackage ] ++ (voicesFn finalAttrs.passthru.packages);
+      paths = [ finalAttrs.finalPackage ] ++ selectedVoices;
       meta = finalAttrs.meta;
       nativeBuildInputs = [ makeWrapper ];
       postBuild = ''
         wrapProgram $out/bin/festival \
-          --set-default FESTLIBDIR "$out/lib"
+          --set-default FESTLIBDIR "$out/lib" \
+          ${lib.optionalString (extraBins != [ ]) ''--prefix PATH : "${lib.makeBinPath extraBins}"''}
       '';
     };
 

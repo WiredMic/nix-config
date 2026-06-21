@@ -1,18 +1,24 @@
-{ lib, fetchurl, buildFestivalVoice, ... }:
+{
+  lib,
+  fetchurl,
+  buildFestivalVoice,
+  ...
+}:
 
-buildFestivalVoice {
-  pname = "cmu_indic_tam_sdr";
+buildFestivalVoice (finalAttrs: {
+  voiceName = "cmu_indic_tam_sdr";
+  pname = "festvox-cmu-indic-tam-sdr";
   version = "2.5";
 
   src = fetchurl {
-    url = "http://festvox.org/packed/festival/2.5/voices/festvox_cmu_indic_tam_sdr_cg.tar.gz";
-    hash = "sha256-mkwIjOO9vxeGfV35GPw4aFlwYTgK6Nr4ls6Z0zcj5XA=";  
+    url = "http://festvox.org/packed/festival/${finalAttrs.version}/voices/festvox_${finalAttrs.voiceName}_cg.tar.gz";
+    hash = "sha256-mkwIjOO9vxeGfV35GPw4aFlwYTgK6Nr4ls6Z0zcj5XA=";
   };
 
   meta = with lib; {
-    description = "Festival voice: cmu_indic_tam_sdr";
+    description = "Festival voice ${finalAttrs.pname}";
     homepage = "http://festvox.org/";
     license = licenses.free;
-    maintainers = with lib.maintainers; [ WiredMic ];
+    maintainers = with maintainers; [ WiredMic ];
   };
-}
+})

@@ -5,12 +5,23 @@
   fetchurl,
   newScope,
   festival,
+  mbrola,
+  mbrola-voices,
 }:
 
 lib.makeScope newScope (self: {
 
   buildFestivalVoice = self.callPackage ./build-festival-voice.nix {
-    inherit lib stdenv festival;
+    inherit lib stdenv;
+  };
+
+  buildFestivalMbrolaVoiceWrapper = self.callPackage ./build-festival-mbrola-voice-wrapper.nix {
+    inherit
+      lib
+      stdenv
+      mbrola-voices
+      mbrola
+      ;
   };
 
   # US English voices (CMU)
@@ -32,6 +43,9 @@ lib.makeScope newScope (self: {
   cmu_us_rxr = self.callPackage ./voices/cmu_us_rxr { };
   cmu_us_slp = self.callPackage ./voices/cmu_us_slp { };
   cmu_us_slt = self.callPackage ./voices/cmu_us_slt { };
+  us1_mbrola = self.callPackage ./voices/us1_mbrola { };
+  us2_mbrola = self.callPackage ./voices/us2_mbrola { };
+  us3_mbrola = self.callPackage ./voices/us3_mbrola { };
 
   # Indian
   cmu_indic_ben_rm = self.callPackage ./voices/cmu_indic_ben_rm { };
@@ -48,8 +62,9 @@ lib.makeScope newScope (self: {
   cmu_indic_tel_sk = self.callPackage ./voices/cmu_indic_tel_sk { };
   cmu_indic_tel_ss = self.callPackage ./voices/cmu_indic_tel_ss { };
 
-  # Miscellaneous
+  # British
   kallpc16k = self.callPackage ./voices/kallpc16k { };
   rablpc16k = self.callPackage ./voices/rablpc16k { };
+  en1_mbrola = self.callPackage ./voices/en1_mbrola { };
 
 })

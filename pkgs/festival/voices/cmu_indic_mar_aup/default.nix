@@ -1,18 +1,24 @@
-{ lib, fetchurl, buildFestivalVoice, ... }:
+{
+  lib,
+  fetchurl,
+  buildFestivalVoice,
+  ...
+}:
 
-buildFestivalVoice {
-  pname = "cmu_indic_mar_aup";
+buildFestivalVoice (finalAttrs: {
+  voiceName = "cmu_indic_mar_aup";
+  pname = "festvox-cmu-indic-mar-aup";
   version = "2.5";
 
   src = fetchurl {
-    url = "http://festvox.org/packed/festival/2.5/voices/festvox_cmu_indic_mar_aup_cg.tar.gz";
-    hash = "sha256-DHUJIDSD/JfAS2cBJ7IMLVFyOzoWUXEk4i0JXzecyn8=";  
+    url = "http://festvox.org/packed/festival/${finalAttrs.version}/voices/festvox_${finalAttrs.voiceName}_cg.tar.gz";
+    hash = "sha256-DHUJIDSD/JfAS2cBJ7IMLVFyOzoWUXEk4i0JXzecyn8=";
   };
 
   meta = with lib; {
-    description = "Festival voice: cmu_indic_mar_aup";
+    description = "Festival voice ${finalAttrs.pname}";
     homepage = "http://festvox.org/";
     license = licenses.free;
-    maintainers = with lib.maintainers; [ WiredMic ];
+    maintainers = with maintainers; [ WiredMic ];
   };
-}
+})

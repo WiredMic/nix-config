@@ -9,18 +9,22 @@ pass=0
 fail=0
 errors=()
 
+echo $voices
+
 for voice in $voices; do
     echo -n "Testing $voice ... "
-    result=$(echo "(voice_${voice})(SayText \"test\")" |
-        "$FESTIVAL" 2>&1)
-    if echo "$result" | grep -qi "error\|unbound"; then
-        echo "FAIL"
-        errors+=("$voice: $(echo "$result" | grep -i 'error\|unbound' | head -1)")
-        ((fail++))
-    else
-        echo "ok"
+    tmpfile=$(mktemp /tmp/XXXXXX.wav)
+    echo "(voice_${voice})(utt.save.wave (utt.synth (Utterance Text \"hello world\")) \"$tmpfile\")" |
+        "$FESTIVAL" 2>&1
+    size=$(stat -c%s "$tmpfile")
+    if [[ $size -gt 44 ]]; then
+        echo "ok ($size bytes)"
         ((pass++))
+    else
+        echo "FAIL (only $size bytes)"
+        ((fail++))
     fi
+    rm -f "$tmpfile"
 done
 
 echo ""

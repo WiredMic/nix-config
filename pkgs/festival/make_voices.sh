@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 voices=(
     cmu_us_aew cmu_us_ahw cmu_us_aup cmu_us_axb cmu_us_bdl cmu_us_clb
@@ -14,65 +15,103 @@ special_voices=(
     kallpc16k rablpc16k
 )
 
+mbrola_voices=(us1 us2 us3 en1)
+
 BASE_URL="http://festvox.org/packed/festival/2.5/voices"
+BASE_WRAPPER_URL="https://www.cstr.ed.ac.uk/downloads/festival/1.95/"
 CACHE_DIR="/tmp/festival-voices-cache"
 mkdir -p "$CACHE_DIR"
 
 rm -rf voices/*
 
-for v in "${voices[@]}" "${special_voices[@]}"; do
-    mkdir -p "voices/$v"
+for v in "${voices[@]}" "${special_voices[@]}" "${mbrola_voices[@]}"; do
 
-    if [[ " ${special_voices[*]} " =~ " ${v} " ]]; then
-        # Special case: no _cg
+    if [[ " ${mbrola_voices[*]} " =~ " ${v} " ]]; then
         tarname="festvox_${v}.tar.gz"
-        cg=""
+        url="$BASE_WRAPPER_URL/$tarname"
+        outdir="voices/${v}_mbrola"
+        cg_suffix=""
+    elif [[ " ${special_voices[*]} " =~ " ${v} " ]]; then
+        tarname="festvox_${v}.tar.gz"
+        url="$BASE_URL/$tarname"
+        outdir="voices/$v"
+        cg_suffix=""
     else
         tarname="festvox_${v}_cg.tar.gz"
-        cg="_cg"
+        url="$BASE_URL/$tarname"
+        outdir="voices/$v"
+        cg_suffix="_cg"
     fi
 
-    url="$BASE_URL/$tarname"
+    mkdir -p "$outdir"
     cache_file="$CACHE_DIR/$tarname"
 
-    echo "Processing $v ..."
-
-    # Download only if not already cached
     if [[ ! -f "$cache_file" ]]; then
         echo "  ↓ Downloading $tarname ..."
         curl -L -s --fail -o "$cache_file" "$url" || {
-            echo "  Failed to download $tarname"
+            echo "  FAILED"
             continue
         }
-    else
-        echo "  ↺ Using cached file"
     fi
 
     hash=$(nix hash file --type sha256 --sri "$cache_file")
+    pname="festvox-$(echo "$v" | tr '_' '-')"
 
-    echo $hash
+    if [[ " ${mbrola_voices[*]} " =~ " ${v} " ]]; then
+        cat >"$outdir/default.nix" <<-EOF
+{
+  lib,
+  fetchurl,
+  buildFestivalMbrolaVoiceWrapper,
+  ...
+}:
 
-    cat >"voices/$v/default.nix" <<-EOF
-{ lib, fetchurl, buildFestivalVoice, ... }:
-
-buildFestivalVoice {
-  pname = "$v";
-  version = "2.5";
+buildFestivalMbrolaVoiceWrapper (finalAttrs: {
+  voiceName = "$v";
+  pname = "festvox-mbrola-\${finalAttrs.voiceName}";
+  version = "1.95";
 
   src = fetchurl {
-    url = "${url}";
-    hash = "${hash}";  
+    url = "https://www.cstr.ed.ac.uk/downloads/festival/\${finalAttrs.version}/festvox_\${finalAttrs.voiceName}.tar.gz";
+    hash = "$hash";
   };
 
   meta = with lib; {
-    description = "Festival voice: $v";
+    description = "Festival MBROLA voice \${finalAttrs.voiceName}";
     homepage = "http://festvox.org/";
     license = licenses.free;
-    maintainers = with lib.maintainers; [ WiredMic ];
+    maintainers = with maintainers; [ WiredMic ];
   };
-}
+})
 EOF
+    else
+        cat >"$outdir/default.nix" <<-EOF
+{
+  lib,
+  fetchurl,
+  buildFestivalVoice,
+  ...
+}:
 
-    echo "Created $v/default.nix"
+buildFestivalVoice (finalAttrs: {
+  voiceName = "$v";
+  pname = "festvox-$(echo "$v" | tr '_' '-')";
+  version = "2.5";
 
+  src = fetchurl {
+    url = "http://festvox.org/packed/festival/\${finalAttrs.version}/voices/festvox_\${finalAttrs.voiceName}$cg_suffix.tar.gz";
+    hash = "$hash";
+  };
+
+  meta = with lib; {
+    description = "Festival voice \${finalAttrs.pname}";
+    homepage = "http://festvox.org/";
+    license = licenses.free;
+    maintainers = with maintainers; [ WiredMic ];
+  };
+})
+EOF
+    fi
+
+    echo "  ✓ $outdir/default.nix"
 done
