@@ -36,9 +36,12 @@ declare -A festvox_voice_lang=(
 
 festvox_voices=("${!festvox_voice_lang[@]}")
 
-festvox_voices_british=(
-    kallpc16k rablpc16k
+declare -A festvox_voices_lang_special=(
+    [kallpc16k]="English (US)"
+    [rablpc16k]="English (GB)"
 )
+
+festvox_voices_special=("${!festvox_voices_lang_special[@]}")
 
 declare -A mbrola_voice_lang=(
     [us1]="English (US)"
@@ -86,7 +89,7 @@ mkdir -p "$CACHE_DIR"
 
 rm -rf voices/*
 
-for v in "${festvox_voices[@]}" "${festvox_voices_british[@]}" "${mbrola_voices[@]}" "${catalan_voice_hts[@]}" "${catalan_voice_clunits[@]}"; do
+for v in "${festvox_voices[@]}" "${festvox_voices_special[@]}" "${mbrola_voices[@]}" "${catalan_voice_hts[@]}" "${catalan_voice_clunits[@]}"; do
 
     if [[ " ${mbrola_voices[*]} " =~ " ${v} " ]]; then
         tarname="festvox_${v}.tar.gz"
@@ -108,12 +111,12 @@ for v in "${festvox_voices[@]}" "${festvox_voices_british[@]}" "${mbrola_voices[
         outdir="voices/$v"
         cg_suffix="-$version"
         lang="Catalan"
-    elif [[ " ${festvox_voices_british[*]} " =~ " ${v} " ]]; then
+    elif [[ " ${festvox_voices_special[*]} " =~ " ${v} " ]]; then
         tarname="festvox_${v}.tar.gz"
         url="$BASE_URL/$tarname"
         outdir="voices/$v"
         cg_suffix=""
-        lang="English (UK)"
+        lang="${festvox_voices_lang_special[$v]}"
     else
         tarname="festvox_${v}_cg.tar.gz"
         url="$BASE_URL/$tarname"
