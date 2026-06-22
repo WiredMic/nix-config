@@ -15,6 +15,7 @@
   ncurses,
   alsa-lib,
   glibc,
+  sox,
 
   # Tests
   testVersion,
@@ -150,7 +151,15 @@ stdenv.mkDerivation (finalAttrs: {
       postBuild = ''
         wrapProgram $out/bin/festival \
           --set-default FESTLIBDIR "$out/lib" \
-          --prefix PATH : "${lib.makeBinPath (lib.optional withSpeechdSupport glibc ++ extraBins)}"
+          --prefix PATH : "${
+            lib.makeBinPath (
+              lib.optionals withSpeechdSupport [
+                glibc
+                sox
+              ]
+              ++ extraBins
+            )
+          }"
 
         ${lib.optionalString (defaultVoice != null) ''
           cp --remove-destination $(realpath $out/lib/siteinit.scm) $out/lib/siteinit.scm

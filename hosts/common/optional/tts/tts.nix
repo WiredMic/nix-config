@@ -56,6 +56,7 @@ in
       extraVoices =
         voices: with voices; [
           kallpc16k
+          rablpc16k
         ];
       withSpeechdSupport = true;
     };
@@ -69,11 +70,18 @@ in
         withPico = true;
         withFlite = false;
       };
+      modules = {
+        # festival = builtins.readFile "${pkgs.speechd}/etc/speech-dispatcher/modules/festival.conf";
+        festival = ''
+          ${builtins.readFile "${pkgs.speechd}/etc/speech-dispatcher/modules/festival.conf"}
+        '';
+        pico = builtins.readFile "${pkgs.speechd}/etc/speech-dispatcher/modules/pico.conf";
+      };
       config = ''
 
         # -----LOGGING CONFIGURATION-----
-        LogLevel  3
-        LogDir  "default"
+        LogLevel 5
+        LogDir "/tmp/speechd-log"
 
 
         # ----- VOICE PARAMETERS -----
@@ -97,11 +105,9 @@ in
 
         #AddModule "espeak"                   "sd_espeak"                                                                   "${pkgs.speechd}/etc/speech-dispatcher/modules/espeak.conf"
         #AddModule "espeak-ng"                "${pkgs.speechd}/libexec/speech-dispatcher-modules/sd_espeak-ng"           "${pkgs.speechd}/etc/speech-dispatcher/modules/espeak-ng.conf"
-        AddModule "festival"                 "${pkgs.speechd}/libexec/speech-dispatcher-modules/sd_festival"            "${pkgs.speechd}/etc/speech-dispatcher/modules/festival.conf"
         #AddModule "flite"                    "${pkgs.speechd}/libexec/speech-dispatcher-modules/sd_flite"               "${pkgs.speechd}/etc/speech-dispatcher/modules/flite.conf"
         #AddModule "ivona"                    "sd_ivona"                                                                    "ivona.conf"
-        AddModule "pico"                     "${pkgs.speechd}/libexec/speech-dispatcher-modules/sd_pico"                "${pkgs.speechd}/etc/speech-dispatcher/modules/pico.conf"
-        AddModule "piper" "${pkgs.speechd}/libexec/speech-dispatcher-modules/sd_generic" "piper.conf"
+        #AddModule "piper"                    "${pkgs.speechd}/libexec/speech-dispatcher-modules/sd_generic" "piper.conf"
         #AddModule "espeak-ng-mbrola"         "${pkgs.speechd}/libexec/speech-dispatcher-modules/sd_espeak-ng-mbrola"    "${pkgs.speechd}/etc/speech-dispatcher/modules/espeak-ng-mbrola.conf"
         #AddModule "espeak-ng-mbrola-generic" "${pkgs.speechd}/libexec/speech-dispatcher-modules/sd_generic"             "${pkgs.speechd}/etc/speech-dispatcher/modules/espeak-ng-mbrola-generic.conf"
         #AddModule "espeak-mbrola-generic"    "${pkgs.speechd}/libexec/speech-dispatcher-modules/sd_generic"             "${pkgs.speechd}/etc/speech-dispatcher/modules/espeak-mbrola-generic.conf"
@@ -117,9 +123,9 @@ in
         #AddModule "voxin"                    "${pkgs.speechd}/libexec/speech-dispatcher-modules/sd_voxin"               "${pkgs.speechd}/etc/speech-dispatcher/modules/voxin.conf"
 
 
-        DefaultModule piper
+        DefaultModule festival
 
-        LanguageDefaultModule "da"  "piper"
+        #LanguageDefaultModule "da"  "piper"
         #LanguageDefaultModule "cs"  "festival"
         #LanguageDefaultModule "es"  "festival"
 

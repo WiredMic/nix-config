@@ -45,16 +45,15 @@ in
   };
 
   config = mkIf cfg.enable {
-    systemd.services.festival = {
+    systemd.user.services.festival = {
       description = "Festival speech synthesis server";
-      wantedBy = [ "multi-user.target" ];
+      wantedBy = [ "default.target" ];
 
       serviceConfig = {
         ExecStart =
           "${lib.getExe cfg.package} --server"
           + lib.optionalString (cfg.heap != null) " --heap ${toString cfg.heap}";
         Restart = "on-failure";
-        DynamicUser = true;
       };
     };
   };
