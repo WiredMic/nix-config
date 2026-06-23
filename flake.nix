@@ -27,8 +27,8 @@
     nix-flatpak.url = "github:gmodena/nix-flatpak"; # unstable branch. Use github:gmodena/nix-flatpak/?ref=<tag> to pin releases.
 
     stylix = {
-      url = "github:danth/stylix";
-      # url = "github:danth/stylix/release-25.11";
+      # url = "github:danth/stylix";
+      url = "github:danth/stylix/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -106,8 +106,8 @@
       userSettings = {
         username = "rasmus";
         de = {
-          hyprland = true;
-          kde = false;
+          hyprland = false;
+          kde = true;
           gnome = false;
           cosmic = true;
           console = false;
@@ -117,6 +117,14 @@
         editor = "emacs";
         style-color = "catppuccin-mocha";
       };
+
+      commonModules = [
+        { nixpkgs.overlays = [ (import ./pkgs) ]; }
+        nix-flatpak.nixosModules.nix-flatpak
+        stylix.nixosModules.stylix
+        nix-index-database.nixosModules.nix-index
+      ]
+      ++ (builtins.attrValues self.nixosModules);
 
     in
     {
@@ -157,14 +165,8 @@
             inherit systemSettings;
             inherit userSettings;
           };
-          modules = [
+          modules = commonModules ++ [
             { nixpkgs.overlays = [ (import ./pkgs) ]; }
-            nix-flatpak.nixosModules.nix-flatpak
-            stylix.nixosModules.stylix
-
-            # nix-ld.nixosModules.nix-ld
-            nix-index-database.nixosModules.nix-index
-
             home-manager.nixosModules.home-manager
             # Our main nixos configuration file <
             ./hosts/nixDesk/configuration.nix
@@ -197,12 +199,9 @@
             inherit systemSettings;
             inherit userSettings;
           };
-          modules = [
+          modules = commonModules ++ [
             { nixpkgs.overlays = [ (import ./pkgs) ]; }
-            nix-flatpak.nixosModules.nix-flatpak
-            stylix.nixosModules.stylix
-            nix-index-database.nixosModules.nix-index
-            "${nixos-hardware}/lenovo/legion/15ich"
+            # "${nixos-hardware}/lenovo/legion/15ich"
 
             home-manager.nixosModules.home-manager
 
@@ -237,12 +236,9 @@
             inherit systemSettings;
             inherit userSettings;
           };
-          modules = [
+          modules = commonModules ++ [
             # Must be here for the other configs
             { nixpkgs.overlays = [ (import ./pkgs) ]; }
-            nix-flatpak.nixosModules.nix-flatpak
-            stylix.nixosModules.stylix
-
             home-manager.nixosModules.home-manager
 
             # Our main nixos configuration file
