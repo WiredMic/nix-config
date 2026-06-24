@@ -2,43 +2,49 @@
 set -euo pipefail
 
 declare -A festvox_voice_lang=(
-    [cmu_us_aew]="English (US)"
-    [cmu_us_ahw]="English (US)"
-    [cmu_us_aup]="English (US)"
-    [cmu_us_axb]="English (US)"
-    [cmu_us_bdl]="English (US)"
-    [cmu_us_clb]="English (US)"
-    [cmu_us_eey]="English (US)"
-    [cmu_us_fem]="English (US)"
-    [cmu_us_gka]="English (US)"
-    [cmu_us_jmk]="English (US)"
-    [cmu_us_ksp]="English (US)"
-    [cmu_us_ljm]="English (US)"
-    [cmu_us_lnh]="English (US)"
-    [cmu_us_rms]="English (US)"
-    [cmu_us_rxr]="English (US)"
-    [cmu_us_slp]="English (US)"
-    [cmu_us_slt]="English (US)"
-    [cmu_indic_ben_rm]="Bengali"
-    [cmu_indic_guj_ad]="Gujarati"
-    [cmu_indic_guj_dp]="Gujarati"
-    [cmu_indic_guj_kt]="Gujarati"
-    [cmu_indic_hin_ab]="Hindi"
-    [cmu_indic_kan_plv]="Kannada"
-    [cmu_indic_mar_aup]="Marathi"
-    [cmu_indic_mar_slp]="Marathi"
-    [cmu_indic_pan_amp]="Punjabi"
-    [cmu_indic_tam_sdr]="Tamil"
-    [cmu_indic_tel_kpn]="Telugu"
-    [cmu_indic_tel_sk]="Telugu"
-    [cmu_indic_tel_ss]="Telugu"
+    [cmu_us_aew_cg]="English (US)"
+    [cmu_us_ahw_cg]="English (US)"
+    [cmu_us_aup_cg]="English (US)"
+    [cmu_us_axb_cg]="English (US)"
+    [cmu_us_awb_cg]="English (US)"
+    [cmu_us_bdl_cg]="English (US)"
+    [cmu_us_clb_cg]="English (US)"
+    [cmu_us_eey_cg]="English (US)"
+    [cmu_us_fem_cg]="English (US)"
+    [cmu_us_gka_cg]="English (US)"
+    [cmu_us_jmk_cg]="English (US)"
+    [cmu_us_ksp_cg]="English (US)"
+    [cmu_us_ljm_cg]="English (US)"
+    [cmu_us_lnh_cg]="English (US)"
+    [cmu_us_rms_cg]="English (US)"
+    [cmu_us_rxr_cg]="English (US)"
+    [cmu_us_slp_cg]="English (US)"
+    [cmu_us_slt_cg]="English (US)"
+    [cmu_indic_ben_rm_cg]="Bengali"
+    [cmu_indic_guj_ad_cg]="Gujarati"
+    [cmu_indic_guj_dp_cg]="Gujarati"
+    [cmu_indic_guj_kt_cg]="Gujarati"
+    [cmu_indic_hin_ab_cg]="Hindi"
+    [cmu_indic_kan_plv_cg]="Kannada"
+    [cmu_indic_mar_aup_cg]="Marathi"
+    [cmu_indic_mar_slp_cg]="Marathi"
+    [cmu_indic_pan_amp_cg]="Punjabi"
+    [cmu_indic_tam_sdr_cg]="Tamil"
+    [cmu_indic_tel_kpn_cg]="Telugu"
+    [cmu_indic_tel_sk_cg]="Telugu"
+    [cmu_indic_tel_ss_cg]="Telugu"
 )
 
 festvox_voices=("${!festvox_voice_lang[@]}")
 
 declare -A festvox_voices_lang_special=(
-    [kallpc16k]="English (US)"
-    [rablpc16k]="English (GB)"
+    [kal_diphone]="English (US)"
+    [rab_diphone]="English (GB)"
+)
+
+declare -A festvox_voices_special_tarball=(
+    [kal_diphone]="kallpc16k"
+    [rab_diphone]="rablpc16k"
 )
 
 festvox_voices_special=("${!festvox_voices_lang_special[@]}")
@@ -112,16 +118,17 @@ for v in "${festvox_voices[@]}" "${festvox_voices_special[@]}" "${mbrola_voices[
         cg_suffix="-$version"
         lang="Catalan"
     elif [[ " ${festvox_voices_special[*]} " =~ " ${v} " ]]; then
-        tarname="festvox_${v}.tar.gz"
+        tarball="${festvox_voices_special_tarball[$v]}"
+        tarname="festvox_${tarball}.tar.gz"
         url="$BASE_URL/$tarname"
         outdir="voices/$v"
         cg_suffix=""
         lang="${festvox_voices_lang_special[$v]}"
     else
-        tarname="festvox_${v}_cg.tar.gz"
+        tarname="festvox_${v}.tar.gz"
         url="$BASE_URL/$tarname"
         outdir="voices/$v"
-        cg_suffix="_cg"
+        cg_suffix=""
         lang="${festvox_voice_lang[$v]}"
     fi
 
@@ -269,6 +276,33 @@ buildFestivalVoice (finalAttrs: {
   };
 })
 EOF
+    elif [[ " ${festvox_voices_special[*]} " =~ " ${v} " ]]; then
+        cat >"$outdir/default.nix" <<-EOF
+{
+  lib,
+  fetchurl,
+  buildFestivalVoice,
+  ...
+}:
+
+buildFestivalVoice (finalAttrs: {
+  voiceName = "$v";
+  pname = "festvox-$(echo "$v" | tr '_' '-')";
+  version = "2.5";
+
+  src = fetchurl {
+    url = "http://festvox.org/packed/festival/\${finalAttrs.version}/voices/festvox_${tarball}.tar.gz";
+    hash = "$hash";
+  };
+
+  meta = with lib; {
+    description = "Festival $lang voice \${finalAttrs.pname}";
+    homepage = "http://festvox.org/";
+    license = licenses.free;
+    maintainers = with maintainers; [ WiredMic ];
+  };
+})
+EOF
     else
         cat >"$outdir/default.nix" <<-EOF
 {
@@ -284,7 +318,7 @@ buildFestivalVoice (finalAttrs: {
   version = "2.5";
 
   src = fetchurl {
-    url = "http://festvox.org/packed/festival/\${finalAttrs.version}/voices/festvox_\${finalAttrs.voiceName}$cg_suffix.tar.gz";
+    url = "http://festvox.org/packed/festival/\${finalAttrs.version}/voices/festvox_\${finalAttrs.voiceName}.tar.gz";
     hash = "$hash";
   };
 

@@ -12,40 +12,53 @@ final: prev: {
   # festivalVoices = final.lib.recurseIntoAttrs final.festival.packages;
   speech-tools = final.callPackage ./speech-tools/package.nix { };
   upc_ca_base = final.callPackage ./upc_ca_base/package.nix { };
+
+  festivalVoiceTests =
+    let
+      voicesWithTests = final.lib.filterAttrs (
+        _: pkg: pkg ? passthru && pkg.passthru ? isFestivalVoice && pkg.passthru.isFestivalVoice
+      ) final.festival.packages;
+      tests = final.lib.mapAttrs (_: pkg: pkg.tests.synthesizes) voicesWithTests;
+    in
+    final.symlinkJoin {
+      name = "festival-voice-tests";
+      paths = builtins.attrValues tests;
+    };
+
   festivalFull = final.festival.withVoices (
     voices: with voices; [
-      cmu_us_aew
-      cmu_us_ahw
-      cmu_us_aup
-      cmu_us_axb
-      cmu_us_bdl
-      cmu_us_clb
-      cmu_us_eey
-      cmu_us_fem
-      cmu_us_gka
-      cmu_us_jmk
-      cmu_us_ksp
-      cmu_us_ljm
-      cmu_us_lnh
-      cmu_us_rms
-      cmu_us_rxr
-      cmu_us_slp
-      cmu_us_slt
-      cmu_indic_ben_rm
-      cmu_indic_guj_ad
-      cmu_indic_guj_dp
-      cmu_indic_guj_kt
-      cmu_indic_hin_ab
-      cmu_indic_kan_plv
-      cmu_indic_mar_aup
-      cmu_indic_mar_slp
-      cmu_indic_pan_amp
-      cmu_indic_tam_sdr
-      cmu_indic_tel_kpn
-      cmu_indic_tel_sk
-      cmu_indic_tel_ss
-      kallpc16k
-      rablpc16k
+      cmu_us_aew_cg
+      cmu_us_ahw_cg
+      cmu_us_aup_cg
+      cmu_us_axb_cg
+      cmu_us_bdl_cg
+      cmu_us_clb_cg
+      cmu_us_eey_cg
+      cmu_us_fem_cg
+      cmu_us_gka_cg
+      cmu_us_jmk_cg
+      cmu_us_ksp_cg
+      cmu_us_ljm_cg
+      cmu_us_lnh_cg
+      cmu_us_rms_cg
+      cmu_us_rxr_cg
+      cmu_us_slp_cg
+      cmu_us_slt_cg
+      cmu_indic_ben_rm_cg
+      cmu_indic_guj_ad_cg
+      cmu_indic_guj_dp_cg
+      cmu_indic_guj_kt_cg
+      cmu_indic_hin_ab_cg
+      cmu_indic_kan_plv_cg
+      cmu_indic_mar_aup_cg
+      cmu_indic_mar_slp_cg
+      cmu_indic_pan_amp_cg
+      cmu_indic_tam_sdr_cg
+      cmu_indic_tel_kpn_cg
+      cmu_indic_tel_sk_cg
+      cmu_indic_tel_ss_cg
+      kal_diphone
+      rab_diphone
       us1_mbrola
       us2_mbrola
       us3_mbrola

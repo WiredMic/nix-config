@@ -55,8 +55,8 @@ in
       defaultVoice = "us1_mbrola";
       extraVoices =
         voices: with voices; [
-          kallpc16k
-          rablpc16k
+          kal_diphone
+          rab_diphone
         ];
       withSpeechdSupport = true;
     };

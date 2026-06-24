@@ -30,23 +30,31 @@ stdenv.mkDerivation (
 
     passthru.isFestivalVoice = true;
 
-    # Test to see if festival with the speciffic voice generates a wave file
-    # that is bigger than the header size of a wave file (44 B)
+    # The tests are
+    # 1. Catch SIOD ERROR as errors even if sound is produced
+    # 2. Catch to see if the voice can produce sound
+    #   - If sound is produces the file must be bigger
+    #     than the header size of a wave file (44 B)
     passthru.tests.synthesizes =
       runCommand "${finalAttrs.pname}-test"
         {
           nativeBuildInputs = [
-            (festival.withVoices (_: [ finalAttrs.finalPackage ]))
+            (festival.withDefaultVoice (_: [ finalAttrs.finalPackage ]) voiceName)
           ];
         }
         ''
           tmpfile=$(mktemp /tmp/XXXXXX.wav)
-          echo "(voice_${voiceName}_mbrola)(utt.save.wave \
+          output=$(echo "(utt.save.wave \
             (utt.synth (Utterance Text \"hello world\")) \
-            \"$tmpfile\")" | festival 2>&1
+            \"$tmpfile\")" | festival 2>&1) && festivalExit=0 || festivalExit=$?
+          if echo "$output" | grep -q "SIOD ERROR"; then
+            echo "SIOD ERROR detected:"
+            echo "$output" | grep "SIOD ERROR"
+            exit 1
+          fi
           size=$(stat -c%s "$tmpfile")
-          test $size -gt 44 || (echo "No audio generated" && exit 1)
-          touch $out
+          test $size -gt 44 || (echo "No audio generated (only $size bytes)" && exit 1)
+          mkdir $out
         '';
 
     meta.platforms = lib.platforms.all;
