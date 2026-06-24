@@ -21,7 +21,7 @@ in
         else
           pkgs.festival.withVoices (
             voices: with voices; [
-              kallpc16k
+              kal_diphone
             ]
           );
       defaultText = lib.literalExpression ''

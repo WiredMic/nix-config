@@ -152,11 +152,39 @@
       # These are usually stuff you would upstream into home-manager
       homeManagerModules = import ./modules/home-manager;
 
+      checks = forAllSystems (
+        system:
+        let
+          pkgsFor = import nixpkgs {
+            inherit system;
+            overlays = [ (import ./pkgs) ];
+          };
+          lib = nixpkgs.lib;
+
+          testTree = import ./tests {
+            pkgs = pkgsFor;
+            inherit self;
+          };
+
+          # Flatten an arbitrarily-nested attrset of derivations into
+          # checks.<system>."a-b-c" = derivation
+          flattenTests =
+            prefix: tree:
+            lib.concatMapAttrs (
+              name: value:
+              let
+                path = if prefix == "" then name else "${prefix}-${name}";
+              in
+              if lib.isDerivation value then { ${path} = value; } else flattenTests path value
+            ) tree;
+        in
+        flattenTests "" testTree
+      );
+
       formatter = forAllSystems (
         system:
         (treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${system} ./treefmt.nix).config.build.wrapper
       );
-
       nixosConfigurations = {
         nixDesk = nixpkgs.lib.nixosSystem {
           specialArgs = {

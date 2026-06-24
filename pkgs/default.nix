@@ -25,7 +25,7 @@ final: prev: {
       paths = builtins.attrValues tests;
     };
 
-  festivalFull = final.festival.withVoices (
+  festivalFull = final.festival.withDefaultVoice (
     voices: with voices; [
       cmu_us_aew_cg
       cmu_us_ahw_cg
@@ -86,17 +86,18 @@ final: prev: {
       upc_ca_jan_clunits
       upc_ca_pol_clunits
     ]
-  );
+  ) "kal_diphone";
 
-  festivalMbrola = final.festival.withVoices (
+  festivalMbrola = final.festival.withDefaultVoice (
     voices: with voices; [
       us1_mbrola
       us2_mbrola
       us3_mbrola
       en1_mbrola
     ]
-  );
-  festivalCatalan = final.festival.withVoices (
+  ) "us1_mbrola";
+
+  festivalCatalan = final.festival.withDefaultVoice (
     voices: with voices; [
       upc_ca_bet_hts
       upc_ca_eli_hts
@@ -121,6 +122,6 @@ final: prev: {
       upc_ca_jan_clunits
       upc_ca_pol_clunits
     ]
-  );
+  ) "upc_ca_bet_hts";
 
 }

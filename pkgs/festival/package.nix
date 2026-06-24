@@ -105,6 +105,9 @@ stdenv.mkDerivation (finalAttrs: {
     (cd doc && make)
   '';
 
+  # VCLocalRules is not a binary
+  # default_voices cannot be used in a sandbox
+  # text2wave is broken
   installPhase = ''
     runHook preInstall
 
@@ -115,10 +118,13 @@ stdenv.mkDerivation (finalAttrs: {
     for d in bin doc lib; do
       for i in ./$d/*; do
         test "$(basename "$i")" = "Makefile" ||
+        test "$i" = "./bin/VCLocalRules" ||
+        test "$i" = "./bin/default_voices" ||
+        test "$i" = "./bin/text2wave" ||
           cp -r "$(readlink -f $i)" "$out/$d"
       done
     done
-                   
+
     runHook postInstall
   '';
 
@@ -132,6 +138,8 @@ stdenv.mkDerivation (finalAttrs: {
     version = finalAttrs.version;
   };
 
+  # Test all binaries
+
   passthru.packages = callPackage ./festival-voices-packages.nix { };
 
   passthru.withVoices = voicesFn: finalAttrs.passthru.withDefaultVoice voicesFn null;
@@ -140,8 +148,8 @@ stdenv.mkDerivation (finalAttrs: {
     voicesFn: defaultVoice:
     let
       selectedVoices = voicesFn finalAttrs.passthru.packages;
-      extraBins = lib.concatMap (v: v.passthru.extraBinPath or [ ]) selectedVoices;
-      extraDeps = lib.concatMap (v: v.passthru.festivalDeps or [ ]) selectedVoices;
+      extraBins = lib.unique (lib.concatMap (v: v.passthru.extraBinPath or [ ]) selectedVoices);
+      extraDeps = lib.unique (lib.concatMap (v: v.passthru.festivalDeps or [ ]) selectedVoices);
     in
     symlinkJoin {
       name = "${finalAttrs.pname}-with-voices";
@@ -149,17 +157,25 @@ stdenv.mkDerivation (finalAttrs: {
       meta = finalAttrs.meta;
       nativeBuildInputs = [ makeWrapper ];
       postBuild = ''
-        wrapProgram $out/bin/festival \
-          --set-default FESTLIBDIR "$out/lib" \
-          --prefix PATH : "${
-            lib.makeBinPath (
-              lib.optionals withSpeechdSupport [
-                glibc
-                sox
-              ]
-              ++ extraBins
-            )
-          }"
+        # Wrap ALL executables in bin/ — this is the most robust approach
+        for bin in $out/bin/*; do
+          if [ -e "$bin" ]; then
+            # Skip already-wrapped binaries (they end with -wrapped)
+            if [[ "$(basename "$bin")" != *"-wrapped" ]]; then
+              wrapProgram "$bin" \
+                --set-default FESTLIBDIR "$out/lib" \
+                --prefix PATH : "${
+                  lib.makeBinPath (
+                    lib.optionals withSpeechdSupport [
+                      glibc
+                      sox
+                    ]
+                    ++ extraBins
+                  )
+                }"
+            fi
+          fi
+        done
 
         ${lib.optionalString (defaultVoice != null) ''
           cp --remove-destination $(realpath $out/lib/siteinit.scm) $out/lib/siteinit.scm

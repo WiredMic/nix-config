@@ -18,6 +18,8 @@ lib.makeScope newScope (self: {
   # All voices must have the same name as in festival
   # echo '(mapcar (lambda (v) (format t "%s\n" v)) (voice.list))' | festival 2>/dev/null | grep -E '^[a-zA-Z0-9_]+$'
 
+  # https://packages.debian.org/trixie/festival-voice
+
   # US English voices (CMU)
   cmu_us_aew_cg = self.callPackage ./voices/cmu_us_aew_cg { };
   cmu_us_ahw_cg = self.callPackage ./voices/cmu_us_ahw_cg { };
