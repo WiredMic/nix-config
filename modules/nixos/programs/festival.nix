@@ -47,6 +47,18 @@ in
         '';
       };
 
+      extraSiteInit = mkOption {
+        type = types.lines;
+        default = "";
+        example = literalExpression ''
+          "(set! Duration_Stretch 1.2)"
+        '';
+        description = ''
+          Extra Scheme code to append to Festival's {file}`siteinit.scm`.
+          Useful for tuning voice parameters or loading additional modules.
+        '';
+      };
+
       withSpeechdSupport = mkOption {
         type = types.bool;
         default = true;
@@ -79,7 +91,10 @@ in
           voices:
           cfg.extraVoices voices ++ lib.optional (cfg.defaultVoice != null) voices.${cfg.defaultVoice};
       in
-      (cfg.package.override { inherit (cfg) withSpeechdSupport; }).withDefaultVoice allVoices
-        cfg.defaultVoice;
+      (cfg.package.override { inherit (cfg) withSpeechdSupport; }).withSiteInitConfig allVoices {
+        defaultVoice = cfg.defaultVoice;
+        extraSiteInit = cfg.extraSiteInit;
+      };
+
   };
 }

@@ -8,12 +8,13 @@
   mbrola,
 }:
 buildFestivalVoice (finalAttrs: {
-  voiceName = "us2";
-  pname = "festvox-mbrola-${finalAttrs.voiceName}";
+  voiceName = "us2_mbrola";
+  mbrolaVoiceName = "us2";
+  pname = "festvox-us2-mbrola";
   version = "1.95";
 
   src = fetchurl {
-    url = "https://www.cstr.ed.ac.uk/downloads/festival/${finalAttrs.version}/festvox_${finalAttrs.voiceName}.tar.gz";
+    url = "https://www.cstr.ed.ac.uk/downloads/festival/${finalAttrs.version}/festvox_${finalAttrs.mbrolaVoiceName}.tar.gz";
     hash = "sha256-0nrSYhMUTZVoFegEwG5UcxkawSr7RPahAps4QuOjAHw=";
   };
 
@@ -24,8 +25,8 @@ buildFestivalVoice (finalAttrs: {
     cp -r lib "$out/lib"
 
     ln -s "${
-      mbrola-voices.override { languages = [ finalAttrs.voiceName ]; }
-    }/data/${finalAttrs.voiceName}"       "$out/lib/voices/english/${finalAttrs.voiceName}_mbrola/${finalAttrs.voiceName}"
+      mbrola-voices.override { languages = [ finalAttrs.mbrolaVoiceName ]; }
+    }/data/${finalAttrs.mbrolaVoiceName}"         "$out/lib/voices/english/${finalAttrs.voiceName}/${finalAttrs.mbrolaVoiceName}"
 
     runHook postInstall
   '';

@@ -12,6 +12,7 @@ final: prev: {
   # festivalVoices = final.lib.recurseIntoAttrs final.festival.packages;
   speech-tools = final.callPackage ./speech-tools/package.nix { };
   upc_ca_base = final.callPackage ./upc_ca_base/package.nix { };
+  festival-czech = final.callPackage ./festival-czech/package.nix { };
 
   festivalVoiceTests =
     let
@@ -25,7 +26,7 @@ final: prev: {
       paths = builtins.attrValues tests;
     };
 
-  festivalFull = final.festival.withDefaultVoice (
+  festivalFull = final.festival.withSiteInitConfig (
     voices: with voices; [
       cmu_us_aew_cg
       cmu_us_ahw_cg
@@ -85,19 +86,21 @@ final: prev: {
       upc_ca_mar_clunits
       upc_ca_jan_clunits
       upc_ca_pol_clunits
+      # czech_mbrola_cz1
+      czech_mbrola_cz2
     ]
-  ) "kal_diphone";
+  ) { defaultVoice = "kal_diphone"; };
 
-  festivalMbrola = final.festival.withDefaultVoice (
+  festivalMbrola = final.festival.withSiteInitConfig (
     voices: with voices; [
       us1_mbrola
       us2_mbrola
       us3_mbrola
       en1_mbrola
     ]
-  ) "us1_mbrola";
+  ) { defaultVoice = "us1_mbrola"; };
 
-  festivalCatalan = final.festival.withDefaultVoice (
+  festivalCatalan = final.festival.withSiteInitConfig (
     voices: with voices; [
       upc_ca_bet_hts
       upc_ca_eli_hts
@@ -122,6 +125,6 @@ final: prev: {
       upc_ca_jan_clunits
       upc_ca_pol_clunits
     ]
-  ) "upc_ca_bet_hts";
+  ) { defaultVoice = "upc_ca_bet_hts"; };
 
 }

@@ -48,7 +48,7 @@ in
     systemd.user.services.festival = {
       description = "Festival speech synthesis server";
       wantedBy = [ "default.target" ];
-
+      restartTriggers = [ config.programs.festival.finalPackage ];
       serviceConfig = {
         ExecStart =
           "${lib.getExe cfg.package} --server"

@@ -19,6 +19,27 @@ lib.makeScope newScope (self: {
   # echo '(mapcar (lambda (v) (format t "%s\n" v)) (voice.list))' | festival 2>/dev/null | grep -E '^[a-zA-Z0-9_]+$'
 
   # https://packages.debian.org/trixie/festival-voice
+  # https://salsa.debian.org/tts-team/
+  #
+  # [ ] https://packages.debian.org/trixie/festvox-don
+  # [ ] https://packages.debian.org/trixie/festvox-hi-nsk
+  # [ ] https://packages.debian.org/trixie/festvox-italp16k
+  # [ ] https://packages.debian.org/trixie/festvox-itapc16k
+  # [ ] https://packages.debian.org/trixie/festvox-kallpc16k
+  # [ ] https://packages.debian.org/trixie/festvox-kallpc8k
+  # [ ] https://packages.debian.org/trixie/festvox-kdlpc16k
+  # [ ] https://packages.debian.org/trixie/festvox-kdlpc8k
+  # [ ] https://packages.debian.org/trixie/festvox-mr-nsk
+  # [ ] https://packages.debian.org/trixie/festvox-rablpc16k
+  # [ ] https://packages.debian.org/trixie/festvox-rablpc8k
+  # [ ] https://packages.debian.org/trixie/festvox-ru
+  # [ ] https://packages.debian.org/trixie/festvox-suopuhe-lj
+  # [ ] https://packages.debian.org/trixie/festvox-suopuhe-mv
+  # [ ] https://packages.debian.org/trixie/festvox-te-nsk
+  # [ ] https://packages.debian.org/trixie/festvox-us-slt-hts
+  # [X] https://packages.debian.org/trixie/festvox-us1
+  # [X] https://packages.debian.org/trixie/festvox-us2
+  # [X] https://packages.debian.org/trixie/festvox-us3
 
   # US English voices (CMU)
   cmu_us_aew_cg = self.callPackage ./voices/cmu_us_aew_cg { };
@@ -59,12 +80,11 @@ lib.makeScope newScope (self: {
   cmu_indic_tel_sk_cg = self.callPackage ./voices/cmu_indic_tel_sk_cg { };
   cmu_indic_tel_ss_cg = self.callPackage ./voices/cmu_indic_tel_ss_cg { };
 
-  # British
+  # English (GB)
   rab_diphone = self.callPackage ./voices/rab_diphone { };
   en1_mbrola = self.callPackage ./voices/en1_mbrola { };
 
   # Catalan
-
   upc_ca_pep_clunits = self.callPackage ./voices/upc_ca_pep_clunits { };
   upc_ca_bet_clunits = self.callPackage ./voices/upc_ca_bet_clunits { };
   upc_ca_teo_clunits = self.callPackage ./voices/upc_ca_teo_clunits { };
@@ -88,5 +108,8 @@ lib.makeScope newScope (self: {
   upc_ca_pol_hts = self.callPackage ./voices/upc_ca_pol_hts { };
   upc_ca_teo_hts = self.callPackage ./voices/upc_ca_teo_hts { };
   upc_ca_uri_hts = self.callPackage ./voices/upc_ca_uri_hts { };
+
+  # Czech
+  czech_mbrola_cz2 = self.callPackage ./voices/czech_mbrola_cz2 { };
 
 })

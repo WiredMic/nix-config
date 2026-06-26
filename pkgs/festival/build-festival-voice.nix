@@ -14,6 +14,40 @@ in
 
 stdenv.mkDerivation (
   finalAttrs:
+  let
+    defaultPassthru = {
+      isFestivalVoice = true;
+      tests.synthesizes =
+        runCommand "${finalAttrs.pname}-test"
+          {
+            nativeBuildInputs = [
+              (festival.withSiteInitConfig (_: [ finalAttrs.finalPackage ]) { defaultVoice = voiceName; })
+            ];
+          }
+          ''
+            # Test if the voice can produce sound
+            tmpfile=$(mktemp /tmp/XXXXXX.wav)
+            output=$(echo "(utt.save.wave \
+              (utt.synth (Utterance Text \"hello world\")) \
+              \"$tmpfile\")" | festival 2>&1) && festivalExit=0 || festivalExit=$?
+            if echo "$output" | grep -qE "SIOD ERROR|Cannot open|No such file|sh: "; then
+              echo "Error detected:"
+              echo "$output"
+              exit 1
+            fi
+            size=$(stat -c%s "$tmpfile")
+            test $size -gt 44 || (echo "No audio generated (only $size bytes)" && exit 1)
+
+            # Test if the voice shows in the voice.list
+            if ! echo "(display (voice.list))" | festival 2>&1 | grep -q "${voiceName}"; then
+              echo "Voice ${voiceName} not found in voice-locations"
+              exit 1
+            fi
+
+            mkdir $out
+          '';
+    };
+  in
   {
     dontBuild = true;
     dontConfigure = true;
@@ -28,37 +62,10 @@ stdenv.mkDerivation (
       runHook postInstall
     '';
 
-    passthru.isFestivalVoice = true;
-
-    # The tests are
-    # 1. Catch SIOD ERROR as errors even if sound is produced
-    # 2. Catch to see if the voice can produce sound
-    #   - If sound is produces the file must be bigger
-    #     than the header size of a wave file (44 B)
-    passthru.tests.synthesizes =
-      runCommand "${finalAttrs.pname}-test"
-        {
-          nativeBuildInputs = [
-            (festival.withDefaultVoice (_: [ finalAttrs.finalPackage ]) voiceName)
-          ];
-        }
-        ''
-          tmpfile=$(mktemp /tmp/XXXXXX.wav)
-          output=$(echo "(utt.save.wave \
-            (utt.synth (Utterance Text \"hello world\")) \
-            \"$tmpfile\")" | festival 2>&1) && festivalExit=0 || festivalExit=$?
-          if echo "$output" | grep -q "SIOD ERROR"; then
-            echo "SIOD ERROR detected:"
-            echo "$output" | grep "SIOD ERROR"
-            exit 1
-          fi
-          size=$(stat -c%s "$tmpfile")
-          test $size -gt 44 || (echo "No audio generated (only $size bytes)" && exit 1)
-          mkdir $out
-        '';
+    passthru = defaultPassthru // (attrs.passthru or { });
 
     meta.platforms = lib.platforms.all;
 
   }
-  // attrs
+  // (removeAttrs attrs [ "passthru" ])
 )

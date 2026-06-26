@@ -87,6 +87,13 @@ catalan_voice_clunits=(
 )
 # https://festcat.talp.cat/download/upc_ca_pep_clunits-1.2.tgz
 
+declare -A czech_voice_lang_mobrola=(
+    # [cz1]="Czech"
+    [cz2]="Czech"
+)
+
+czech_voice_mobrola=("${!czech_voice_lang_mobrola[@]}")
+
 BASE_URL="http://festvox.org/packed/festival/2.5/voices"
 BASE_WRAPPER_URL="https://www.cstr.ed.ac.uk/downloads/festival/1.95/"
 BASE_URL_FESTCAT="https://festcat.talp.cat/download/"
@@ -95,40 +102,106 @@ mkdir -p "$CACHE_DIR"
 
 rm -rf voices/*
 
-for v in "${festvox_voices[@]}" "${festvox_voices_special[@]}" "${mbrola_voices[@]}" "${catalan_voice_hts[@]}" "${catalan_voice_clunits[@]}"; do
+for v in "${czech_voice_mobrola[@]}" "${festvox_voices[@]}" "${festvox_voices_special[@]}" "${mbrola_voices[@]}" "${catalan_voice_hts[@]}" "${catalan_voice_clunits[@]}"; do
+
+    # --- Glue voices: no tarball, emit and continue early ---
+
+    if [[ " ${czech_voice_mobrola[*]} " =~ " ${v} " ]]; then
+        lang="${czech_voice_lang_mobrola[$v]}"
+        festivalVoiceName="czech_mbrola_${v}"
+        outdir="voices/${festivalVoiceName}"
+        mkdir -p "$outdir"
+        cat >"$outdir/default.nix" <<-EOF
+{
+  lib,
+  fetchurl,
+  buildFestivalVoice,
+
+  # Dependencies
+  mbrola-voices,
+  mbrola,
+  festival-czech,
+}:
+buildFestivalVoice (finalAttrs: {
+  voiceName = "$festivalVoiceName";
+  mbrolaVoiceName = "$v";
+  pname = "festival-$(echo "$v" | tr '_' '-')";
+  version = "\${mbrola-voices.version}";
+
+  dontUnpack = true;
+  dontConfigure = true;
+  dontBuild = true;
+
+  installPhase = ''
+    runHook preInstall
+
+    mkdir -p "\$out/lib"
+    cp \${festival-czech}/lib/czech-mbrola.scm \$out/lib/czech-mbrola.scm
+
+    substituteInPlace \$out/lib/czech-mbrola.scm \
+      --replace-fail \
+        '(defvar czech-mbrola_database nil)' \
+        "(defvar czech-mbrola_database \"\${
+            mbrola-voices.override { languages = [ ''$v'' ]; }
+        }/data/$v/$v\")"
+
+    mkdir -p "\$out/lib/voices/czech/$festivalVoiceName/festvox"
+    cat > "\$out/lib/voices/czech/$festivalVoiceName/festvox/${festivalVoiceName}.scm" << 'VOICESCM'
+(proclaim_voice
+ 'czech_mbrola_cz2
+ '((language czech)
+   (gender male)
+   (description "Czech voice provided by the Mbrola cz2 database.")))
+VOICESCM
+
+    runHook postInstall
+  '';
+
+  passthru.extraBinPath = [ mbrola ];
+  passthru.festivalDeps = [ festival-czech ];
+  passthru.siteInitSnippet = "(require 'czech-mbrola)";
+
+  meta = with lib; {
+    description = "Festival MBROLA $lang voice \${finalAttrs.voiceName}";
+    homepage = "http://festvox.org/";
+    license = licenses.lgpl2;
+    maintainers = with maintainers; [ WiredMic ];
+  };
+})
+EOF
+        echo "  ✓ $outdir/default.nix (glue)"
+        continue
+    fi
+
+    # --- Voices with tarballs ---
 
     if [[ " ${mbrola_voices[*]} " =~ " ${v} " ]]; then
         tarname="festvox_${v}.tar.gz"
         url="$BASE_WRAPPER_URL/$tarname"
         outdir="voices/${v}_mbrola"
-        cg_suffix=""
         lang="${mbrola_voice_lang[$v]}"
     elif [[ " ${catalan_voice_hts[*]} " =~ " ${v} " ]]; then
         version="1.3"
         tarname="${v}-${version}.tgz"
         url="$BASE_URL_FESTCAT/$tarname"
         outdir="voices/$v"
-        cg_suffix="-$version"
         lang="Catalan"
     elif [[ " ${catalan_voice_clunits[*]} " =~ " ${v} " ]]; then
         version="1.2"
         tarname="${v}-${version}.tgz"
         url="$BASE_URL_FESTCAT/$tarname"
         outdir="voices/$v"
-        cg_suffix="-$version"
         lang="Catalan"
     elif [[ " ${festvox_voices_special[*]} " =~ " ${v} " ]]; then
         tarball="${festvox_voices_special_tarball[$v]}"
         tarname="festvox_${tarball}.tar.gz"
         url="$BASE_URL/$tarname"
         outdir="voices/$v"
-        cg_suffix=""
         lang="${festvox_voices_lang_special[$v]}"
     else
         tarname="festvox_${v}.tar.gz"
         url="$BASE_URL/$tarname"
         outdir="voices/$v"
-        cg_suffix=""
         lang="${festvox_voice_lang[$v]}"
     fi
 
@@ -165,7 +238,6 @@ buildFestivalVoice (finalAttrs: {
     url = "${BASE_URL_FESTCAT}/\${finalAttrs.voiceName}-\${finalAttrs.version}.tgz";
     hash = "$hash";
   };
-
 
   installPhase = ''
     runHook preInstall
@@ -208,7 +280,6 @@ buildFestivalVoice (finalAttrs: {
     hash = "$hash";
   };
 
-
   installPhase = ''
     runHook preInstall
 
@@ -230,7 +301,6 @@ buildFestivalVoice (finalAttrs: {
   };
 })
 EOF
-
     elif [[ " ${mbrola_voices[*]} " =~ " ${v} " ]]; then
         cat >"$outdir/default.nix" <<-EOF
 {
@@ -243,12 +313,13 @@ EOF
   mbrola,
 }:
 buildFestivalVoice (finalAttrs: {
-  voiceName = "$v";
-  pname = "festvox-mbrola-\${finalAttrs.voiceName}";
+  voiceName = "${v}_mbrola";
+  mbrolaVoiceName = "$v";
+  pname = "festvox-$(echo "${v}_mbrola" | tr '_' '-')";
   version = "1.95";
 
   src = fetchurl {
-    url = "https://www.cstr.ed.ac.uk/downloads/festival/\${finalAttrs.version}/festvox_\${finalAttrs.voiceName}.tar.gz";
+    url = "https://www.cstr.ed.ac.uk/downloads/festival/\${finalAttrs.version}/festvox_\${finalAttrs.mbrolaVoiceName}.tar.gz";
     hash = "$hash";
   };
 
@@ -259,9 +330,9 @@ buildFestivalVoice (finalAttrs: {
     cp -r lib "\$out/lib"
 
     ln -s "\${
-      mbrola-voices.override { languages = [ finalAttrs.voiceName ]; }
-    }/data/\${finalAttrs.voiceName}" \
-      "\$out/lib/voices/english/\${finalAttrs.voiceName}_mbrola/\${finalAttrs.voiceName}"
+      mbrola-voices.override { languages = [ finalAttrs.mbrolaVoiceName ]; }
+    }/data/\${finalAttrs.mbrolaVoiceName}" \
+        "\$out/lib/voices/$(echo "$lang" | sed 's/ (.*//' | tr '[:upper:]' '[:lower:]')/\${finalAttrs.voiceName}/\${finalAttrs.mbrolaVoiceName}"
 
     runHook postInstall
   '';

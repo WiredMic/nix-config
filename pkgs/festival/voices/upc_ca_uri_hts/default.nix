@@ -16,7 +16,6 @@ buildFestivalVoice (finalAttrs: {
     hash = "sha256-oRnBd9O/j+C35BG9nrzscEDvjigRuUoSVVK/bmRxuZI=";
   };
 
-
   installPhase = ''
     runHook preInstall
 

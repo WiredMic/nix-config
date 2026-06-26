@@ -142,14 +142,33 @@ stdenv.mkDerivation (finalAttrs: {
 
   passthru.packages = callPackage ./festival-voices-packages.nix { };
 
-  passthru.withVoices = voicesFn: finalAttrs.passthru.withDefaultVoice voicesFn null;
+  passthru.withVoices =
+    voicesFn:
+    finalAttrs.passthru.withSiteInitConfig voicesFn {
+      defaultVoice = null;
+      extraSiteInit = "";
+    };
 
-  passthru.withDefaultVoice =
-    voicesFn: defaultVoice:
+  passthru.withSiteInitConfig =
+    voicesFn:
+    {
+      defaultVoice ? null,
+      extraSiteInit ? "",
+    }:
     let
       selectedVoices = voicesFn finalAttrs.passthru.packages;
       extraBins = lib.unique (lib.concatMap (v: v.passthru.extraBinPath or [ ]) selectedVoices);
+
+      # Check if the voices are mbrola voices
+      mbrolaPackage = lib.findFirst (p: lib.getName p == "mbrola") null (
+        lib.concatMap (v: v.passthru.extraBinPath or [ ]) selectedVoices
+      );
       extraDeps = lib.unique (lib.concatMap (v: v.passthru.festivalDeps or [ ]) selectedVoices);
+      defaultVoiceSiteInit = lib.optionalString (
+        defaultVoice != null
+      ) "(set! voice_default 'voice_${defaultVoice})\n";
+      voiceSiteInit = lib.concatMapStrings (v: v.passthru.siteInitSnippet or "") selectedVoices;
+      combinedSiteInit = voiceSiteInit + defaultVoiceSiteInit + extraSiteInit;
     in
     symlinkJoin {
       name = "${finalAttrs.pname}-with-voices";
@@ -177,12 +196,28 @@ stdenv.mkDerivation (finalAttrs: {
           fi
         done
 
-        ${lib.optionalString (defaultVoice != null) ''
+        ${lib.optionalString (combinedSiteInit != "") ''
           cp --remove-destination $(realpath $out/lib/siteinit.scm) $out/lib/siteinit.scm
+          chmod u+w $out/lib/siteinit.scm
+          # Remove the existing (provide 'siteinit) so we can place it last
           substituteInPlace $out/lib/siteinit.scm \
             --replace-fail \
-              ';(set! voice_default' \
-              "(set! voice_default 'voice_${defaultVoice}) ;(set! voice_default"
+              "(provide 'siteinit)" \
+              ""
+          {
+            echo "${combinedSiteInit}";
+            echo "(provide 'siteinit)";
+          } >> $out/lib/siteinit.scm
+        ''}
+
+        # If the voices are mbrola voices they will include mbrola in extraBins
+        # mbrola.scm needs to link to it
+        ${lib.optionalString (mbrolaPackage != null) ''
+          cp --remove-destination $(realpath $out/lib/mbrola.scm) $out/lib/mbrola.scm
+          substituteInPlace $out/lib/mbrola.scm \
+            --replace-fail \
+              '"/cstr/external/mbrola/mbrola"' \
+              '"${mbrolaPackage}/bin/mbrola"'
         ''}
       '';
     };

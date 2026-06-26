@@ -57,11 +57,21 @@ in
         voices: with voices; [
           kal_diphone
           rab_diphone
+          czech_mbrola_cz2
+          upc_ca_bet_hts
         ];
       withSpeechdSupport = true;
     };
 
     services.festival.enable = true;
+
+    systemd.user.services.speech-dispatcher = {
+      restartTriggers = [ config.services.speechd.package ];
+      after = [ "festival.service" ];
+      bindsTo = [ "festival.service" ];
+    };
+
+    # systemctl restart --user festival.service && systemctl restart --user speech-dispatcher.service && systemctl restart --user speech-dispatcher.socket
 
     services.speechd = {
       enable = true;
@@ -103,6 +113,7 @@ in
 
         # -----OUTPUT MODULES CONFIGURATION-----
 
+        #AddModule "festival" "${config.services.speechd.package}/libexec/speech-dispatcher-modules/sd_festival" "/etc/speech-dispatcher/modules/festival.conf"
         #AddModule "espeak"                   "sd_espeak"                                                                   "${pkgs.speechd}/etc/speech-dispatcher/modules/espeak.conf"
         #AddModule "espeak-ng"                "${pkgs.speechd}/libexec/speech-dispatcher-modules/sd_espeak-ng"           "${pkgs.speechd}/etc/speech-dispatcher/modules/espeak-ng.conf"
         #AddModule "flite"                    "${pkgs.speechd}/libexec/speech-dispatcher-modules/sd_flite"               "${pkgs.speechd}/etc/speech-dispatcher/modules/flite.conf"
