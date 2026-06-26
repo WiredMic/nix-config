@@ -39,7 +39,7 @@ stdenv.mkDerivation (
             test $size -gt 44 || (echo "No audio generated (only $size bytes)" && exit 1)
 
             # Test if the voice shows in the voice.list
-            if ! echo "(display (voice.list))" | festival 2>&1 | grep -q "${voiceName}"; then
+            if ! echo "(print (voice.list))" | festival 2>&1 | grep -q "${voiceName}"; then
               echo "Voice ${voiceName} not found in voice-locations"
               exit 1
             fi

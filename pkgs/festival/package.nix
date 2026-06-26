@@ -132,95 +132,97 @@ stdenv.mkDerivation (finalAttrs: {
     cp ${finalAttrs.freebsoftUtilsSrc}/*.scm $out/lib/
   '';
 
-  passthru.tests.version = testVersion {
-    package = finalAttrs.finalPackage;
-    command = "${finalAttrs.pname} --version";
-    version = finalAttrs.version;
+  passthru = {
+    tests.version = testVersion {
+      package = finalAttrs.finalPackage;
+      command = "${finalAttrs.pname} --version";
+      version = finalAttrs.version;
+    };
   };
-
-  # Test all binaries
 
   passthru.packages = callPackage ./festival-voices-packages.nix { };
 
-  passthru.withVoices =
-    voicesFn:
-    finalAttrs.passthru.withSiteInitConfig voicesFn {
-      defaultVoice = null;
-      extraSiteInit = "";
-    };
+  passthru = {
+    withVoices =
+      voicesFn:
+      finalAttrs.passthru.withSiteInitConfig voicesFn {
+        defaultVoice = null;
+        extraSiteInit = "";
+      };
 
-  passthru.withSiteInitConfig =
-    voicesFn:
-    {
-      defaultVoice ? null,
-      extraSiteInit ? "",
-    }:
-    let
-      selectedVoices = voicesFn finalAttrs.passthru.packages;
-      extraBins = lib.unique (lib.concatMap (v: v.passthru.extraBinPath or [ ]) selectedVoices);
+    withSiteInitConfig =
+      voicesFn:
+      {
+        defaultVoice ? null,
+        extraSiteInit ? "",
+      }:
+      let
+        selectedVoices = voicesFn finalAttrs.passthru.packages;
+        extraBins = lib.unique (lib.concatMap (v: v.passthru.extraBinPath or [ ]) selectedVoices);
 
-      # Check if the voices are mbrola voices
-      mbrolaPackage = lib.findFirst (p: lib.getName p == "mbrola") null (
-        lib.concatMap (v: v.passthru.extraBinPath or [ ]) selectedVoices
-      );
-      extraDeps = lib.unique (lib.concatMap (v: v.passthru.festivalDeps or [ ]) selectedVoices);
-      defaultVoiceSiteInit = lib.optionalString (
-        defaultVoice != null
-      ) "(set! voice_default 'voice_${defaultVoice})\n";
-      voiceSiteInit = lib.concatMapStrings (v: v.passthru.siteInitSnippet or "") selectedVoices;
-      combinedSiteInit = voiceSiteInit + defaultVoiceSiteInit + extraSiteInit;
-    in
-    symlinkJoin {
-      name = "${finalAttrs.pname}-with-voices";
-      paths = [ finalAttrs.finalPackage ] ++ selectedVoices ++ extraDeps;
-      meta = finalAttrs.meta;
-      nativeBuildInputs = [ makeWrapper ];
-      postBuild = ''
-        # Wrap ALL executables in bin/ — this is the most robust approach
-        for bin in $out/bin/*; do
-          if [ -e "$bin" ]; then
-            # Skip already-wrapped binaries (they end with -wrapped)
-            if [[ "$(basename "$bin")" != *"-wrapped" ]]; then
-              wrapProgram "$bin" \
-                --set-default FESTLIBDIR "$out/lib" \
-                --prefix PATH : "${
-                  lib.makeBinPath (
-                    lib.optionals withSpeechdSupport [
-                      glibc
-                      sox
-                    ]
-                    ++ extraBins
-                  )
-                }"
+        # Check if the voices are mbrola voices
+        mbrolaPackage = lib.findFirst (p: lib.getName p == "mbrola") null (
+          lib.concatMap (v: v.passthru.extraBinPath or [ ]) selectedVoices
+        );
+        extraDeps = lib.unique (lib.concatMap (v: v.passthru.festivalDeps or [ ]) selectedVoices);
+        defaultVoiceSiteInit = lib.optionalString (
+          defaultVoice != null
+        ) "(set! voice_default 'voice_${defaultVoice})\n";
+        voiceSiteInit = lib.concatMapStrings (v: v.passthru.siteInitSnippet or "") selectedVoices;
+        combinedSiteInit = voiceSiteInit + defaultVoiceSiteInit + extraSiteInit;
+      in
+      symlinkJoin {
+        name = "${finalAttrs.pname}-with-voices";
+        paths = [ finalAttrs.finalPackage ] ++ selectedVoices ++ extraDeps;
+        meta = finalAttrs.meta;
+        nativeBuildInputs = [ makeWrapper ];
+        postBuild = ''
+          # Wrap ALL executables in bin/ — this is the most robust approach
+          for bin in $out/bin/*; do
+            if [ -e "$bin" ]; then
+              # Skip already-wrapped binaries (they end with -wrapped)
+              if [[ "$(basename "$bin")" != *"-wrapped" ]]; then
+                wrapProgram "$bin" \
+                  --set-default FESTLIBDIR "$out/lib" \
+                  --prefix PATH : "${
+                    lib.makeBinPath (
+                      lib.optionals withSpeechdSupport [
+                        glibc
+                        sox
+                      ]
+                      ++ extraBins
+                    )
+                  }"
+              fi
             fi
-          fi
-        done
+          done
 
-        ${lib.optionalString (combinedSiteInit != "") ''
-          cp --remove-destination $(realpath $out/lib/siteinit.scm) $out/lib/siteinit.scm
-          chmod u+w $out/lib/siteinit.scm
-          # Remove the existing (provide 'siteinit) so we can place it last
-          substituteInPlace $out/lib/siteinit.scm \
-            --replace-fail \
-              "(provide 'siteinit)" \
-              ""
-          {
-            echo "${combinedSiteInit}";
-            echo "(provide 'siteinit)";
-          } >> $out/lib/siteinit.scm
-        ''}
+          ${lib.optionalString (combinedSiteInit != "") ''
+            cp --remove-destination $(realpath $out/lib/siteinit.scm) $out/lib/siteinit.scm
+            chmod u+w $out/lib/siteinit.scm
+            # Remove the existing (provide 'siteinit) so we can place it last
+            substituteInPlace $out/lib/siteinit.scm \
+              --replace-fail \
+                "(provide 'siteinit)" \
+                ""
+            cat >> $out/lib/siteinit.scm << 'EOF'
+            ${combinedSiteInit}
+            (provide 'siteinit)
+            EOF
+          ''}
 
-        # If the voices are mbrola voices they will include mbrola in extraBins
-        # mbrola.scm needs to link to it
-        ${lib.optionalString (mbrolaPackage != null) ''
-          cp --remove-destination $(realpath $out/lib/mbrola.scm) $out/lib/mbrola.scm
-          substituteInPlace $out/lib/mbrola.scm \
-            --replace-fail \
-              '"/cstr/external/mbrola/mbrola"' \
-              '"${mbrolaPackage}/bin/mbrola"'
-        ''}
-      '';
-    };
+          # If the voices are mbrola voices they will include mbrola in extraBins
+          # mbrola.scm needs to link to it
+          ${lib.optionalString (mbrolaPackage != null) ''
+            cp --remove-destination $(realpath $out/lib/mbrola.scm) $out/lib/mbrola.scm
+            substituteInPlace $out/lib/mbrola.scm \
+              --replace-fail \
+                '"/cstr/external/mbrola/mbrola"' \
+                '"${mbrolaPackage}/bin/mbrola"'
+          ''}
+        '';
+      };
+  };
 
   meta = {
     description = "Festival is a multi-lingual speech synthesis from the CMU";
