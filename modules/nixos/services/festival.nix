@@ -28,6 +28,9 @@ in
         if config.programs.festival.enable then config.programs.festival.finalPackage
         else pkgs.festival.withVoices (voices: with voices; [ kal_diphone ])
       '';
+      description = ''
+        The Festival package to use for the server.
+      '';
     };
 
     port = mkOption {
@@ -36,6 +39,21 @@ in
       description = ''
         Port for the Festival server to listen on.
         Sets the `server_port` Scheme variable in `siteinit.scm`.
+      '';
+    };
+
+    openFirewall = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = ''
+        Whether to open port {option}`services.festival.port` in the firewall.
+
+        ::: {.warning}
+        The Festival server protocol offers no encryption. Before exposing
+        it to a network, configure access control via
+        {option}`services.festival.extraSiteInit` (e.g. `server_access_list`,
+        `server_deny_list`, `server_passwd`).
+        :::
       '';
     };
 
@@ -126,6 +144,10 @@ in
           + lib.optionalString (cfg.heap != null) " --heap ${toString cfg.heap}";
         Restart = "on-failure";
       };
+    };
+
+    networking.firewall = lib.mkIf cfg.openFirewall {
+      allowedTCPPorts = [ cfg.port ];
     };
   };
 }

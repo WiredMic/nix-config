@@ -40,6 +40,10 @@
     machine.start()
     machine.wait_for_unit("multi-user.target")
 
+    # Dump user journal to help debug if festival fails to start
+    machine.succeed("su - machine -c 'journalctl --user -xeu festival.service --no-pager' || true")
+
+    machine.systemctl("reset-failed festival.service", "machine")
     machine.systemctl("start festival.service", "machine")
     machine.wait_for_unit("festival.service", "machine")
 
@@ -65,7 +69,7 @@
     assert spd_size > 100_000, f"spd→festival WAV too small, likely no audio: {spd_size} bytes"
 
     machine.fail(
-      "journalctl --no-pager -o cat"
+      "su - machine -c 'journalctl --user --no-pager -o cat'"
       " | grep -qE 'command not found|Cannot load wavefile|SIOD ERROR'"
     )
 

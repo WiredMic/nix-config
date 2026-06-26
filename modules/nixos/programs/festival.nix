@@ -22,7 +22,14 @@ in
     programs.festival = {
       enable = lib.mkEnableOption "Festival";
 
-      package = lib.mkPackageOption pkgs "festival" { };
+      package = mkOption {
+        type = types.package;
+        default = pkgs.festival;
+        defaultText = "pkgs.festival";
+        description = ''
+          The Festival package to use.
+        '';
+      };
 
       defaultVoice = mkOption {
         type = types.enum (lib.attrNames pkgs.festival.packages);

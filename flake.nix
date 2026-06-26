@@ -166,8 +166,6 @@
             inherit self;
           };
 
-          # Flatten an arbitrarily-nested attrset of derivations into
-          # checks.<system>."a-b-c" = derivation
           flattenTests =
             prefix: tree:
             lib.concatMapAttrs (
@@ -177,8 +175,25 @@
               in
               if lib.isDerivation value then { ${path} = value; } else flattenTests path value
             ) tree;
+
+          # Build optionsCommonMark for every module in nixosModules
+          docChecks = lib.mapAttrs' (
+            name: module:
+            lib.nameValuePair "docs-${name}" (
+              (pkgsFor.nixosOptionsDoc {
+                options =
+                  (nixpkgs.lib.nixosSystem {
+                    inherit system;
+                    modules = [
+                      { nixpkgs.overlays = [ (import ./pkgs) ]; }
+                      module
+                    ];
+                  }).options;
+              }).optionsCommonMark
+            )
+          ) self.nixosModules;
         in
-        flattenTests "" testTree
+        (flattenTests "" testTree) // docChecks
       );
 
       formatter = forAllSystems (
