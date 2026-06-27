@@ -7,10 +7,9 @@ final: prev: {
 
   # Should user be able to install a voice on their own
   speech-tools = final.callPackage ./speech-tools/package.nix { };
+
   upc_ca_base = final.callPackage ./upc_ca_base/package.nix { };
   festival-czech = final.callPackage ./festival-czech/package.nix { };
-
-  # festivalVoices = final.lib.recurseIntoAttrs (final.callPackage ./festival/voices { });
 
   festival =
     (final.callPackage ./festival/package.nix {
@@ -22,6 +21,8 @@ final: prev: {
           tests = final.lib.mapAttrs (_: pkg: pkg.passthru.tests.synthesizes) final.festival.packages;
         };
       });
+  # Should user be able to install a voice on their own
+  # festivalVoices = final.lib.recurseIntoAttrs final.festival.packages;
 
   festivalVoiceTests = final.symlinkJoin {
     name = "festival-voice-tests";

@@ -8,7 +8,6 @@
   mbrola,
 }:
 buildFestivalVoice (finalAttrs: {
-  voiceName = "en1_mbrola";
   mbrolaVoiceName = "en1";
   pname = "festvox-en1-mbrola";
   version = "1.95";
@@ -26,15 +25,16 @@ buildFestivalVoice (finalAttrs: {
 
     ln -s "${
       mbrola-voices.override { languages = [ finalAttrs.mbrolaVoiceName ]; }
-    }/data/${finalAttrs.mbrolaVoiceName}"         "$out/lib/voices/english/${finalAttrs.voiceName}/${finalAttrs.mbrolaVoiceName}"
+    }/data/${finalAttrs.mbrolaVoiceName}"         "$out/lib/voices/english/${finalAttrs.passthru.voiceName}/${finalAttrs.mbrolaVoiceName}"
 
     runHook postInstall
   '';
 
+  passthru.voiceName = "en1_mbrola";
   passthru.extraBinDeps = [ mbrola ];
 
   meta = with lib; {
-    description = "Festival MBROLA English (GB) voice ${finalAttrs.voiceName}";
+    description = "Festival MBROLA English (GB) voice ${finalAttrs.passthru.voiceName}";
     homepage = "http://festvox.org/";
     license = licenses.free;
     maintainers = with maintainers; [ WiredMic ];

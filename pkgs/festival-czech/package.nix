@@ -3,6 +3,7 @@
   stdenv,
   fetchFromGitHub,
   festival,
+  runCommand,
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "festival-czech";
@@ -44,6 +45,10 @@ stdenv.mkDerivation (finalAttrs: {
       --replace-fail \
         '(defvar czech-lexicon-file "czech-lexicon.out")' \
         '(defvar czech-lexicon-file "${placeholder "out"}/lib/czech-lexicon.out")'
+  '';
+
+  passthru.tests.stub = runCommand "stub-test" ''
+    mkdir $out
   '';
 
   meta = {

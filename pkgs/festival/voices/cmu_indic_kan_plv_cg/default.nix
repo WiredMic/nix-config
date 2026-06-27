@@ -2,18 +2,18 @@
   lib,
   fetchurl,
   buildFestivalVoice,
-  ...
 }:
 
 buildFestivalVoice (finalAttrs: {
-  voiceName = "cmu_indic_kan_plv_cg";
   pname = "festvox-cmu-indic-kan-plv-cg";
   version = "2.5";
 
   src = fetchurl {
-    url = "http://festvox.org/packed/festival/${finalAttrs.version}/voices/festvox_${finalAttrs.voiceName}.tar.gz";
+    url = "http://festvox.org/packed/festival/${finalAttrs.version}/voices/festvox_${finalAttrs.passthru.voiceName}.tar.gz";
     hash = "sha256-2H9Oo0LnyzfpDd9J3eN/GcFHCzxaCdAM7zISEIEHyzE=";
   };
+
+  passthru.voiceName = "cmu_indic_kan_plv_cg";
 
   meta = with lib; {
     description = "Festival Kannada voice ${finalAttrs.pname}";

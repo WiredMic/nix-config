@@ -128,7 +128,6 @@ for v in "${czech_voice_mobrola[@]}" "${festvox_voices[@]}" "${festvox_voices_sp
   festival-czech,
 }:
 buildFestivalVoice (finalAttrs: {
-  voiceName = "$festivalVoiceName";
   mbrolaVoiceName = "$v";
   pname = "festival-$(echo "$v" | tr '_' '-')";
   version = "\${mbrola-voices.version}";
@@ -153,7 +152,7 @@ buildFestivalVoice (finalAttrs: {
     mkdir -p "\$out/lib/voices/czech/$festivalVoiceName/festvox"
     cat > "\$out/lib/voices/czech/$festivalVoiceName/festvox/${festivalVoiceName}.scm" << 'VOICESCM'
 (proclaim_voice
- '\${finalAttrs.voiceName}
+ '\${finalAttrs.passthru.voiceName}
  '((language czech)
    (gender male)
    (description "Czech voice provided by the Mbrola ${v} database.")))
@@ -162,12 +161,13 @@ VOICESCM
     runHook postInstall
   '';
 
+  passthru.voiceName = "$festivalVoiceName";
   passthru.extraBinDeps = [ mbrola ];
   passthru.extraLibDeps = [ festival-czech ];
   passthru.siteInit = "(require 'czech-mbrola)";
 
   meta = with lib; {
-    description = "Festival MBROLA $lang voice \${finalAttrs.voiceName}";
+    description = "Festival MBROLA $lang voice \${finalAttrs.passthru.voiceName}";
     license = licenses.mit;
     maintainers = with maintainers; [ WiredMic ];
   };
@@ -230,34 +230,33 @@ EOF
   fetchurl,
   buildFestivalVoice,
   upc_ca_base,
-  ...
 }:
 
 buildFestivalVoice (finalAttrs: {
-  voiceName = "$v";
   pname = "$(echo "$v" | tr '_' '-')";
   version = "${version}";
 
   src = fetchurl {
-    url = "${BASE_URL_FESTCAT}/\${finalAttrs.voiceName}-\${finalAttrs.version}.tgz";
+    url = "${BASE_URL_FESTCAT}/\${finalAttrs.passthru.voiceName}-\${finalAttrs.version}.tgz";
     hash = "$hash";
   };
 
   installPhase = ''
     runHook preInstall
 
-    mkdir -p "\$out/lib/voices/catalan/\${finalAttrs.voiceName}"
+    mkdir -p "\$out/lib/voices/catalan/\${finalAttrs.passthru.voiceName}"
     for d in festvox hts; do
-      [ -d "\$d" ] && cp -r "\$d" "\$out/lib/voices/catalan/\${finalAttrs.voiceName}/"
+      [ -d "\$d" ] && cp -r "\$d" "\$out/lib/voices/catalan/\${finalAttrs.passthru.voiceName}/"
     done
 
     runHook postInstall
   '';
 
+  passthru.voiceName = "$v";
   passthru.extraLibDeps = [ upc_ca_base ];
 
   meta = with lib; {
-    description = "Festival Catalan voice \${finalAttrs.voiceName}";
+    description = "Festival Catalan voice \${finalAttrs.passthru.voiceName}";
     homepage = "https://festcat.talp.cat";
     license = licenses.lgpl2;
     maintainers = with maintainers; [ WiredMic ];
@@ -271,34 +270,33 @@ EOF
   fetchurl,
   buildFestivalVoice,
   upc_ca_base,
-  ...
 }:
 
 buildFestivalVoice (finalAttrs: {
-  voiceName = "$v";
   pname = "$(echo "$v" | tr '_' '-')";
   version = "${version}";
 
   src = fetchurl {
-    url = "${BASE_URL_FESTCAT}/\${finalAttrs.voiceName}-\${finalAttrs.version}.tgz";
+    url = "${BASE_URL_FESTCAT}/\${finalAttrs.passthru.voiceName}-\${finalAttrs.version}.tgz";
     hash = "$hash";
   };
 
   installPhase = ''
     runHook preInstall
 
-    mkdir -p "\$out/lib/voices/catalan/\${finalAttrs.voiceName}"
+    mkdir -p "\$out/lib/voices/catalan/\${finalAttrs.passthru.voiceName}"
     for d in doc festival festvox mcep wav; do
-      [ -d "\$d" ] && cp -r "\$d" "\$out/lib/voices/catalan/\${finalAttrs.voiceName}/"
+      [ -d "\$d" ] && cp -r "\$d" "\$out/lib/voices/catalan/\${finalAttrs.passthru.voiceName}/"
     done
 
     runHook postInstall
   '';
 
+  passthru.voiceName = "$v";
   passthru.extraLibDeps = [ upc_ca_base ];
 
   meta = with lib; {
-    description = "Festival Catalan voice \${finalAttrs.voiceName}";
+    description = "Festival Catalan voice \${finalAttrs.passthru.voiceName}";
     homepage = "https://festcat.talp.cat";
     license = licenses.lgpl2;
     maintainers = with maintainers; [ WiredMic ];
@@ -317,7 +315,6 @@ EOF
   mbrola,
 }:
 buildFestivalVoice (finalAttrs: {
-  voiceName = "${v}_mbrola";
   mbrolaVoiceName = "$v";
   pname = "festvox-$(echo "${v}_mbrola" | tr '_' '-')";
   version = "1.95";
@@ -336,15 +333,16 @@ buildFestivalVoice (finalAttrs: {
     ln -s "\${
       mbrola-voices.override { languages = [ finalAttrs.mbrolaVoiceName ]; }
     }/data/\${finalAttrs.mbrolaVoiceName}" \
-        "\$out/lib/voices/$(echo "$lang" | sed 's/ (.*//' | tr '[:upper:]' '[:lower:]')/\${finalAttrs.voiceName}/\${finalAttrs.mbrolaVoiceName}"
+        "\$out/lib/voices/$(echo "$lang" | sed 's/ (.*//' | tr '[:upper:]' '[:lower:]')/\${finalAttrs.passthru.voiceName}/\${finalAttrs.mbrolaVoiceName}"
 
     runHook postInstall
   '';
 
+  passthru.voiceName = "${v}_mbrola";
   passthru.extraBinDeps = [ mbrola ];
 
   meta = with lib; {
-    description = "Festival MBROLA $lang voice \${finalAttrs.voiceName}";
+    description = "Festival MBROLA $lang voice \${finalAttrs.passthru.voiceName}";
     homepage = "http://festvox.org/";
     license = licenses.free;
     maintainers = with maintainers; [ WiredMic ];
@@ -357,11 +355,9 @@ EOF
   lib,
   fetchurl,
   buildFestivalVoice,
-  ...
 }:
 
 buildFestivalVoice (finalAttrs: {
-  voiceName = "$v";
   pname = "festvox-$(echo "$v" | tr '_' '-')";
   version = "2.5";
 
@@ -369,6 +365,8 @@ buildFestivalVoice (finalAttrs: {
     url = "http://festvox.org/packed/festival/\${finalAttrs.version}/voices/festvox_${tarball}.tar.gz";
     hash = "$hash";
   };
+
+  passthru.voiceName = "$v";
 
   meta = with lib; {
     description = "Festival $lang voice \${finalAttrs.pname}";
@@ -384,18 +382,18 @@ EOF
   lib,
   fetchurl,
   buildFestivalVoice,
-  ...
 }:
 
 buildFestivalVoice (finalAttrs: {
-  voiceName = "$v";
   pname = "festvox-$(echo "$v" | tr '_' '-')";
   version = "2.5";
 
   src = fetchurl {
-    url = "http://festvox.org/packed/festival/\${finalAttrs.version}/voices/festvox_\${finalAttrs.voiceName}.tar.gz";
+    url = "http://festvox.org/packed/festival/\${finalAttrs.version}/voices/festvox_\${finalAttrs.passthru.voiceName}.tar.gz";
     hash = "$hash";
   };
+
+  passthru.voiceName = "$v";
 
   meta = with lib; {
     description = "Festival $lang voice \${finalAttrs.pname}";

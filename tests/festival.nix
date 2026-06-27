@@ -88,7 +88,7 @@ in
     assert size > 10000, f"Festival WAV too small: {size} bytes"
 
     machine.fail(
-      "journalctl --user --no-pager -o cat"
+      "su - machine -c 'journalctl --user --no-pager -o cat'"
       " | grep -qE 'command not found|Cannot load wavefile|SIOD ERROR'"
     )
 

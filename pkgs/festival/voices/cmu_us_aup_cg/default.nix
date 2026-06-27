@@ -2,18 +2,18 @@
   lib,
   fetchurl,
   buildFestivalVoice,
-  ...
 }:
 
 buildFestivalVoice (finalAttrs: {
-  voiceName = "cmu_us_aup_cg";
   pname = "festvox-cmu-us-aup-cg";
   version = "2.5";
 
   src = fetchurl {
-    url = "http://festvox.org/packed/festival/${finalAttrs.version}/voices/festvox_${finalAttrs.voiceName}.tar.gz";
+    url = "http://festvox.org/packed/festival/${finalAttrs.version}/voices/festvox_${finalAttrs.passthru.voiceName}.tar.gz";
     hash = "sha256-RVR24cUkbZCqwJCgavpaTpDIAa66zm/jV5AMjglb6CY=";
   };
+
+  passthru.voiceName = "cmu_us_aup_cg";
 
   meta = with lib; {
     description = "Festival English (US) voice ${finalAttrs.pname}";

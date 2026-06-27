@@ -61,7 +61,7 @@ in
       type = types.lines;
       default = "";
       description = ''
-        Extra Scheme expressions appended to `siteinit.scm` for the server
+        Extra Scheme expressions appended to {file}`siteinit.scm` for the server
         package. Evaluated after the port setting.
         Useful for access control variables such as `server_access_list`,
         `server_deny_list`, and `server_passwd`.
@@ -74,10 +74,8 @@ in
       example = 1000000;
       description = ''
         Scheme heap size in Lisp cells (`festival --heap`). Bounded at
-        67108863 -- past this, `heap * 32` overflows a signed 32-bit int
-        inside Festival's WALLOC and `malloc` is called with a negative
-        size, crashing the server outright rather than failing to allocate
-        gracefully.
+        67108863. Past this, `heap * 32` overflows a signed 32-bit int
+        and crashes Festival.
       '';
     };
 

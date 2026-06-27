@@ -18,7 +18,7 @@
   sox,
 
   # Tests
-  testVersion,
+  testers,
 }:
 # https://gitlab.archlinux.org/archlinux/packaging/packages/festival/-/blob/main/PKGBUILD?ref_type=heads
 stdenv.mkDerivation (finalAttrs: {
@@ -133,16 +133,14 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   passthru = {
-    tests.version = testVersion {
+    tests.version = testers.testVersion {
       package = finalAttrs.finalPackage;
       command = "${finalAttrs.pname} --version";
       version = finalAttrs.version;
     };
-  };
 
-  passthru.packages = callPackage ./festival-voices-packages.nix { };
+    packages = callPackage ./festival-voices-packages.nix { };
 
-  passthru = {
     withVoices =
       voicesFn:
       finalAttrs.passthru.withSiteInitConfig voicesFn {

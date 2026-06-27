@@ -48,22 +48,20 @@ in
         defaultText = literalExpression "voices: [ ]";
         example = literalExpression "voices: with voices; [ kal_diphone cmu_us_aew ]";
         description = ''
-          Extra voices available to Festival. The argument is
-          {option}`festival.passthru.packages`. To get a list of
-          available packages run:
-          {command}`nix-env -f '<nixpkgs>' -qaP -A festivalVoices`.
+          Extra voices available to Festival.
         '';
       };
 
       extraSiteInit = mkOption {
         type = types.lines;
         default = "";
-        example = literalExpression ''
-          "(set! Duration_Stretch 1.2)"
+        example = ''
+          (Parameter.set 'Audio_Method 'Audio_Command)
+          (Parameter.set 'Audio_Command "''${alsa-utils}/bin/aplay -q -c 1 -t raw -f s16 -r $SR $FILE")
         '';
         description = ''
           Extra Scheme code to append to Festival's {file}`siteinit.scm`.
-          Useful for tuning voice parameters or loading additional modules.
+          Uses can be found in the Festival manual.
         '';
       };
 

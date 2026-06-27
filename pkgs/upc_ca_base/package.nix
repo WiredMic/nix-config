@@ -2,6 +2,7 @@
   lib,
   stdenv,
   fetchurl,
+  runCommand,
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "upc_ca_base";
@@ -24,6 +25,10 @@ stdenv.mkDerivation (finalAttrs: {
     cp -r festival/lib $out
 
     runHook postInstall
+  '';
+
+  passthru.tests.stub = runCommand "stub-test" ''
+    mkdir $out
   '';
 
   meta = {

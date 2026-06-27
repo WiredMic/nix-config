@@ -2,18 +2,18 @@
   lib,
   fetchurl,
   buildFestivalVoice,
-  ...
 }:
 
 buildFestivalVoice (finalAttrs: {
-  voiceName = "cmu_indic_tel_ss_cg";
   pname = "festvox-cmu-indic-tel-ss-cg";
   version = "2.5";
 
   src = fetchurl {
-    url = "http://festvox.org/packed/festival/${finalAttrs.version}/voices/festvox_${finalAttrs.voiceName}.tar.gz";
+    url = "http://festvox.org/packed/festival/${finalAttrs.version}/voices/festvox_${finalAttrs.passthru.voiceName}.tar.gz";
     hash = "sha256-suVspHIuPQJdgx/R7vZ5/78A/hZbaKRKVZYyFBH/ofA=";
   };
+
+  passthru.voiceName = "cmu_indic_tel_ss_cg";
 
   meta = with lib; {
     description = "Festival Telugu voice ${finalAttrs.pname}";
