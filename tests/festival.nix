@@ -10,7 +10,7 @@ let
   testPassword = "testpass";
 in
 {
-  name = "speechd-festival";
+  name = "festival-server";
 
   _module.args.self = self;
 
@@ -24,7 +24,6 @@ in
       programs.festival = {
         enable = true;
         defaultVoice = v: v.kal_diphone;
-        withSpeechdSupport = true;
       };
 
       # tests:

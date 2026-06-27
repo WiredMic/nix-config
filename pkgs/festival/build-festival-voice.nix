@@ -52,6 +52,8 @@ stdenv.mkDerivation (
     dontBuild = true;
     dontConfigure = true;
     dontFixup = true;
+    __structuredAttrs = true;
+    strictDeps = true;
 
     installPhase = ''
       runHook preInstall

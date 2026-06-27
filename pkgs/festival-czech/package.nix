@@ -9,7 +9,9 @@ stdenv.mkDerivation (finalAttrs: {
   pname = "festival-czech";
   version = "0.3";
 
-  #
+  __structuredAttrs = true;
+  strictDeps = true;
+
   src = fetchFromGitHub {
     repo = "festival-czech";
     owner = "brailcom";

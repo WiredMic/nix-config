@@ -8,7 +8,9 @@ stdenv.mkDerivation (finalAttrs: {
   pname = "upc_ca_base";
   version = "3.0.6";
 
-  #
+  __structuredAttrs = true;
+  strictDeps = true;
+
   src = fetchurl {
     url = "https://festcat.talp.cat/download/${finalAttrs.pname}-${finalAttrs.version}.tgz";
     hash = "sha256-p6ZgakktCEOBPZ6qU1IhlvZ3fa9RMSMGfV4RrLcPSrU=";

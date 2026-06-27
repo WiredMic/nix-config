@@ -25,6 +25,9 @@ stdenv.mkDerivation (finalAttrs: {
   pname = "festival";
   version = "2.5.0";
 
+  __structuredAttrs = true;
+  strictDeps = true;
+
   srcs = [
     (fetchurl {
       url = "http://festvox.org/packed/${finalAttrs.pname}/${lib.versions.majorMinor finalAttrs.version}/${finalAttrs.pname}-${finalAttrs.version}-release.tar.gz";

@@ -21,7 +21,7 @@
         enable = true;
         defaultVoice = v: v.kal_diphone;
         extraVoices = voices: with voices; [ kal_diphone ];
-        withSpeechdSupport = true;
+        speechdSupport = true;
       };
 
       services.festival.enable = true;

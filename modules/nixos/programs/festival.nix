@@ -65,7 +65,7 @@ in
         '';
       };
 
-      withSpeechdSupport = mkOption {
+      speechdSupport = mkOption {
         type = types.bool;
         default = true;
         description = ''
@@ -94,7 +94,7 @@ in
         defaultVoicePkg = cfg.defaultVoice cfg.package.packages;
         allVoices = voices: cfg.extraVoices voices ++ [ (cfg.defaultVoice voices) ];
       in
-      (cfg.package.override { inherit (cfg) withSpeechdSupport; }).withSiteInitConfig allVoices {
+      (cfg.package.override { withSpeechdSupport = cfg.speechdSupport; }).withSiteInitConfig allVoices {
         defaultVoice = defaultVoicePkg.passthru.voiceName;
         extraSiteInit = cfg.extraSiteInit;
       };
