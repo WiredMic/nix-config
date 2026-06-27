@@ -16,7 +16,7 @@ stdenv.mkDerivation (
   finalAttrs:
   let
     defaultPassthru = {
-      isFestivalVoice = true;
+      inherit voiceName;
       tests.synthesizes =
         runCommand "${finalAttrs.pname}-test"
           {

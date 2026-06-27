@@ -102,6 +102,11 @@ mkdir -p "$CACHE_DIR"
 
 rm -rf voices/*
 
+cat >"voices/default.nix" <<-EOF
+import ../festival-voices-packages.nix
+EOF
+echo "  ✓ voices/default.nix"
+
 for v in "${czech_voice_mobrola[@]}" "${festvox_voices[@]}" "${festvox_voices_special[@]}" "${mbrola_voices[@]}" "${catalan_voice_hts[@]}" "${catalan_voice_clunits[@]}"; do
 
     # --- Glue voices: no tarball, emit and continue early ---

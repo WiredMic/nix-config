@@ -5,26 +5,30 @@ final: prev: {
 
   piper-tts = final.callPackage ./piper-tts/package.nix { };
 
-  festival = final.callPackage ./festival/package.nix {
-    speech-tools = final.speech-tools;
-  };
   # Should user be able to install a voice on their own
-  # festivalVoices = final.lib.recurseIntoAttrs final.festival.packages;
   speech-tools = final.callPackage ./speech-tools/package.nix { };
   upc_ca_base = final.callPackage ./upc_ca_base/package.nix { };
   festival-czech = final.callPackage ./festival-czech/package.nix { };
 
-  festivalVoiceTests =
-    let
-      voicesWithTests = final.lib.filterAttrs (
-        _: pkg: pkg ? passthru && pkg.passthru ? isFestivalVoice && pkg.passthru.isFestivalVoice
-      ) final.festival.packages;
-      tests = final.lib.mapAttrs (_: pkg: pkg.tests.synthesizes) voicesWithTests;
-    in
-    final.symlinkJoin {
-      name = "festival-voice-tests";
-      paths = builtins.attrValues tests;
-    };
+  # festivalVoices = final.lib.recurseIntoAttrs (final.callPackage ./festival/voices { });
+
+  festival =
+    (final.callPackage ./festival/package.nix {
+      inherit (final) speech-tools;
+      inherit (final) ncurses alsa-lib;
+    }).overrideAttrs
+      (old: {
+        passthru = old.passthru // {
+          tests = final.lib.mapAttrs (_: pkg: pkg.passthru.tests.synthesizes) final.festival.packages;
+        };
+      });
+
+  festivalVoiceTests = final.symlinkJoin {
+    name = "festival-voice-tests";
+    paths = final.lib.mapAttrsToList (_: pkg: pkg.passthru.tests.synthesizes) (
+      final.lib.filterAttrs (_: final.lib.isDerivation) final.festival.packages
+    );
+  };
 
   festivalFull = final.festival.withSiteInitConfig (
     voices: with voices; [

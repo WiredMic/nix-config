@@ -21,7 +21,7 @@
     programs.festival = {
       enable = true;
       package = pkgs.festival;
-      defaultVoice = "us1_mbrola";
+      defaultVoice = voice: voice.us1_mbrola;
       extraVoices =
         voices: with voices; [
           kal_diphone

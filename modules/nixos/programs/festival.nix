@@ -32,9 +32,10 @@ in
       };
 
       defaultVoice = mkOption {
-        type = types.enum (lib.attrNames pkgs.festival.packages);
-        default = "kallpc16k";
-        example = literalExpression "kallpc16k";
+        type = types.functionTo types.package;
+        default = voices: voices.kal_diphone;
+        defaultText = literalExpression "voices: voices.kal_diphone";
+        example = literalExpression "voices: voices.cmu_us_slt_cg";
         description = ''
           The voice Festival should use by default. The voice is automatically
           included — you do not need to repeat it in {option}`extraVoices`.
@@ -45,7 +46,7 @@ in
         default = _voices: [ ];
         type = types.functionTo (types.listOf types.package);
         defaultText = literalExpression "voices: [ ]";
-        example = literalExpression "voices: with voices; [ kallpc16k cmu_us_aew ]";
+        example = literalExpression "voices: with voices; [ kal_diphone cmu_us_aew ]";
         description = ''
           Extra voices available to Festival. The argument is
           {option}`festival.passthru.packages`. To get a list of
@@ -90,18 +91,16 @@ in
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = [ cfg.finalPackage ];
-
     programs.festival.finalPackage =
       let
-        allVoices =
-          voices:
-          cfg.extraVoices voices ++ lib.optional (cfg.defaultVoice != null) voices.${cfg.defaultVoice};
+        defaultVoicePkg = cfg.defaultVoice cfg.package.packages;
+        allVoices = voices: cfg.extraVoices voices ++ [ (cfg.defaultVoice voices) ];
       in
       (cfg.package.override { inherit (cfg) withSpeechdSupport; }).withSiteInitConfig allVoices {
-        defaultVoice = cfg.defaultVoice;
+        defaultVoice = defaultVoicePkg.passthru.voiceName;
         extraSiteInit = cfg.extraSiteInit;
       };
 
+    environment.systemPackages = [ cfg.finalPackage ];
   };
 }

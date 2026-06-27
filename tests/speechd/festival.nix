@@ -19,7 +19,7 @@
 
       programs.festival = {
         enable = true;
-        defaultVoice = "kal_diphone";
+        defaultVoice = v: v.kal_diphone;
         extraVoices = voices: with voices; [ kal_diphone ];
         withSpeechdSupport = true;
       };
