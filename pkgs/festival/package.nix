@@ -158,22 +158,22 @@ stdenv.mkDerivation (finalAttrs: {
       }:
       let
         selectedVoices = voicesFn finalAttrs.passthru.packages;
-        extraBins = lib.unique (lib.concatMap (v: v.passthru.extraBinPath or [ ]) selectedVoices);
+
+        extraBins = lib.unique (lib.concatMap (v: v.passthru.extraBinDeps or [ ]) selectedVoices);
+        extraLibs = lib.unique (lib.concatMap (v: v.passthru.extraLibDeps or [ ]) selectedVoices);
+        voiceSiteInit = lib.concatMapStrings (v: v.passthru.siteInit or "") selectedVoices;
 
         # Check if the voices are mbrola voices
-        mbrolaPackage = lib.findFirst (p: lib.getName p == "mbrola") null (
-          lib.concatMap (v: v.passthru.extraBinPath or [ ]) selectedVoices
-        );
-        extraDeps = lib.unique (lib.concatMap (v: v.passthru.festivalDeps or [ ]) selectedVoices);
+        mbrolaPackage = lib.findFirst (p: lib.getName p == "mbrola") null extraBins;
+
         defaultVoiceSiteInit = lib.optionalString (
           defaultVoice != null
         ) "(set! voice_default 'voice_${defaultVoice})\n";
-        voiceSiteInit = lib.concatMapStrings (v: v.passthru.siteInitSnippet or "") selectedVoices;
         combinedSiteInit = voiceSiteInit + defaultVoiceSiteInit + extraSiteInit;
       in
       symlinkJoin {
         name = "${finalAttrs.pname}-with-voices";
-        paths = [ finalAttrs.finalPackage ] ++ selectedVoices ++ extraDeps;
+        paths = [ finalAttrs.finalPackage ] ++ selectedVoices ++ extraLibs;
         meta = finalAttrs.meta;
         nativeBuildInputs = [ makeWrapper ];
         postBuild = ''

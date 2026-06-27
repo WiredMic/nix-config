@@ -27,11 +27,11 @@ buildFestivalVoice (finalAttrs: {
     runHook postInstall
   '';
 
-  passthru.festivalDeps = [ upc_ca_base ];
+  passthru.extraLibDeps = [ upc_ca_base ];
 
   meta = with lib; {
     description = "Festival Catalan voice ${finalAttrs.voiceName}";
-    homepage = "http://festvox.org/";
+    homepage = "https://festcat.talp.cat";
     license = licenses.lgpl2;
     maintainers = with maintainers; [ WiredMic ];
   };

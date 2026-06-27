@@ -148,23 +148,22 @@ buildFestivalVoice (finalAttrs: {
     mkdir -p "\$out/lib/voices/czech/$festivalVoiceName/festvox"
     cat > "\$out/lib/voices/czech/$festivalVoiceName/festvox/${festivalVoiceName}.scm" << 'VOICESCM'
 (proclaim_voice
- 'czech_mbrola_cz2
+ '\${finalAttrs.voiceName}
  '((language czech)
    (gender male)
-   (description "Czech voice provided by the Mbrola cz2 database.")))
+   (description "Czech voice provided by the Mbrola ${v} database.")))
 VOICESCM
 
     runHook postInstall
   '';
 
-  passthru.extraBinPath = [ mbrola ];
-  passthru.festivalDeps = [ festival-czech ];
-  passthru.siteInitSnippet = "(require 'czech-mbrola)";
+  passthru.extraBinDeps = [ mbrola ];
+  passthru.extraLibDeps = [ festival-czech ];
+  passthru.siteInit = "(require 'czech-mbrola)";
 
   meta = with lib; {
     description = "Festival MBROLA $lang voice \${finalAttrs.voiceName}";
-    homepage = "http://festvox.org/";
-    license = licenses.lgpl2;
+    license = licenses.mit;
     maintainers = with maintainers; [ WiredMic ];
   };
 })
@@ -250,11 +249,11 @@ buildFestivalVoice (finalAttrs: {
     runHook postInstall
   '';
 
-  passthru.festivalDeps = [ upc_ca_base ];
+  passthru.extraLibDeps = [ upc_ca_base ];
 
   meta = with lib; {
     description = "Festival Catalan voice \${finalAttrs.voiceName}";
-    homepage = "http://festvox.org/";
+    homepage = "https://festcat.talp.cat";
     license = licenses.lgpl2;
     maintainers = with maintainers; [ WiredMic ];
   };
@@ -291,11 +290,11 @@ buildFestivalVoice (finalAttrs: {
     runHook postInstall
   '';
 
-  passthru.festivalDeps = [ upc_ca_base ];
+  passthru.extraLibDeps = [ upc_ca_base ];
 
   meta = with lib; {
     description = "Festival Catalan voice \${finalAttrs.voiceName}";
-    homepage = "http://festvox.org/";
+    homepage = "https://festcat.talp.cat";
     license = licenses.lgpl2;
     maintainers = with maintainers; [ WiredMic ];
   };
@@ -337,7 +336,7 @@ buildFestivalVoice (finalAttrs: {
     runHook postInstall
   '';
 
-  passthru.extraBinPath = [ mbrola ];
+  passthru.extraBinDeps = [ mbrola ];
 
   meta = with lib; {
     description = "Festival MBROLA $lang voice \${finalAttrs.voiceName}";

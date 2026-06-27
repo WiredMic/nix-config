@@ -31,7 +31,7 @@ buildFestivalVoice (finalAttrs: {
     runHook postInstall
   '';
 
-  passthru.extraBinPath = [ mbrola ];
+  passthru.extraBinDeps = [ mbrola ];
 
   meta = with lib; {
     description = "Festival MBROLA English (GB) voice ${finalAttrs.voiceName}";
