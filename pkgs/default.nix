@@ -10,6 +10,8 @@ final: prev: {
   # Should user be able to install a voice on their own
   speech-tools = final.callPackage ./speech-tools/package.nix { };
 
+  sound-icons = final.callPackage ./sound-icons/package.nix { };
+
   upc_ca_base = final.callPackage ./upc_ca_base/package.nix { };
   festival-czech = final.callPackage ./festival-czech/package.nix { };
 

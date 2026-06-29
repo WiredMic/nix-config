@@ -1,7 +1,10 @@
+# TODO Change speechd -> speechd2
+
 {
   config,
   lib,
   pkgs,
+  sound-icons,
   ...
 }:
 let
@@ -14,231 +17,16 @@ let
     mkOption
     ;
 
-  # keep-sorted start block=yes  newline_separated=yes case=no
-  baratinooModuleType = lib.types.submodule {
-    options = {
-      enable = mkEnableOption "Baratinoo text-to-speech output module.";
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
-    };
-  };
-
-  ciceroModuleType = lib.types.submodule {
-    options = {
-      enablvisiblee = mkEnableOption "Cicero text-to-speech output module.";
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
-    };
-  };
-
-  dtkModuleType = lib.types.submodule {
-    options = {
-      enable = mkEnableOption "Dtk text-to-speech output module.";
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
-    };
-  };
-
-  eposModuleType = lib.types.submodule {
-    options = {
-      enable = mkEnableOption "Epos text-to-speech output module.";
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
-    };
-  };
-
-  espeakNgMbrolaModuleType = lib.types.submodule {
-    options = {
-      enable = mkEnableOption "eSpeak NG using MBROLA text-to-speech output module.";
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
-    };
-  };
-
-  espeakNgModuleType = lib.types.submodule {
-    options = {
-      enable = mkOption {
-        type = lib.types.bool;
-        default = true;
-        description = "Enable eSpeak NG text-to-speech output module.";
-      };
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
-    };
-  };
-
-  festivalModuleType = lib.types.submodule {
-    options = {
-      enable = mkEnableOption "Festival text-to-speech output module.";
-      port = mkOption {
-        type = lib.types.port;
-        default = 1314;
-        description = ''
-          Festival server port.
-          Set the {var}`FestivalServerPort`.
-        '';
-        example = 6456;
-      };
-      host = mkOption {
-        type = lib.types.str;
-        default = "localhost";
-        description = ''
-          Festival server host address.
-          Set the {var}`FestivalServerHost`.
-        '';
-        example = "127.0.0.1";
-      };
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
-    };
-  };
-
-  fliteModuleType = lib.types.submodule {
-    options = {
-      enable = mkEnableOption "Flite text-to-speech output module.";
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
-    };
-  };
-
-  kaliModuleType = lib.types.submodule {
-    options = {
-      enable = mkEnableOption "Kali text-to-speech output module.";
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
-    };
-  };
-
-  # preliminary version
-  lliaPhonModuleType = lib.types.submodule {
-    options = {
-      enable = mkEnableOption "Llia Phon text-to-speech output module.";
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
-    };
-  };
-
-  maryModuleType = lib.types.submodule {
-    options = {
-      enable = mkEnableOption "Mary text-to-speech output module.";
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
-    };
-  };
-
-  mimic3ModuleType = lib.types.submodule {
-    options = {
-      enable = mkEnableOption "Mimic3 text-to-speech output module.";
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
-    };
-  };
-
-  openjtalkModuleType = lib.types.submodule {
-    options = {
-      enable = mkEnableOption "Openjtalk text-to-speech output module.";
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
-    };
-  };
-
-  picoModuleType = lib.types.submodule {
-    options = {
-      enable = mkEnableOption "Pico text-to-speech output module.";
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
-    };
-  };
-
-  swiftModuleType = lib.types.submodule {
-    options = {
-      enable = mkEnableOption "Swift text-to-speech output module.";
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
-    };
-  };
-
-  voxinModuleType = lib.types.submodule {
-    options = {
-      enable = mkEnableOption "Voxin text-to-speech output module.";
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
-    };
-  };
-  # keep-sorted end
-
   mkSimpleGenerateEtc =
     confFiles: modCfg:
     lib.optionalAttrs modCfg.enable (
       lib.mergeAttrsList (
         map (confFile: {
           "speech-dispatcher/modules/${confFile}".text =
-            (builtins.readFile "${cfg.package}/etc/speech-dispatcher/modules/${confFile}")
-            + "\n"
+            builtins.replaceStrings
+              [ "Debug 0" "Debug 1" ]
+              [ "Debug ${lib.boolToInt modCfg.debug}" "Debug ${lib.boolToInt modCfg.debug}" ]
+              (builtins.readFile "${cfg.package}/etc/speech-dispatcher/modules/${confFile}")
             + modCfg.extraConfig;
         }) confFiles
       )
@@ -248,179 +36,56 @@ let
     binary: confFile: ''AddModule "${lib.removeSuffix ".conf" confFile}" "${binary}" "${confFile}"'';
 
   outputModules =
-    lib.mapAttrs
-      (
-        name: mod:
-        let
-          binary = mod.binary or "sd_generic";
-        in
-        mod
-        // {
-          inherit binary;
-          generateEtc = mod.generateEtc or (mkSimpleGenerateEtc mod.confFiles);
-          generateAddModule =
-            mod.generateAddModule
-              or (lib.concatMapStrings (confFile: mkSimpleAddModule binary confFile + "\n") mod.confFiles);
-        }
-      )
-      {
-        # keep-sorted start block=yes case=no
-        baratinoo = {
-          type = baratinooModuleType;
-          # Baratinoo is not packaged in Nixpkgs
-          visible = false;
-          displayName = "Baratinoo";
-          binary = "sd_baratinoo";
-          confFiles = [
-            "baratinoo.conf"
-          ];
-        };
-        cicero = {
-          type = ciceroModuleType;
-          # Cicero is not packaged in Nixpkgs
-          visible = false;
-          displayName = "Cicero";
-          binary = "sd_cicero";
-          confFiles = [
-            "cicero.conf"
-          ];
-        };
-        dtk = {
-          type = dtkModuleType;
-          # Dtk is not packaged in Nixpkgs
-          visible = false;
-          displayName = "DTK";
-          confFiles = [
-            "dtk-generic.conf"
-          ];
-        };
-        epos = {
-          type = eposModuleType;
-          # Epos is not packaged in Nixpkgs
-          visible = false;
-          displayName = "Epos";
-          confFiles = [
-            "epos-generic.conf"
-          ];
-        };
-        espeakNg = {
-          type = espeakNgModuleType;
-          displayName = "eSpeak NG";
-          binary = "sd_espeak-ng";
-          confFiles = [
-            "espeak-ng.conf"
-          ];
-        };
-        espeakNgMbrola = {
-          type = espeakNgMbrolaModuleType;
-          displayName = "eSpeak NG MBROLA";
-          binary = "sd_espeak-ng-mbrola";
-          confFiles = [
-            "espeak-ng-mbrola"
-            "espeak-ng-mbrola-generic"
-          ];
-        };
-        festival = {
-          type = festivalModuleType;
-          # Festival is not packaged in Nixpkgs.
-          # However, it works on a server/client model.
-          # Festival does not need to run on the same
-          # machine as Speechd
-          visible = true;
-          displayName = "Festival";
-          binary = "sd_festival";
-          confFiles = [
-            "festival.conf"
-          ];
-          generateEtc =
-            modCfg:
-            lib.optionalAttrs modCfg.enable {
-              "speech-dispatcher/modules/festival.conf".text = ''
-                FestivalServerHost ${toString modCfg.host}
-                FestivalServerPort ${toString modCfg.port}
-              ''
-              + modCfg.extraConfig;
-            };
-        };
-        flite = {
-          type = fliteModuleType;
-          displayName = "Flite";
-          binary = "sd_flite";
-          confFiles = [
-            "flite.conf"
-          ];
-        };
-        kali = {
-          type = kaliModuleType;
-          # Kali is not packaged in Nixpkgs.
-          visible = false;
-          displayName = "Kali";
-          binary = "sd_kali";
-          confFiles = [
-            "kali.conf"
-          ];
-        };
-        lliaPhon = {
-          type = lliaPhonModuleType;
-          # Llia Phon is not packaged in Nixpkgs.
-          visible = false;
-          displayName = "Llia Phon";
-          confFiles = [
-            "llia_phon-generic.conf"
-          ];
-        };
-        mary = {
-          type = maryModuleType;
-          displayName = "MaryTTS";
-          confFiles = [
-            "mary-generic.conf"
-          ];
-        };
-        mimic3 = {
-          type = mimic3ModuleType;
-          displayName = "Mimic 3";
-          confFiles = [
-            "mimic3-generic.conf"
-          ];
-        };
-        openjtalk = {
-          type = openjtalkModuleType;
-          displayName = "Open JTalk";
-          binary = "sd_openjtalk";
-          confFiles = [
-            "openjtalk.conf"
-          ];
-        };
-        pico = {
-          type = picoModuleType;
-          displayName = "SVOX Pico";
-          binary = "sd_pico";
-          confFiles = [
-            "pico.conf"
-          ];
-        };
-        swift = {
-          type = swiftModuleType;
-          #  SwiftTTS is not packaged in Nixpkgs.
-          visible = false;
-          displayName = "SwiftTTS";
-          confFiles = [
-            "swift-generic.conf"
-          ];
-        };
-        voxin = {
-          type = voxinModuleType;
-          displayName = "Voxin";
-          binary = "sd_voxin";
-          confFiles = [
-            "voxin.conf"
-          ];
-        };
-        # keep-sorted end
+    let
+      mods = lib.mapAttrs (name: filename: import ./modules/${filename}.nix { inherit lib pkgs; }) {
+        # keep-sorted start case=no
+        baratinoo = "baratinoo";
+        cicer = "cicero";
+        dtk = "dtk";
+        epos = "epos";
+        espeakNg = "espeak-ng";
+        espeakNgMbrola = "espeak-ng-mbrola";
+        festival = "festival";
+        flite = "flite";
+        kali = "kali";
+        lliaPhon = "llia-phon";
+        mary = "mary";
+        mimic3 = "mimic3";
+        openjtalk = "openjtalk";
+        pico = "pico";
+        swift = "swift";
+        voxin = "voxin";
+        #keep-sorted end
       };
+      binary = mod: mod.binary or "sd_generic";
+    in
+    lib.mapAttrs (
+      name: mod:
+      mod
+      // {
+        binary = binary mod;
+        generateEtc = mod.generateEtc or (mkSimpleGenerateEtc mod.confFiles);
+        generateAddModule =
+          mod.generateAddModule
+            or (lib.concatMapStrings (confFile: mkSimpleAddModule (binary mod) confFile + "\n") mod.confFiles);
+      }
+    ) mods;
 
 in
 {
+  imports = [
+    # TODO: Remove in 27.05
+    (lib.mkRenamedOptionModule
+      [ "services" "speechd2" "config" ]
+      [ "services" "speechd2" "extraConfig" ]
+    )
+    # TODO: Remove in 27.05
+    (lib.mkRenamedOptionModule
+      [ "services" "speechd2" "clients" ]
+      [ "services" "speechd2" "extraClients" ]
+    )
+  ];
+
   options.services.speechd2 = {
     # FIXME: figure out how to deprecate this EXTREMELY CAREFULLY
     # default guessed conservatively in ../misc/graphical-desktop.nix
@@ -551,9 +216,7 @@ in
         Predefined interfaces for Speech Dispatcher output modules.
       '';
       type = lib.types.submodule {
-
-        # freeformType lets unknown attrs (old raw strings) pass through
-        # so we can catch them in config and warn, rather than error at eval
+        # TODO remove in 27.05
         freeformType = lib.types.attrsOf (lib.types.either lib.types.lines lib.types.anything);
         options = lib.mapAttrs (
           name: mod:
@@ -602,6 +265,7 @@ in
   config = mkIf cfg.enable {
 
     assertions =
+      # The user cannot add a module in `extraModules` that is already defined in `modules`
       lib.concatLists (
         lib.mapAttrsToList (
           name: mod:
@@ -614,6 +278,12 @@ in
               Remove one of them.
             '';
           }) mod.confFiles
+        ) outputModules
+      )
+      # The user cannot set a variable in any `extraConfig` that has a named variable
+      ++ lib.concatLists (
+        lib.mapAttrsToList (
+          name: mod: lib.optionals (mod ? assertions) (mod.assertions cfg.modules.${name})
         ) outputModules
       )
       ++ [
@@ -631,55 +301,31 @@ in
             enabled module with that name was found.
           '';
         }
+      ]
+      ++
+        lib.mapAttrsToList
+          (directive: option: {
+            assertion = !(lib.hasInfix directive cfg.extraConfig);
+            message = ''
+              services.speechd.extraConfig contains a ${directive} directive.
+              Use services.speechd.${option} instead.
+            '';
+          })
+          {
+            LogLevel = "logLevel";
+            LogDir = "logDir";
+            DefaultVolume = "defaultVolume";
+            SymbolsPreproc = "symbolsPreproc";
+            AudioOutputMethod = "audioOutputMethod";
+            DefaultModule = "defaultModule";
+          };
 
-        {
-          assertion = !(lib.hasInfix "LogLevel" cfg.extraConfig);
-          message = ''
-            services.speechd.extraConfig contains a LogLevel directive.
-            Use services.speechd.logLevel instead.
-          '';
-        }
-
-        {
-          assertion = !(lib.hasInfix "LogDir" cfg.extraConfig);
-          message = ''
-            services.speechd.extraConfig contains a LogDir directive.
-            Use services.speechd.logDir instead.
-          '';
-        }
-
-        {
-          assertion = !(lib.hasInfix "DefaultVolume" cfg.extraConfig);
-          message = ''
-            services.speechd.extraConfig contains a DefaultVolume directive.
-            Use services.speechd.defaultVolume instead.
-          '';
-        }
-
-        {
-          assertion = !(lib.hasInfix "SymbolsPreproc" cfg.extraConfig);
-          message = ''
-            services.speechd.extraConfig contains a SymbolsPreproc directive.
-            Use services.speechd.symbolsPreproc instead.
-          '';
-        }
-
-        {
-          assertion = !(lib.hasInfix "AudioOutputMethod" cfg.extraConfig);
-          message = ''
-            services.speechd.extraConfig contains an AudioOutputMethod directive.
-            Use services.speechd.audioOutputMethod instead.
-          '';
-        }
-
-        {
-          assertion = !(lib.hasInfix "DefaultModule" cfg.extraConfig);
-          message = ''
-            services.speechd.extraConfig contains a DefaultModule directive.
-            Use services.speechd.defaultModule instead.
-          '';
-        }
-      ];
+    # TODO remove the warnings after NixOS verions 27.05
+    warnings = lib.optional (lib.any lib.isString (lib.attrValues (lib.removeAttrs cfg.modules (lib.attrNames outputModules)))) ''
+      services.speechd.modules now contains typed backend options.
+      Raw string values previously set under services.speechd.modules
+      should be moved to services.speechd.extraModules instead.
+    '';
 
     environment = {
       systemPackages = [

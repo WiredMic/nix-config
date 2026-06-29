@@ -4,4 +4,5 @@
   # List your module files here
   programs-festival = import ./programs/festival.nix;
   services-festival = import ./services/festival.nix;
+  services-speechd = import ./services/speechd.nix;
 }
