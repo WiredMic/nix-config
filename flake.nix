@@ -19,10 +19,10 @@
     ags.url = "github:Aylur/ags";
 
     # Secrets
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # sops-nix = {
+    #   url = "github:Mic92/sops-nix";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     nix-flatpak.url = "github:gmodena/nix-flatpak"; # unstable branch. Use github:gmodena/nix-flatpak/?ref=<tag> to pin releases.
 
@@ -76,7 +76,7 @@
       nixos-hardware,
       # nix-ld,
       nix-index-database,
-      sops-nix,
+      # sops-nix,
       # waveforms,
       nvf,
       ...
@@ -198,7 +198,7 @@
 
       formatter = forAllSystems (
         system:
-        (treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${system} ./treefmt.nix).config.build.wrapper
+        (treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${system} ./ci/treefmt.nix).config.build.wrapper
       );
       nixosConfigurations = {
         nixDesk = nixpkgs.lib.nixosSystem {
