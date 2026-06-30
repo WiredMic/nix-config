@@ -9,9 +9,17 @@ let
   lib = pkgs.lib;
 in
 {
-  speechd = {
-    festival = runTest (import ./speechd/festival.nix { inherit pkgs self lib; });
+  speechd = import ./speechd/default.nix {
+    inherit
+      runTest
+      lib
+      pkgs
+      self
+      ;
   };
+  # speechd = {
+  #   festival = runTest (import ./speechd/festival.nix { inherit pkgs self lib; });
+  # };
 
   festival = runTest (import ./festival.nix { inherit pkgs self lib; });
 }

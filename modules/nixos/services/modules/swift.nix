@@ -26,7 +26,7 @@
     };
   };
 
-  #  SwiftTTS is not packaged in Nixpkgs.
+  # TODO delete if SwiftTTS is packaged in Nixpkgs.
   visible = false;
   displayName = "SwiftTTS";
   confFiles = [

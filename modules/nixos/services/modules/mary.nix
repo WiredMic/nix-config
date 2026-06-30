@@ -71,13 +71,15 @@
     in
     lib.optionalAttrs modCfg.enable {
       "speech-dispatcher/modules/mary-generic.conf".text = ''
-        Debug ${if modCfg.debug then "1" else "0"}
+        Debug ${lib.toString modCfg.debug}
+
         GenericExecuteSynth "tmp=$(${mktemp} --suffix=.wav) && \
         ${curl} \"http://${modCfg.host}:${toString modCfg.port}/process?INPUT_TEXT=`printf %s \'$DATA\' | ${xxd} -plain | \
         ${tr} -d '\\n' | ${sed} 's/\\\(..\\\)/%\\\1/g'`&INPUT_TYPE=TEXT&OUTPUT_TYPE=AUDIO&AUDIO=WAVE_FILE&LOCALE=$LANGUAGE&VOICE=$VOICE\" | \
         ${sox} -v $VOLUME \"$tmp\" tempo $RATE pitch $PITCH norm && $PLAY_COMMAND \"$tmp\"; \
-        rm -f \"$tmp\""
-        GenericCmdDependency "curl"
+        rm -f \"$tmp\""lib.toString
+
+        GenericCmdDependency "${curl}"
         GenericPortDependency ${toString modCfg.port}
         GenericSoundIconFolder "${pkgs.sound-icons}/share/sounds/sound-icons/"
 
@@ -139,6 +141,7 @@
         GenericPitchForceInteger    1
         GenericVolumeForceInteger   0
       ''
+      + "\n"
       + modCfg.extraConfig;
     };
 }

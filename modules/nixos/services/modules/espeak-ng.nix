@@ -14,16 +14,13 @@
         default = true;
         description = "Enable eSpeak NG text-to-speech output module.";
       };
-
       package = mkPackageOption pkgs "espeak-ng" { };
-
       debug = mkOption {
         type = lib.types.bool;
         default = false;
         description = "Enable debug output.";
         example = true;
       };
-
       soundIconFolder = mkOption {
         type = lib.types.path;
         default = "${pkgs.sound-icons}/share/sounds/sound-icons";
@@ -153,7 +150,7 @@
     modCfg:
     lib.optionalAttrs modCfg.enable {
       "speech-dispatcher/modules/espeak-ng.conf".text = ''
-        Debug ${if modCfg.debug then "1" else "0"}
+        Debug ${lib.toString modCfg.debug}
         EspeakSoundIconFolder "${modCfg.soundIconFolder}/"
         EspeakPunctuationList "${modCfg.punctuationList}"
         EspeakCapitalPitchRise ${toString modCfg.capitalPitchRise}

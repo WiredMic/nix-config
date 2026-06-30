@@ -48,8 +48,8 @@ stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     repo = "speechd";
     owner = "brailcom";
-    version = finalAttrs.version;
-    sha256 = "sha256-sUpSONKH0tzOTdQrvWbKZfoijn5oNwgmf3s0A297pLQ=";
+    tag = finalAttrs.version;
+    sha256 = "sha256-+DgbL5n4G5Hjwk5ymITwfVlSbBfI1hLjtcuRBZDGNTg=";
   };
 
   patches = [

@@ -25,8 +25,9 @@ let
           "speech-dispatcher/modules/${confFile}".text =
             builtins.replaceStrings
               [ "Debug 0" "Debug 1" ]
-              [ "Debug ${lib.boolToInt modCfg.debug}" "Debug ${lib.boolToInt modCfg.debug}" ]
+              [ "Debug ${lib.toString modCfg.debug}" "Debug ${lib.toString modCfg.debug}" ]
               (builtins.readFile "${cfg.package}/etc/speech-dispatcher/modules/${confFile}")
+            + "\n"
             + modCfg.extraConfig;
         }) confFiles
       )
@@ -269,9 +270,34 @@ in
         '';
       };
     };
+
+    finalPackage = mkOption {
+      type = lib.types.package;
+      visible = false;
+      readOnly = true;
+      description = ''
+        The Speech Dispatcher package used by the module.
+      '';
+    };
   };
 
   config = mkIf cfg.enable {
+    services.speechd2.finalPackage = (
+      cfg.package.override {
+        withEspeak = cfg.modules.espeakNg.enable;
+        espeak = cfg.modules.espeakNg.package;
+        withPico = cfg.modules.pico.enable;
+        picotts = cfg.modules.pico.package;
+        withFlite = cfg.modules.flite.enable;
+        flite = cfg.modules.flite.package;
+        # Use the defined audio output backend
+        withPulse = lib.elem cfg.audioOutputMethod [ "pulse" ];
+        withLibao = lib.elem cfg.audioOutputMethod [ "libao" ];
+        withAlsa = lib.elem cfg.audioOutputMethod [ "alsa" ];
+        withOss = lib.elem cfg.audioOutputMethod [ "oss" ];
+        withPipewire = lib.elem cfg.audioOutputMethod [ "pipewire" ];
+      }
+    );
 
     assertions =
       # The user cannot add a module in `extraModules` that is already defined in `modules`
@@ -338,42 +364,13 @@ in
 
     environment = {
       systemPackages = [
-        (cfg.package.override {
-          withEspeak = cfg.modules.espeakNg.enable;
-          espeak = cfg.modules.espeakNg.package;
-          withPico = cfg.modules.pico.enable;
-          pico = cfg.modules.pico.package;
-          withFlite = cfg.modules.flite.enable;
-          flite = cfg.modules.flite.package;
-          # Use the defined audio output backend
-          withPulse = lib.elem cfg.audioOutputMethod [ "pulse" ];
-          withLibao = lib.elem cfg.audioOutputMethod [ "libao" ];
-          withAlsa = lib.elem cfg.audioOutputMethod [ "alsa" ];
-          withOss = lib.elem cfg.audioOutputMethod [ "oss" ];
-          withPipewire = lib.elem cfg.audioOutputMethod [ "pipewire" ];
-        })
-
-        # All modules that use an external binary directly
-        # Some are not packaged yet
-        (lib.filter (p: p != null) [
-          # keep-sorted start case=no
-          cfg.modules.baratinoo.package
-          cfg.modules.cicero.package
-          cfg.modules.dtk.package
-          cfg.modules.epos.package
-          cfg.modules.kali.package
-          cfg.modules.lliaPhon.package
-          cfg.modules.mimic3.package
-          cfg.modules.openjtalk.package
-          cfg.modules.swift.package
-          cfg.modules.voxin.package
-          #keep-sorted end
-        ])
+        cfg.finalPackage
       ];
 
       etc = {
         "speech-dispatcher/speechd.conf".text =
           cfg.extraConfig
+          + "\n"
           + ''
             LogLevel ${toString cfg.logLevel}
             LogDir "${cfg.logDir}"
@@ -411,10 +408,14 @@ in
       );
     };
 
-    systemd.packages = [ cfg.package ];
+    # Ensure that the log directory is created
+    systemd.tmpfiles.rules = lib.optional (
+      cfg.logDir != "default" && cfg.logDir != "stdout"
+    ) "d ${cfg.logDir} 1777 - - - -";
+
+    systemd.packages = [ cfg.finalPackage ];
     # have to set `wantedBy` since `systemd.packages` ignores `[Install]`
     systemd.user.sockets.speech-dispatcher.wantedBy = [ "sockets.target" ];
-
   };
 
   meta = {

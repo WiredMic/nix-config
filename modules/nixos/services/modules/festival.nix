@@ -58,10 +58,11 @@
     modCfg:
     lib.optionalAttrs modCfg.enable {
       "speech-dispatcher/modules/festival.conf".text = ''
-        Debug ${if modCfg.debug then "1" else "0"}
+        Debug ${lib.toString modCfg.debug}
         FestivalServerHost ${toString modCfg.host}
         FestivalServerPort ${toString modCfg.port}
       ''
+      + "\n"
       + modCfg.extraConfig;
     };
 }
