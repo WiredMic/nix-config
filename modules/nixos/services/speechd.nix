@@ -37,26 +37,35 @@ let
 
   outputModules =
     let
-      mods = lib.mapAttrs (name: filename: import ./modules/${filename}.nix { inherit lib pkgs; }) {
-        # keep-sorted start case=no
-        baratinoo = "baratinoo";
-        cicer = "cicero";
-        dtk = "dtk";
-        epos = "epos";
-        espeakNg = "espeak-ng";
-        espeakNgMbrola = "espeak-ng-mbrola";
-        festival = "festival";
-        flite = "flite";
-        kali = "kali";
-        lliaPhon = "llia-phon";
-        mary = "mary";
-        mimic3 = "mimic3";
-        openjtalk = "openjtalk";
-        pico = "pico";
-        swift = "swift";
-        voxin = "voxin";
-        #keep-sorted end
-      };
+      mods =
+        lib.mapAttrs
+          (
+            name: filename:
+            import ./modules/${filename}.nix {
+              inherit lib pkgs;
+              inherit (lib) mkPackageOption mkEnableOption mkOption;
+            }
+          )
+          {
+            # keep-sorted start case=no
+            baratinoo = "baratinoo";
+            cicero = "cicero";
+            dtk = "dtk";
+            epos = "epos";
+            espeakNg = "espeak-ng";
+            espeakNgMbrola = "espeak-ng-mbrola";
+            festival = "festival";
+            flite = "flite";
+            kali = "kali";
+            lliaPhon = "llia-phon";
+            mary = "mary";
+            mimic3 = "mimic3";
+            openjtalk = "openjtalk";
+            pico = "pico";
+            swift = "swift";
+            voxin = "voxin";
+            #keep-sorted end
+          };
       binary = mod: mod.binary or "sd_generic";
     in
     lib.mapAttrs (
@@ -331,8 +340,11 @@ in
       systemPackages = [
         (cfg.package.override {
           withEspeak = cfg.modules.espeakNg.enable;
+          espeak = cfg.modules.espeakNg.package;
           withPico = cfg.modules.pico.enable;
+          pico = cfg.modules.pico.package;
           withFlite = cfg.modules.flite.enable;
+          flite = cfg.modules.flite.package;
           # Use the defined audio output backend
           withPulse = lib.elem cfg.audioOutputMethod [ "pulse" ];
           withLibao = lib.elem cfg.audioOutputMethod [ "libao" ];
@@ -340,6 +352,23 @@ in
           withOss = lib.elem cfg.audioOutputMethod [ "oss" ];
           withPipewire = lib.elem cfg.audioOutputMethod [ "pipewire" ];
         })
+
+        # All modules that use an external binary directly
+        # Some are not packaged yet
+        (lib.filter (p: p != null) [
+          # keep-sorted start case=no
+          cfg.modules.baratinoo.package
+          cfg.modules.cicero.package
+          cfg.modules.dtk.package
+          cfg.modules.epos.package
+          cfg.modules.kali.package
+          cfg.modules.lliaPhon.package
+          cfg.modules.mimic3.package
+          cfg.modules.openjtalk.package
+          cfg.modules.swift.package
+          cfg.modules.voxin.package
+          #keep-sorted end
+        ])
       ];
 
       etc = {

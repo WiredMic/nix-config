@@ -2,6 +2,7 @@
   lib,
   pkgs,
   mkEnableOption,
+  mkPackageOption,
   mkOption,
   ...
 }:
@@ -13,6 +14,8 @@
         default = true;
         description = "Enable eSpeak NG text-to-speech output module.";
       };
+
+      package = mkPackageOption pkgs "espeak-ng" { };
 
       debug = mkOption {
         type = lib.types.bool;

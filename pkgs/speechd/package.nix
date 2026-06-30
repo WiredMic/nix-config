@@ -3,8 +3,9 @@
   lib,
   replaceVars,
   pkg-config,
-  fetchurl,
+  fetchFromGitHub,
   fetchpatch,
+  nix-update-script,
   python3Packages,
   gettext,
   itstool,
@@ -44,8 +45,10 @@ stdenv.mkDerivation (finalAttrs: {
   pname = "speech-dispatcher";
   version = "0.12.1";
 
-  src = fetchurl {
-    url = "https://github.com/brailcom/speechd/releases/download/${finalAttrs.version}/speech-dispatcher-${finalAttrs.version}.tar.gz";
+  src = fetchFromGitHub {
+    repo = "speechd";
+    owner = "brailcom";
+    version = finalAttrs.version;
     sha256 = "sha256-sUpSONKH0tzOTdQrvWbKZfoijn5oNwgmf3s0A297pLQ=";
   };
 
@@ -111,12 +114,20 @@ stdenv.mkDerivation (finalAttrs: {
     pyxdg
   ];
 
+  preConfigure = ''
+    substituteInPlace configure.ac \
+      --replace-fail 'test "$EMAIL" = samuel.thibault@ens-lyon.org' 'true'
+  '';
+
   configureFlags = [
     "--sysconfdir=/etc"
     # Audio method falls back from left to right.
     "--with-default-audio-method=\"libao,pipewire,pulse,alsa,oss\""
     "--with-systemdsystemunitdir=${placeholder "out"}/lib/systemd/system"
     "--with-systemduserunitdir=${placeholder "out"}/lib/systemd/user"
+
+    "--enable-doc"
+    "--enable-html"
   ]
   ++ lib.optionals withPulse [
     "--with-pulse"
@@ -141,12 +152,15 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   postPatch = lib.optionalString withPico ''
-    substituteInPlace src/modules/pico.c --replace "/usr/share/pico/lang" "${picotts}/share/pico/lang"
+    substituteInPlace src/modules/pico.c \
+      --replace-fail "/usr/share/pico/lang" "${picotts}/share/pico/lang"
   '';
 
   installFlags = [
     "sysconfdir=${placeholder "out"}/etc"
   ];
+
+  outputs = [ "out" ] ++ lib.optionals (!libsOnly) [ "doc" ];
 
   postInstall =
     if libsOnly then
@@ -156,9 +170,15 @@ stdenv.mkDerivation (finalAttrs: {
     else
       ''
         wrapPythonPrograms
+      ''
+      + ''
+        mkdir -p $doc
+        cp -r doc/*.html doc/figures $doc
       '';
 
   enableParallelBuilding = true;
+
+  passthru.updateScript = nix-update-script { };
 
   meta = {
     description =
@@ -166,8 +186,7 @@ stdenv.mkDerivation (finalAttrs: {
     homepage = "https://devel.freebsoft.org/speechd";
     license = lib.licenses.gpl2Plus;
     maintainers = with lib.maintainers; [ jtojnar ];
-    # TODO: remove checks for `withPico` once PR #375450 is merged
-    platforms = if withAlsa || withPico then lib.platforms.linux else lib.platforms.unix;
+    platforms = if withAlsa then lib.platforms.linux else lib.platforms.unix;
     mainProgram = "speech-dispatcher";
   };
 })
