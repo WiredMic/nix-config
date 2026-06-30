@@ -27,6 +27,7 @@
     # Import optional common configs
     ../common/optional/optional.nix
 
+    ./big_picture.nix
   ];
 
   nixpkgs = {
@@ -80,6 +81,9 @@
     experimental-features = "nix-command flakes";
     # Deduplicate and optimize nix store
     auto-optimise-store = true;
+    # Build with one core less than max
+    cores = 6;
+    max-jobs = 3;
   };
 
   nix.optimise = {
@@ -105,6 +109,27 @@
     firewall = {
       enable = true;
     };
+  };
+
+  # Swap
+  zramSwap = {
+    enable = true;
+    memoryPercent = 50; # compressed swap in RAM, ~50% of RAM as zram device
+    priority = 10; # higher priority than disk swap, used first
+  };
+
+  swapDevices = [
+    {
+      device = "/var/lib/swapfile";
+      size = 16 * 1024; # 16 GiB
+    }
+  ];
+
+  # The ultimate Killer
+  systemd.oomd = {
+    enable = true;
+    enableUserSlices = true;
+    enableSystemSlice = true;
   };
 
   # Amd GPU
@@ -207,10 +232,10 @@
 
     wtype # does not work on kde or gnome
     wev
-    davinci-resolve
     just
     fastfetch
     nmap
+    file
     gnome-system-monitor
 
     # icons

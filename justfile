@@ -5,8 +5,9 @@ default:
     @just --list
 
 rebuild-pre: update-nix-secrets
-    git add **
+    git add -A
     sudo nix flake check
+    nix fmt
 
 rebuild-post:
     just check-sops
