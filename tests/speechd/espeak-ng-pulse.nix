@@ -32,27 +32,42 @@ in
 
       boot.kernelModules = [ "snd-aloop" ];
 
+      environment.systemPackages = [
+        pkgs.alsa-utils
+        pkgs.python3
+      ];
+
       services.speechd.enable = lib.mkForce false;
 
       services.speechd2 = {
         enable = true;
-        package = espeak-ng-en;
         modules = {
           espeakNg = {
             enable = true;
+            package = espeak-ng-en;
             debug = true;
           };
         };
-        defaultModule = "espeak-ng";
+        defaultModule = "espeakNg";
         logLevel = 5;
         logDir = "/tmp/speech-debug";
         audioOutputMethod = "${audioOutputMethod}";
         extraConfig = "DisableAutoSpawn";
       };
 
-      environment.systemPackages = [
-        pkgs.alsa-utils
-      ];
+      security.rtkit.enable = true;
+      services.pipewire = {
+        enable = true;
+        pulse.enable = true;
+        alsa.enable = true;
+      };
+
+      # # Make the loopback device the default sink so arecord can capture it
+      # environment.etc."pipewire/pipewire.conf.d/99-loopback-default.conf".text = ''
+      #   context.exec = [
+      #     { path = "pactl" args = "set-default-sink alsa_output.platform-snd_aloop.0.analog-stereo" }
+      #   ]
+      # '';
 
       users.users.machine = {
         isNormalUser = true;
@@ -79,6 +94,9 @@ in
       machine.systemctl("reset-failed speech-dispatcher.service", "machine")
       machine.systemctl("start speech-dispatcher.service", "machine")
       machine.wait_for_unit("speech-dispatcher.service", "machine")
+
+      machine.wait_for_unit("pipewire.service", "machine")
+      machine.wait_for_unit("pipewire-pulse.service", "machine")
 
       # Wait for eSpeaks voices to be initized
       machine.wait_until_succeeds(

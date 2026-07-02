@@ -56,9 +56,7 @@
   };
 
   displayName = "MaryTTS";
-  confFiles = [
-    "mary-generic.conf"
-  ];
+  confFile = "mary-generic.conf";
   generateEtc =
     modCfg:
     let
@@ -70,14 +68,14 @@
       sox = "${pkgs.sox}/bin/sox";
     in
     lib.optionalAttrs modCfg.enable {
-      "speech-dispatcher/modules/mary-generic.conf".text = ''
+      "speech-dispatcher/modules/mary.conf".text = ''
         Debug ${lib.toString modCfg.debug}
 
         GenericExecuteSynth "tmp=$(${mktemp} --suffix=.wav) && \
         ${curl} \"http://${modCfg.host}:${toString modCfg.port}/process?INPUT_TEXT=`printf %s \'$DATA\' | ${xxd} -plain | \
         ${tr} -d '\\n' | ${sed} 's/\\\(..\\\)/%\\\1/g'`&INPUT_TYPE=TEXT&OUTPUT_TYPE=AUDIO&AUDIO=WAVE_FILE&LOCALE=$LANGUAGE&VOICE=$VOICE\" | \
         ${sox} -v $VOLUME \"$tmp\" tempo $RATE pitch $PITCH norm && $PLAY_COMMAND \"$tmp\"; \
-        rm -f \"$tmp\""lib.toString
+        rm -f \"$tmp\""
 
         GenericCmdDependency "${curl}"
         GenericPortDependency ${toString modCfg.port}

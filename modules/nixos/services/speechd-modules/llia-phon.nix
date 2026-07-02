@@ -8,20 +8,20 @@
 {
   type = lib.types.submodule {
     options = {
-      enable = mkEnableOption "Kali text-to-speech output module.";
-      # TODO use mkPackageOption if Kali is packaged
+      enable = mkEnableOption "Llia Phon text-to-speech output module.";
+      # TODO use mkPackageOption if Llia Phon gets packaged
       package = mkOption {
         type = lib.types.nullOr lib.types.package;
-        default = pkgs.kali or null;
-        defaultText = "pkgs.kali";
+        default = pkgs.llia-phon or null;
+        defaultText = "pkgs.llia-phon";
         description = ''
-          The Kali text-to-spech package to use.
+          The Llia Phon text-to-spech package to use.
 
-          Since `kali` is not yet in nixpkgs, you must override this
+          Since `llia-phon` is not yet in nixpkgs, you must override this
           with your own derivation (or a package from an overlay) if you
           want to enable the module.
         '';
-        example = "pkgs.kali";
+        example = "pkgs.llia-phon";
       };
       debug = mkOption {
         type = lib.types.bool;
@@ -40,11 +40,8 @@
     };
   };
 
-  # TODO remove if Kali is packaged in Nixpkgs.
+  # TODO remove if Llia Phon is packaged in Nixpkgs.
   visible = false;
-  displayName = "Kali";
-  binary = "sd_kali";
-  confFiles = [
-    "kali.conf"
-  ];
+  displayName = "Llia Phon";
+  confFile = "llia_phon-generic.conf";
 }

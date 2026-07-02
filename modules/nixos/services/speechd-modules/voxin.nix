@@ -1,7 +1,6 @@
 {
   lib,
   pkgs,
-  mkPackageOption,
   mkEnableOption,
   mkOption,
   ...
@@ -9,8 +8,7 @@
 {
   type = lib.types.submodule {
     options = {
-      enable = mkEnableOption "Pico text-to-speech output module.";
-      package = mkPackageOption pkgs "picotts" { };
+      enable = mkEnableOption "Voxin text-to-speech output module.";
       debug = mkOption {
         type = lib.types.bool;
         default = false;
@@ -28,9 +26,9 @@
     };
   };
 
-  displayName = "SVOX Pico";
-  binary = "sd_pico";
-  confFiles = [
-    "pico.conf"
-  ];
+  # TODO remove if mkPackageOption if Voxin is packaged
+  visible = false;
+  displayName = "Voxin";
+  binary = "sd_voxin";
+  confFile = "voxin.conf";
 }

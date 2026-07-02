@@ -4,11 +4,14 @@
   config,
   lib,
   pkgs,
-  sound-icons,
   ...
 }:
 let
   cfg = config.services.speechd2;
+
+  # TODO: Remove this in 27.05
+  legacyStringModules = lib.filterAttrs (name: value: lib.isString value) cfg.modules;
+
   inherit (lib)
     mapAttrs'
     mkEnableOption
@@ -18,23 +21,18 @@ let
     ;
 
   mkSimpleGenerateEtc =
-    confFiles: modCfg:
-    lib.optionalAttrs modCfg.enable (
-      lib.mergeAttrsList (
-        map (confFile: {
-          "speech-dispatcher/modules/${confFile}".text =
-            builtins.replaceStrings
-              [ "Debug 0" "Debug 1" ]
-              [ "Debug ${lib.toString modCfg.debug}" "Debug ${lib.toString modCfg.debug}" ]
-              (builtins.readFile "${cfg.package}/etc/speech-dispatcher/modules/${confFile}")
-            + "\n"
-            + modCfg.extraConfig;
-        }) confFiles
-      )
-    );
+    name: confFile: modCfg:
+    lib.optionalAttrs modCfg.enable {
+      "speech-dispatcher/modules/${name}.conf".text =
+        builtins.replaceStrings
+          [ "Debug 0" "Debug 1" ]
+          [ "Debug ${lib.toString modCfg.debug}" "Debug ${lib.toString modCfg.debug}" ]
+          (builtins.readFile "${cfg.package}/etc/speech-dispatcher/modules/${confFile}")
+        + "\n"
+        + modCfg.extraConfig;
+    };
 
-  mkSimpleAddModule =
-    binary: confFile: ''AddModule "${lib.removeSuffix ".conf" confFile}" "${binary}" "${confFile}"'';
+  mkSimpleAddModule = binary: name: ''AddModule "${name}" "${binary}" "${name}.conf"'';
 
   outputModules =
     let
@@ -42,7 +40,7 @@ let
         lib.mapAttrs
           (
             name: filename:
-            import ./modules/${filename}.nix {
+            import ./speechd-modules/${filename}.nix {
               inherit lib pkgs;
               inherit (lib) mkPackageOption mkEnableOption mkOption;
             }
@@ -54,7 +52,6 @@ let
             dtk = "dtk";
             epos = "epos";
             espeakNg = "espeak-ng";
-            espeakNgMbrola = "espeak-ng-mbrola";
             festival = "festival";
             flite = "flite";
             kali = "kali";
@@ -67,17 +64,20 @@ let
             voxin = "voxin";
             #keep-sorted end
           };
-      binary = mod: mod.binary or "sd_generic";
+      binaryFor =
+        mod: modCfg:
+        let
+          b = mod.binary or "sd_generic";
+        in
+        if lib.isFunction b then b modCfg else b;
     in
     lib.mapAttrs (
       name: mod:
       mod
       // {
-        binary = binary mod;
-        generateEtc = mod.generateEtc or (mkSimpleGenerateEtc mod.confFiles);
+        generateEtc = mod.generateEtc or (mkSimpleGenerateEtc name mod.confFile);
         generateAddModule =
-          mod.generateAddModule
-            or (lib.concatMapStrings (confFile: mkSimpleAddModule (binary mod) confFile + "\n") mod.confFiles);
+          mod.generateAddModule or (modCfg: mkSimpleAddModule (binaryFor mod modCfg) name);
       }
     ) mods;
 
@@ -186,7 +186,8 @@ in
       type = lib.types.enum [
         "pulse"
         "alsa"
-        "oss"
+        # "oss"
+        # "nas"
         "pipewire"
         "libao"
       ];
@@ -194,7 +195,7 @@ in
       description = ''
         Audio output system used at runtime.
         Sets {var}`AudioOutputMethod`.
-        Overrides {var}`speechd` to include the speciffic backend.
+        Overrides {var}`speechd` to include the specific backend.
       '';
     };
 
@@ -299,21 +300,23 @@ in
       }
     );
 
+    # TODO: Remove this in 27.05
+    services.speechd2.extraModules = legacyStringModules;
+
     assertions =
       # The user cannot add a module in `extraModules` that is already defined in `modules`
       lib.concatLists (
-        lib.mapAttrsToList (
-          name: mod:
-          map (confFile: {
+        lib.mapAttrsToList (name: mod: [
+          {
             assertion =
-              !(cfg.modules.${name}.enable && cfg.extraModules ? "${lib.removeSuffix ".conf" confFile}");
+              !(cfg.modules.${name}.enable && cfg.extraModules ? "${lib.removeSuffix ".conf" mod.confFile}");
             message = ''
-              services.speechd.modules.${name} and services.speechd.extraModules."${lib.removeSuffix ".conf" confFile}"
-              both configure speech-dispatcher/modules/${confFile}.
+              services.speechd.modules.${name} and services.speechd.extraModules."${lib.removeSuffix ".conf" mod.confFile}"
+              both configure speech-dispatcher/modules/${mod.confFile}.
               Remove one of them.
             '';
-          }) mod.confFiles
-        ) outputModules
+          }
+        ]) outputModules
       )
       # The user cannot set a variable in any `extraConfig` that has a named variable
       ++ lib.concatLists (
@@ -325,15 +328,44 @@ in
         {
           assertion =
             cfg.defaultModule == null
-            || lib.any (
-              name:
-              cfg.modules.${name}.enable
-              && lib.any (f: lib.removeSuffix ".conf" f == cfg.defaultModule) outputModules.${name}.confFiles
-            ) (lib.attrNames outputModules)
+            || (outputModules ? ${cfg.defaultModule} && cfg.modules.${cfg.defaultModule}.enable)
             || cfg.extraModules ? "${cfg.defaultModule}";
           message = ''
-            services.speechd.defaultModule is set to "${cfg.defaultModule}" but no
-            enabled module with that name was found.
+            services.speechd2.defaultModule is set to "${toString cfg.defaultModule}" but it
+            does not match the attribute name of an enabled module under
+            services.speechd2.modules, nor a key in services.speechd2.extraModules.
+          '';
+        }
+      ]
+      ++ [
+        # TODO: Remove this assertion in 27.05
+        {
+          assertion = lib.all (
+            name: builtins.elem name (lib.attrNames outputModules) || lib.isString cfg.modules.${name}
+          ) (lib.attrNames cfg.modules);
+          message = ''
+            services.speechd2.modules contains unrecognized backend name(s): ${
+              toString (
+                lib.filter (
+                  name: !(builtins.elem name (lib.attrNames outputModules) || lib.isString cfg.modules.${name})
+                ) (lib.attrNames cfg.modules)
+              )
+            }.
+            Valid backend names are: ${toString (lib.attrNames outputModules)}.
+          '';
+        }
+      ]
+      ++ [
+        # TODO: Remove this assertion in 27.05
+        {
+          assertion = lib.all (name: !(cfg.extraModules ? ${name})) (lib.attrNames legacyStringModules);
+          message = ''
+            The following `services.speechd2.modules` entries are raw configuration
+            strings that collide with a same-named `services.speechd2.extraModules`
+            entry: ${
+              toString (lib.filter (name: cfg.extraModules ? ${name}) (lib.attrNames legacyStringModules))
+            }.
+            Move everything to `services.speechd2.extraModules.<name>`.
           '';
         }
       ]
@@ -355,12 +387,11 @@ in
             DefaultModule = "defaultModule";
           };
 
-    # TODO remove the warnings after NixOS verions 27.05
-    warnings = lib.optional (lib.any lib.isString (lib.attrValues (lib.removeAttrs cfg.modules (lib.attrNames outputModules)))) ''
-      services.speechd.modules now contains typed backend options.
-      Raw string values previously set under services.speechd.modules
-      should be moved to services.speechd.extraModules instead.
-    '';
+    # TODO: Remove in 27.05 along with freeformType on `modules`.
+    warnings = lib.mapAttrsToList (name: _: ''
+      The option `services.speechd2.modules.${name}` is set as a raw configuration string.
+      Raw configurations have moved to `services.speechd2.extraModules.${name}` instead.
+    '') legacyStringModules;
 
     environment = {
       systemPackages = [
@@ -385,7 +416,7 @@ in
           ''
           + lib.concatStrings (
             lib.mapAttrsToList (
-              name: mod: lib.optionalString cfg.modules.${name}.enable mod.generateAddModule
+              name: mod: lib.optionalString cfg.modules.${name}.enable (mod.generateAddModule cfg.modules.${name})
             ) outputModules
           )
           + lib.optionalString (cfg.defaultModule != null) ''

@@ -8,7 +8,7 @@
 {
   type = lib.types.submodule {
     options = {
-      enable = mkEnableOption "Swift text-to-speech output module.";
+      enable = mkEnableOption "Dtk text-to-speech output module.";
       debug = mkOption {
         type = lib.types.bool;
         default = false;
@@ -26,10 +26,8 @@
     };
   };
 
-  # TODO delete if SwiftTTS is packaged in Nixpkgs.
+  # Dtk is not packaged in Nixpkgs
   visible = false;
-  displayName = "SwiftTTS";
-  confFiles = [
-    "swift-generic.conf"
-  ];
+  displayName = "DTK";
+  confFile = "dtk-generic.conf";
 }

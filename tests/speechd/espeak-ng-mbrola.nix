@@ -4,29 +4,11 @@
   lib,
   ...
 }:
-let
-  audioOutputMethod = "alsa";
-in
 {
-  name = "speechd-espeak-ng-${audioOutputMethod}";
+  name = "speechd-espeak-ng-libao";
 
   nodes.machine =
     { config, pkgs, ... }:
-    let
-      espeak-ng-en = pkgs.espeak-ng.overrideAttrs (old: {
-        postInstall = (old.postInstall or "") + ''
-          # Keep only English dict and lang files
-          find $out/share/espeak-ng-data -maxdepth 1 -name "*_dict" \
-            ! -name "en_dict" -delete
-
-          find $out/share/espeak-ng-data/lang -mindepth 1 -type f \
-            ! -name "en" ! -name "en-*" -delete
-
-          find $out/share/espeak-ng-data/voices/!v -mindepth 1 -type f \
-            ! -name "en" ! -name "en-*" -delete
-        '';
-      });
-    in
     {
       imports = builtins.attrValues self.nixosModules;
 
@@ -39,14 +21,13 @@ in
         modules = {
           espeakNg = {
             enable = true;
-            package = espeak-ng-en;
             debug = true;
           };
         };
-        defaultModule = "espeakNg";
+        defaultModule = "espeak-ng";
         logLevel = 5;
         logDir = "/tmp/speech-debug";
-        audioOutputMethod = "${audioOutputMethod}";
+        audioOutputMethod = "libao";
         extraConfig = "DisableAutoSpawn";
       };
 
@@ -65,7 +46,6 @@ in
     { nodes, ... }:
     let
       logDir = nodes.machine.services.speechd2.logDir;
-      defaultModule = nodes.machine.services.speechd2.defaultModule;
     in
     ''
       import re
@@ -82,7 +62,7 @@ in
 
       # Wait for eSpeaks voices to be initized
       machine.wait_until_succeeds(
-        "su - machine -c 'XDG_RUNTIME_DIR=/run/user/1000 spd-say -O | grep -q \"${defaultModule}\"'"
+        "su - machine -c 'XDG_RUNTIME_DIR=/run/user/1000 spd-say -O | grep -q \"espeak-ng\"'"
       )
 
       # --- Sound Icons Test ---
@@ -105,12 +85,12 @@ in
       machine.sleep(1)
 
       status, out = machine.execute(
-        "su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o ${defaultModule} -w 'Test from Speech Dispatcher via eSpeak NG. Second sentence.'\" 2>&1"
+        "su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o espeak-ng -w 'Test from Speech Dispatcher via eSpeak NG. Second sentence.'\" 2>&1"
       )
       print(f"spd-say exit={status}\n{out}")
 
-      machine.succeed("su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o ${defaultModule} -w 'Test a single sentence.'\"")
-      machine.succeed("su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o ${defaultModule} -w 'Test from Speech Dispatcher via eSpeak NG. Second sentence.'\"")
+      machine.succeed("su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o espeak-ng -w 'Test a single sentence.'\"")
+      machine.succeed("su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o espeak-ng -w 'Test from Speech Dispatcher via eSpeak NG. Second sentence.'\"")
 
       machine.sleep(2)
 
@@ -118,10 +98,10 @@ in
       assert spd_size > 100_000, f"spd→espeak-ng WAV too small, likely no audio: {spd_size} bytes"
 
       # --- Rate / pitch / volume options ---
-      machine.succeed("su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o ${defaultModule} -r 50 -w 'Fast speech rate test.'\"")
-      machine.succeed("su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o ${defaultModule} -r -50 -w 'Slow speech rate test.'\"")
-      machine.succeed("su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o ${defaultModule} -p 50 -w 'High pitch test.'\"")
-      machine.succeed("su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o ${defaultModule} -i 50 -w 'High volume test.'\"")
+      machine.succeed("su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o espeak-ng -r 50 -w 'Fast speech rate test.'\"")
+      machine.succeed("su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o espeak-ng -r -50 -w 'Slow speech rate test.'\"")
+      machine.succeed("su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o espeak-ng -p 50 -w 'High pitch test.'\"")
+      machine.succeed("su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o espeak-ng -i 50 -w 'High volume test.'\"")
 
       # --- Log directory and content ---
       machine.succeed("test -d ${logDir}")
@@ -129,7 +109,7 @@ in
       machine.succeed("test -n \"$(ls ${logDir})\"")
 
       # machine.fail("grep -qE 'ADD TEST HERE' ${logDir}/speech-dispatcher.log")
-      # machine.fail("grep -qE 'ADD TEST HERE' ${logDir}/${defaultModule}.log")
+      # machine.fail("grep -qE 'ADD TEST HERE' ${logDir}/espeak-ng.log")
 
       # --- No fatal errors in journal ---
       journal = machine.succeed("su - machine -c 'journalctl --user --no-pager -o cat'")

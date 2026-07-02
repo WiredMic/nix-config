@@ -8,7 +8,7 @@
 {
   type = lib.types.submodule {
     options = {
-      enable = mkEnableOption "Voxin text-to-speech output module.";
+      enable = mkEnableOption "Swift text-to-speech output module.";
       debug = mkOption {
         type = lib.types.bool;
         default = false;
@@ -26,11 +26,8 @@
     };
   };
 
-  # TODO remove if mkPackageOption if Voxin is packaged
-  visiable = false;
-  displayName = "Voxin";
-  binary = "sd_voxin";
-  confFiles = [
-    "voxin.conf"
-  ];
+  # TODO delete if SwiftTTS is packaged in Nixpkgs.
+  visible = false;
+  displayName = "SwiftTTS";
+  confFile = "swift-generic.conf";
 }

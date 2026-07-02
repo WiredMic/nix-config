@@ -24,7 +24,7 @@
             debug = true;
           };
         };
-        defaultModule = "espeak-ng";
+        defaultModule = "espeakNg";
         logLevel = 5;
         logDir = "/tmp/speech-debug";
         audioOutputMethod = "libao";
@@ -108,8 +108,8 @@
       print(machine.succeed("ls ${logDir}"))
       machine.succeed("test -n \"$(ls ${logDir})\"")
 
-      # machine.fail("grep -qE 'ADD TEST HERE' ${logDir}/speech-dispatcher.log")
-      # machine.fail("grep -qE 'ADD TEST HERE' ${logDir}/espeak-ng.log")
+      machine.succeed("ls ${logDir}/speech-dispatcher.log")
+      machine.succeed("ls ${logDir}/espeakNg.log")
 
       # --- No fatal errors in journal ---
       journal = machine.succeed("su - machine -c 'journalctl --user --no-pager -o cat'")

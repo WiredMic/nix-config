@@ -15,6 +15,20 @@ final: prev: {
   upc_ca_base = final.callPackage ./upc_ca_base/package.nix { };
   festival-czech = final.callPackage ./festival-czech/package.nix { };
 
+  espeak-ng-en = final.pkgs.espeak-ng.overrideAttrs (old: {
+    postInstall = (old.postInstall or "") + ''
+      # Keep only English dict and lang files
+      find $out/share/espeak-ng-data -maxdepth 1 -name "*_dict" \
+        ! -name "en_dict" -delete
+
+      find $out/share/espeak-ng-data/lang -mindepth 1 -type f \
+        ! -name "en" ! -name "en-*" -delete
+
+      find $out/share/espeak-ng-data/voices/!v -mindepth 1 -type f \
+        ! -name "en" ! -name "en-*" -delete
+    '';
+  });
+
   festival =
     (final.callPackage ./festival/package.nix {
       inherit (final) speech-tools;

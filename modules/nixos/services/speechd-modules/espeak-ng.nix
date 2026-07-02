@@ -127,6 +127,17 @@
           Sets {var}`EspeakIndexing`.
         '';
       };
+      mbrola = mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = ''
+          Enabling this makes eSpeak NG only show MBROLA voices.
+
+          Sets {var}`EspeakMbrola`.
+        '';
+        example = "true";
+      };
+
       extraConfig = mkOption {
         type = lib.types.lines;
         default = "";
@@ -142,15 +153,13 @@
   };
 
   displayName = "eSpeak NG";
-  binary = "sd_espeak-ng";
-  confFiles = [
-    "espeak-ng.conf"
-  ];
+  binary = modCfg: if modCfg.mbrola then "sd_espeak-ng-mbrola" else "sd_espeak-ng";
+  confFile = "espeak-ng.conf";
   generateEtc =
     modCfg:
     lib.optionalAttrs modCfg.enable {
-      "speech-dispatcher/modules/espeak-ng.conf".text = ''
-        Debug ${lib.toString modCfg.debug}
+      "speech-dispatcher/modules/espeakNg.conf".text = ''
+        Debug ${toString modCfg.debug}
         EspeakSoundIconFolder "${modCfg.soundIconFolder}/"
         EspeakPunctuationList "${modCfg.punctuationList}"
         EspeakCapitalPitchRise ${toString modCfg.capitalPitchRise}
@@ -159,9 +168,10 @@
         EspeakMaxRate ${toString modCfg.maxRate}
         EspeakAudioChunkSize ${toString modCfg.audioChunkSize}
         EspeakAudioQueueMaxSize ${toString modCfg.audioQueueMaxSize}
-        EspeakIndexing ${if modCfg.indexing then "1" else "0"}
-        EspeakMbrola 0
+        EspeakIndexing ${toString modCfg.indexing}
+        EspeakMbrola ${toString modCfg.mbrola}
       ''
+      + "\n"
       + modCfg.extraConfig;
     };
 

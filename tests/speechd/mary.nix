@@ -6,7 +6,7 @@
 }:
 
 {
-  name = "speechd-festival";
+  name = "speechd-marytts";
 
   nodes.machine =
     { config, pkgs, ... }:
@@ -15,27 +15,35 @@
 
       boot.kernelModules = [ "snd-aloop" ];
 
-      programs.festival = {
-        enable = true;
-        defaultVoice = v: v.kal_diphone;
-        extraVoices = voices: with voices; [ kal_diphone ];
-        speechdSupport = true;
-      };
-
-      services.festival = {
+      services.marytts = {
         enable = true;
         port = 5646;
+        voices = [
+          (pkgs.fetchzip {
+            url = "https://github.com/marytts/voice-bits1-hsmm/releases/download/v5.2/voice-bits1-hsmm-5.2.zip";
+            hash = "sha256-1nK+qZxjumMev7z5lgKr660NCKH5FDwvZ9sw/YYYeaA=";
+          })
+        ];
+
       };
+
+      services.speechd.enable = lib.mkForce false;
 
       services.speechd2 = {
         enable = true;
         modules = {
-          festival = {
+          espeakNg.enable = false;
+          mary = {
             enable = true;
-            port = config.services.festival.port;
+            debug = true;
+            port = config.services.marytts.port;
           };
         };
-        defaultModule = "festival";
+        defaultModule = "mary";
+        logLevel = 4;
+        logDir = "/tmp/speech-debug";
+        audioOutputMethod = "libao";
+        extraConfig = "DisableAutoSpawn";
       };
 
       environment.systemPackages = [ pkgs.alsa-utils ];
@@ -47,43 +55,64 @@
       };
     };
 
-  testScript = ''
-    machine.start()
-    machine.wait_for_unit("multi-user.target")
+  testScript =
+    { nodes, ... }:
+    let
+      logDir = nodes.machine.services.speechd2.logDir;
+      defaultModule = nodes.machine.services.speechd2.defaultModule;
+    in
+    ''
+      import re
 
-    # Dump user journal to help debug if festival fails to start
-    machine.succeed("su - machine -c 'journalctl --user -xeu festival.service --no-pager' || true")
+      machine.start()
+      machine.wait_for_unit("multi-user.target")
 
-    machine.systemctl("reset-failed festival.service", "machine")
-    machine.systemctl("start festival.service", "machine")
-    machine.wait_for_unit("festival.service", "machine")
+      # Dump user journal to help debug if mary fails to start
+      machine.succeed("'journalctl --user -xeu mary.service --no-pager' || true")
 
-    machine.systemctl("start speech-dispatcher.service", "machine")
-    machine.wait_for_unit("speech-dispatcher.service", "machine")
+      machine.systemctl("reset-failed marytts.service")
+      machine.systemctl("start marytts.service")
+      machine.wait_for_unit("marytts.service")
+      machine.wait_for_open_port(${toString nodes.machine.services.marytts.port})
 
-    # Direct Festival test
-    machine.succeed(
-      "echo '(utt.save.wave (utt.synth (Utterance Text \"Festival test. Festival test.\")) \"/tmp/tts-out.wav\" (quote riff))' | festival --pipe"
-    )
-    size = int(machine.succeed("stat -c %s /tmp/tts-out.wav").strip())
-    assert size > 44, f"Festival WAV too small: {size} bytes"
+      machine.systemctl("start speech-dispatcher.service", "machine")
+      machine.wait_for_unit("speech-dispatcher.service", "machine")
 
-    # spd-say test: record the loopback while spd-say speaks
-    machine.execute("arecord -D hw:Loopback,1,0 -f S16_LE -r 16000 -c 1 -d 10 /tmp/spd-out.wav &")
-    machine.sleep(1)
+      # spd-say test: record the loopback while spd-say speaks
+      machine.execute("arecord -D hw:Loopback,1,0 -f S16_LE -r 16000 -c 1 -d 10 /tmp/spd-out.wav &")
+      machine.sleep(1)
 
-    machine.succeed("spd-say -o festival -w 'Test from Speech Dispatcher via Festival. Second sentence.'")
+      machine.succeed(
+          "su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o ${defaultModule} -w 'Test from Speech Dispatcher via ${defaultModule}. Second sentence.'\""
+      )
 
-    machine.sleep(2)
+      machine.sleep(2)
 
-    spd_size = int(machine.succeed("stat -c %s /tmp/spd-out.wav").strip())
-    assert spd_size > 100_000, f"spd→festival WAV too small, likely no audio: {spd_size} bytes"
+      spd_size = int(machine.succeed("stat -c %s /tmp/spd-out.wav").strip())
+      assert spd_size > 100_000, f"spd→mary WAV too small, likely no audio: {spd_size} bytes"
 
-    machine.fail(
-      "su - machine -c 'journalctl --user --no-pager -o cat'"
-      " | grep -qE 'command not found|Cannot load wavefile|SIOD ERROR'"
-    )
+      # --- Log directory and content ---
+      machine.succeed("test -d ${logDir}")
+      machine.succeed("test -n \"$(ls ${logDir})\"")
+      print(machine.succeed("ls ${logDir}"))
 
-    print("✅ speechd-festival test passed")
-  '';
+      machine.succeed("ls ${logDir}/speech-dispatcher.log")
+      print(machine.succeed("cat ${logDir}/speech-dispatcher.log"))
+      print(machine.succeed("cat ${logDir}/dummy.log"))
+      machine.succeed("ls ${logDir}/${defaultModule}.log")
+
+
+      # --- No fatal errors in journal ---
+      journal = machine.succeed("su - machine -c 'journalctl --user --no-pager -o cat'")
+
+      pattern = re.compile(
+          r"Unknown Config-Option|Could not initialize engine|has no voice|"
+          r"Failed to set synthesis voice|Failed to set punctuation list|FATAL|core dumped",
+          re.IGNORECASE,
+      )
+      matches = [line for line in journal.splitlines() if pattern.search(line)]
+      if matches:
+          print("Found problem lines:\n" + "\n".join(matches))
+          raise AssertionError("Found error patterns in journal")
+    '';
 }

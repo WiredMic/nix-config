@@ -27,10 +27,8 @@
   };
 
   # TODO delete if mimic3 is packaged in nixpkgs
-  visiable = false;
+  visible = false;
   displayName = "Mimic 3";
-  confFiles = [
-    "mimic3-generic.conf"
-  ];
+  confFile = "mimic3-generic.conf";
 
 }

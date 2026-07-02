@@ -29,67 +29,36 @@
           czech_mbrola_cz2
           upc_ca_bet_hts
         ];
-      withSpeechdSupport = true;
+      speechdSupport = true;
     };
 
     services.festival = {
       enable = true;
-    };
-
-    systemd.user.services.speech-dispatcher = {
-      restartTriggers = [ config.services.speechd.package ];
-      after = [ "festival.service" ];
-      bindsTo = [ "festival.service" ];
+      port = 1314;
+      extraSiteInit = "";
     };
 
     # systemctl restart --user festival.service && systemctl restart --user speech-dispatcher.service && systemctl restart --user speech-dispatcher.socket
 
-    services.speechd = {
+    services.speechd.enable = lib.mkForce false;
+
+    services.speechd2 = {
       enable = true;
-      package = pkgs.speechd.override {
-        withEspeak = false;
-        withPico = true;
-        withFlite = false;
-      };
       modules = {
-        # festival = builtins.readFile "${pkgs.speechd}/etc/speech-dispatcher/modules/festival.conf";
-        festival = ''
-          ${builtins.readFile "${pkgs.speechd}/etc/speech-dispatcher/modules/festival.conf"}
-        '';
-        pico = builtins.readFile "${pkgs.speechd}/etc/speech-dispatcher/modules/pico.conf";
+        espeakNg.enable = true;
+        festival = {
+          enable = true;
+          debug = true;
+          port = config.services.festival.port;
+        };
+        pico.enable = true;
       };
-      config = ''
-        # https://htmlpreview.github.io/?https://github.com/brailcom/speechd/blob/master/doc/speech-dispatcher.html
-        # -----LOGGING CONFIGURATION-----
-        LogLevel 4
-        LogFile "/tmp/speechd-log.log"
-
-
-        # ----- VOICE PARAMETERS -----
-        DefaultVolume 100
-
-
-        # -----SPELLING/PUNCTUATION/CAPITAL LETTERS  CONFIGURATION-----
-
-        SymbolsPreproc "char"
-
-        SymbolsPreprocFile "gender-neutral.dic"
-        SymbolsPreprocFile "font-variants.dic"
-        SymbolsPreprocFile "symbols.dic"
-        SymbolsPreprocFile "emojis.dic"
-        SymbolsPreprocFile "orca.dic"
-        SymbolsPreprocFile "orca-chars.dic"
-
-
-
-        # -----OUTPUT MODULES CONFIGURATION-----
-
-        DefaultModule festival
-
-        # -----CLIENT SPECIFIC CONFIGURATION-----
-
-        Include "${pkgs.speechd}/etc/speech-dispatcher/clients/*.conf"
-      '';
+      extraModules = {
+      };
+      logLevel = 4;
+      logDir = "/tmp/speechd-log";
+      defaultModule = "festival";
+      extraConfig = "";
     };
   };
 }

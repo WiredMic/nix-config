@@ -30,7 +30,5 @@
 
   displayName = "Flite";
   binary = "sd_flite";
-  confFiles = [
-    "flite.conf"
-  ];
+  confFile = "flite.conf";
 }

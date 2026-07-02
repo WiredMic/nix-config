@@ -1,6 +1,7 @@
 {
   lib,
   pkgs,
+  mkPackageOption,
   mkEnableOption,
   mkOption,
   ...
@@ -8,7 +9,8 @@
 {
   type = lib.types.submodule {
     options = {
-      enable = mkEnableOption "eSpeak NG using MBROLA text-to-speech output module.";
+      enable = mkEnableOption "Pico text-to-speech output module.";
+      package = mkPackageOption pkgs "picotts" { };
       debug = mkOption {
         type = lib.types.bool;
         default = false;
@@ -26,10 +28,7 @@
     };
   };
 
-  displayName = "eSpeak NG MBROLA";
-  binary = "sd_espeak-ng-mbrola";
-  confFiles = [
-    "espeak-ng-mbrola"
-    "espeak-ng-mbrola-generic"
-  ];
+  displayName = "SVOX Pico";
+  binary = "sd_pico";
+  confFile = "pico.conf";
 }

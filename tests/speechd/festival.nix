@@ -30,6 +30,7 @@
       services.speechd2 = {
         enable = true;
         modules = {
+          espeak.enable = false;
           festival = {
             enable = true;
             port = config.services.festival.port;

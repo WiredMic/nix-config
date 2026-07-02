@@ -32,26 +32,31 @@ in
 
       boot.kernelModules = [ "snd-aloop" ];
 
+      security.rtkit.enable = true;
+      services.pipewire = {
+        enable = true;
+        alsa.enable = true;
+        pulse.enable = true;
+      };
+
       services.speechd.enable = lib.mkForce false;
 
       services.speechd2 = {
         enable = true;
-        package = espeak-ng-en;
-        modules = {
-          espeakNg = {
-            enable = true;
-            debug = true;
-          };
+        modules.espeakNg = {
+          enable = true;
+          debug = true;
         };
-        defaultModule = "espeak-ng";
+        defaultModule = "espeakNg";
         logLevel = 5;
         logDir = "/tmp/speech-debug";
-        audioOutputMethod = "${audioOutputMethod}";
+        audioOutputMethod = "pipewire";
         extraConfig = "DisableAutoSpawn";
       };
 
       environment.systemPackages = [
         pkgs.alsa-utils
+        pkgs.python3
       ];
 
       users.users.machine = {
@@ -73,17 +78,24 @@ in
       machine.start()
       machine.wait_for_unit("multi-user.target")
 
-      # Dump user journal to help debug if speech-dispatcher fails to start
-      machine.succeed("su - machine -c 'journalctl --user -xeu speech-dispatcher.service --no-pager' || true")
+      machine.wait_for_unit("pipewire.socket", "machine")
 
-      machine.systemctl("reset-failed speech-dispatcher.service", "machine")
-      machine.systemctl("start speech-dispatcher.service", "machine")
-      machine.wait_for_unit("speech-dispatcher.service", "machine")
-
-      # Wait for eSpeaks voices to be initized
-      machine.wait_until_succeeds(
-        "su - machine -c 'XDG_RUNTIME_DIR=/run/user/1000 spd-say -O | grep -q \"${defaultModule}\"'"
+      # Poke the socket to trigger pipewire.service activation
+      machine.succeed(
+          "su - machine -c 'XDG_RUNTIME_DIR=/run/user/1000 pw-cli info'"
       )
+
+      # Now pipewire.service should be up, and wireplumber pulled in as its dependency
+      machine.wait_for_unit("pipewire.service", "machine")
+      machine.wait_for_unit("wireplumber.service", "machine")
+
+      machine.sleep(3)
+      print(machine.succeed(
+          "su - machine -c 'XDG_RUNTIME_DIR=/run/user/1000 journalctl --user -u wireplumber --no-pager'"
+      ))
+      print(machine.succeed(
+          "su - machine -c 'XDG_RUNTIME_DIR=/run/user/1000 wpctl status'"
+      ))
 
       # --- Sound Icons Test ---
       machine.execute("arecord -D hw:Loopback,1,0 -f S16_LE -r 16000 -c 1 -d 5 /tmp/sound-icon-out.wav &")
@@ -104,10 +116,23 @@ in
       machine.execute("arecord -D hw:Loopback,1,0 -f S16_LE -r 16000 -c 1 -d 10 /tmp/spd-out.wav &")
       machine.sleep(1)
 
+      print(machine.succeed(
+          "su - machine -c 'XDG_RUNTIME_DIR=/run/user/1000 wpctl status'"
+      ))
+      sinks = machine.succeed(
+          "su - machine -c 'XDG_RUNTIME_DIR=/run/user/1000 wpctl status' "
+          "| grep -A5 Sinks"
+      )
+      print(sinks)
+      assert "Loopback" in sinks or "*" in sinks, "no default sink found before running speechd tests"
+
       status, out = machine.execute(
-        "su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o ${defaultModule} -w 'Test from Speech Dispatcher via eSpeak NG. Second sentence.'\" 2>&1"
+          "su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 timeout 15 spd-say -o ${defaultModule} -w 'Test from Speech Dispatcher via eSpeak NG. Second sentence.'\" 2>&1"
       )
       print(f"spd-say exit={status}\n{out}")
+      if status == 124:
+          print(machine.succeed("su - machine -c 'journalctl --user --no-pager -u speech-dispatcher'"))
+          raise AssertionError("spd-say timed out — likely stuck waiting on audio sink")
 
       machine.succeed("su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o ${defaultModule} -w 'Test a single sentence.'\"")
       machine.succeed("su - machine -c \"XDG_RUNTIME_DIR=/run/user/1000 spd-say -o ${defaultModule} -w 'Test from Speech Dispatcher via eSpeak NG. Second sentence.'\"")

@@ -30,20 +30,23 @@ in
     {
       imports = builtins.attrValues self.nixosModules;
 
-      boot.kernelModules = [ "snd-aloop" ];
+      boot.kernelModules = [
+        "snd-aloop"
+        "snd-pcm-oss"
+      ];
 
       services.speechd.enable = lib.mkForce false;
 
       services.speechd2 = {
         enable = true;
-        package = espeak-ng-en;
         modules = {
           espeakNg = {
             enable = true;
+            package = espeak-ng-en;
             debug = true;
           };
         };
-        defaultModule = "espeak-ng";
+        defaultModule = "espeakNg";
         logLevel = 5;
         logDir = "/tmp/speech-debug";
         audioOutputMethod = "${audioOutputMethod}";

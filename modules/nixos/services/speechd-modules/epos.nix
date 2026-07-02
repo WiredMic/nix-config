@@ -8,20 +8,20 @@
 {
   type = lib.types.submodule {
     options = {
-      enable = mkEnableOption "Llia Phon text-to-speech output module.";
-      # TODO use mkPackageOption if Llia Phon gets packaged
+      enable = mkEnableOption "Epos text-to-speech output module.";
+      # TODO use mkPackageOption if Epos is packaged
       package = mkOption {
         type = lib.types.nullOr lib.types.package;
-        default = pkgs.llia-phon or null;
-        defaultText = "pkgs.llia-phon";
+        default = pkgs.epos or null;
+        defaultText = "pkgs.epos";
         description = ''
-          The Llia Phon text-to-spech package to use.
+          The Epos text-to-spech package to use.
 
-          Since `llia-phon` is not yet in nixpkgs, you must override this
+          Since `epos` is not yet in nixpkgs, you must override this
           with your own derivation (or a package from an overlay) if you
           want to enable the module.
         '';
-        example = "pkgs.llia-phon";
+        example = "pkgs.epos";
       };
       debug = mkOption {
         type = lib.types.bool;
@@ -40,10 +40,9 @@
     };
   };
 
-  # TODO remove if Llia Phon is packaged in Nixpkgs.
+  # TODO remove if Epos is packaged in Nixpkgs
   visible = false;
-  displayName = "Llia Phon";
-  confFiles = [
-    "llia_phon-generic.conf"
-  ];
+  displayName = "Epos";
+  confFile = "epos-generic.conf";
+
 }

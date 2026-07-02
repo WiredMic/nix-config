@@ -1,9 +1,9 @@
 {
   lib,
-  stdenv,
+  stdenvNoCC,
   fetchurl,
 }:
-stdenv.mkDerivation (finalAttrs: {
+stdenvNoCC.mkDerivation (finalAttrs: {
 
   pname = "sound-icons";
   version = "0.1";
@@ -30,7 +30,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   meta = {
-    description = "Sound-icons are a set of wave file used by eSpeak developed for Free(b)soft";
+    description = "Sound icons are a set of wave file used by eSpeak developed for Free(b)soft";
     homepage = "https://freebsoft.org/index";
     license = with lib.licenses; [
       gpl2Only

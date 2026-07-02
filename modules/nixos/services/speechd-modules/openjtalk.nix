@@ -35,14 +35,13 @@
 
   displayName = "Open JTalk";
   binary = "sd_openjtalk";
-  confFiles = [
-    "openjtalk.conf"
-  ];
+  confFile = "openjtalk.conf";
+
   generateEtc =
     modCfg:
     lib.optionalAttrs modCfg.enable {
       "speech-dispatcher/modules/openjtalk.conf".text =
-        (builtins.readFile "${pkgs.speechd}/etc/speech-dispatcher/modules/openjtalk.conf")
+        (builtins.readFile "${pkgs.speechd}/etc/speech-dispatcher/modules/${modCfg.confFile}")
         + "\n"
         + modCfg.extraConfig;
     };

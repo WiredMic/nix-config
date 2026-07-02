@@ -51,9 +51,7 @@
   visible = true;
   displayName = "Festival";
   binary = "sd_festival";
-  confFiles = [
-    "festival.conf"
-  ];
+  confFile = "festival.conf";
   generateEtc =
     modCfg:
     lib.optionalAttrs modCfg.enable {
