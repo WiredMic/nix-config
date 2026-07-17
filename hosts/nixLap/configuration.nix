@@ -75,16 +75,25 @@
 
   nix.settings = {
     # Enable flakes and new 'nix' command
-    experimental-features = "nix-command flakes";
+    experimental-features = [
+      "nix-command flakes"
+      "auto-allocate-uids"
+      "cgroups"
+    ];
     # Deduplicate and optimize nix store
     auto-optimise-store = true;
-    max-jobs = 8;
     substituters = [
       "https://cache.nixos-cuda.org"
     ];
     trusted-public-keys = [
       "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
     ];
+    # Build with one core less than max
+    cores = 6;
+    max-jobs = 5;
+
+    auto-allocate-uids = true;
+    extra-system-features = [ "uid-range" ];
   };
 
   nix.optimise = {
@@ -96,6 +105,27 @@
     automatic = true;
     dates = "weekly";
     options = "--delete-older-than 30d";
+  };
+
+  # Swap
+  zramSwap = {
+    enable = true;
+    memoryPercent = 50; # compressed swap in RAM, ~50% of RAM as zram device
+    priority = 10; # higher priority than disk swap, used first
+  };
+
+  swapDevices = [
+    {
+      device = "/var/lib/swapfile";
+      size = 16 * 1024; # 16 GiB
+    }
+  ];
+
+  # The ultimate Killer
+  systemd.oomd = {
+    enable = true;
+    enableUserSlices = true;
+    enableSystemSlice = true;
   };
 
   my.boot.efi.enable = true;

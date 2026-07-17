@@ -78,12 +78,19 @@
 
   nix.settings = {
     # Enable flakes and new 'nix' command
-    experimental-features = "nix-command flakes";
+    experimental-features = [
+      "nix-command flakes"
+      "auto-allocate-uids"
+      "cgroups"
+    ];
     # Deduplicate and optimize nix store
     auto-optimise-store = true;
     # Build with one core less than max
     cores = 6;
     max-jobs = 3;
+
+    auto-allocate-uids = true;
+    extra-system-features = [ "uid-range" ];
   };
 
   nix.optimise = {
