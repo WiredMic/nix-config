@@ -79,6 +79,14 @@
 
       geogebra
 
+      nix-update
+      nixpkgs-review
+      nixpkgs-lint-community
+      nix-output-monitor
+      gh
+      file
+      jq
+
       (rWrapper.override {
         packages = with rPackages; [
           languageserver # LSP

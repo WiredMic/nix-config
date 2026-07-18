@@ -73,6 +73,7 @@
       nix-update
       gh
       nixpkgs-review
+      nix-output-monitor
 
       kdePackages.gwenview
       kdePackages.qtimageformats
