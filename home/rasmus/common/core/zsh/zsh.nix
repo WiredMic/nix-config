@@ -42,6 +42,8 @@
       wget = "wget --hsts-file=${config.xdg.dataHome}/wget-hsts";
       matlab = ''octave -q --eval "PS1('matlab:\#> ')" --persist'';
       matlab-cli = "matlab";
+      nix = "noglob nix";
+      nom = "noglob nom";
     };
 
     # Manual lines in .zshrc file
