@@ -73,6 +73,7 @@
       nix-update
       gh
       nixpkgs-review
+      nixpkgs-lint-community
       nix-output-monitor
 
       kdePackages.gwenview

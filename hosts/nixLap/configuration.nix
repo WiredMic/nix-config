@@ -263,6 +263,9 @@
     tree
     gcc
     kdePackages.kdeconnect-kde
+
+    exfat
+    exfatprogs
     gparted
 
     # network share maybe s
@@ -270,6 +273,7 @@
     # it cannot connect to kpassd-server
     samba
 
+    nh
     wtype # does not work on kde or gnome
     wev
     # calibre

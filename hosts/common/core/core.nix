@@ -8,6 +8,7 @@
   imports = [
     # Here everything in the core dir is imported.
     ./zsh.nix
+    ./scripts.nix
   ];
 
   # Because this is the core dir everything is enabled by default

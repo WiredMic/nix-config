@@ -49,9 +49,10 @@
       xdg-ninja
       rquickshare
 
+      nix-index
       flatpak
       vlc
-      neofetch
+      fastfetch
       pass
       nurl
 
@@ -79,6 +80,10 @@
 
       geogebra
 
+      typst
+
+      drawy
+
       nix-update
       nixpkgs-review
       nixpkgs-lint-community
@@ -86,6 +91,8 @@
       gh
       file
       jq
+
+      calibre
 
       (rWrapper.override {
         packages = with rPackages; [
