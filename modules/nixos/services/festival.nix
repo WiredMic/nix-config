@@ -148,4 +148,8 @@ in
       allowedTCPPorts = [ cfg.port ];
     };
   };
+
+  meta = {
+    maintainers = with lib.maintainers; [ WiredMic ];
+  };
 }

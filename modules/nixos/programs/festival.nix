@@ -16,20 +16,11 @@ let
 
 in
 {
-  meta.maintainers = [ lib.maintainers.WiredMic ];
-
   options = {
     programs.festival = {
       enable = lib.mkEnableOption "Festival";
 
-      package = mkOption {
-        type = types.package;
-        default = pkgs.festival;
-        defaultText = "pkgs.festival";
-        description = ''
-          The Festival package to use.
-        '';
-      };
+      package = lib.mkPackageOption pkgs "festival" { };
 
       defaultVoice = mkOption {
         type = types.functionTo types.package;
@@ -69,12 +60,11 @@ in
         type = types.bool;
         default = true;
         description = ''
-          Enables support for interoperebilly on festivals side between festival and speech-dispathcer.
+          Enables support for interoperability on Festival's side between Festival and speech-dispatcher.
           Note:
-           - Do not add to many voices to festival
-           - Festival still needs to be avaliable as a daemon (see {option}`sevices.festival`) 
+           - Do not add too many voices to Festival
+           - Festival still needs to be available as a daemon (see {option}`sevices.festival`)
         '';
-
       };
 
       finalPackage = mkOption {
@@ -100,5 +90,9 @@ in
       };
 
     environment.systemPackages = [ cfg.finalPackage ];
+  };
+
+  meta = {
+    maintainers = with lib.maintainers; [ WiredMic ];
   };
 }

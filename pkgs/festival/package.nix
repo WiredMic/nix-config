@@ -5,7 +5,7 @@
   fetchFromGitHub,
   symlinkJoin,
   callPackage,
-  makeWrapper,
+  festivalVoices,
 
   # Toogles
   withSpeechdSupport ? true,
@@ -14,8 +14,6 @@
   speech-tools,
   ncurses,
   alsa-lib,
-  glibc,
-  sox,
 
   # Tests
   testers,
@@ -136,13 +134,14 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   passthru = {
-    tests.version = testers.testVersion {
-      package = finalAttrs.finalPackage;
-      command = "${finalAttrs.pname} --version";
-      version = finalAttrs.version;
+    tests = {
+      version = testers.testVersion {
+        package = finalAttrs.finalPackage;
+      };
+      wrapper-all = finalAttrs.finalPackage.withVoices (v: builtins.attrValues v);
     };
 
-    packages = callPackage ./festival-voices-packages.nix { };
+    packages = festivalVoices;
 
     withVoices =
       voicesFn:
@@ -151,78 +150,10 @@ stdenv.mkDerivation (finalAttrs: {
         extraSiteInit = "";
       };
 
-    withSiteInitConfig =
-      voicesFn:
-      {
-        defaultVoice ? null,
-        extraSiteInit ? "",
-      }:
-      let
-        selectedVoices = voicesFn finalAttrs.passthru.packages;
-
-        extraBins = lib.unique (lib.concatMap (v: v.passthru.extraBinDeps or [ ]) selectedVoices);
-        extraLibs = lib.unique (lib.concatMap (v: v.passthru.extraLibDeps or [ ]) selectedVoices);
-        voiceSiteInit = lib.concatMapStrings (v: v.passthru.siteInit or "") selectedVoices;
-
-        # Check if the voices are mbrola voices
-        mbrolaPackage = lib.findFirst (p: lib.getName p == "mbrola") null extraBins;
-
-        defaultVoiceSiteInit = lib.optionalString (
-          defaultVoice != null
-        ) "(set! voice_default 'voice_${defaultVoice})\n";
-        combinedSiteInit = voiceSiteInit + defaultVoiceSiteInit + extraSiteInit;
-      in
-      symlinkJoin {
-        name = "${finalAttrs.pname}-with-voices";
-        paths = [ finalAttrs.finalPackage ] ++ selectedVoices ++ extraLibs;
-        meta = finalAttrs.meta;
-        nativeBuildInputs = [ makeWrapper ];
-        postBuild = ''
-          # Wrap ALL executables in bin/ — this is the most robust approach
-          for bin in $out/bin/*; do
-            if [ -e "$bin" ]; then
-              # Skip already-wrapped binaries (they end with -wrapped)
-              if [[ "$(basename "$bin")" != *"-wrapped" ]]; then
-                wrapProgram "$bin" \
-                  --set-default FESTLIBDIR "$out/lib" \
-                  --prefix PATH : "${
-                    lib.makeBinPath (
-                      lib.optionals withSpeechdSupport [
-                        glibc
-                        sox
-                      ]
-                      ++ extraBins
-                    )
-                  }"
-              fi
-            fi
-          done
-
-          ${lib.optionalString (combinedSiteInit != "") ''
-            cp --remove-destination $(realpath $out/lib/siteinit.scm) $out/lib/siteinit.scm
-            chmod u+w $out/lib/siteinit.scm
-            # Remove the existing (provide 'siteinit) so we can place it last
-            substituteInPlace $out/lib/siteinit.scm \
-              --replace-fail \
-                "(provide 'siteinit)" \
-                ""
-            cat >> $out/lib/siteinit.scm << 'EOF'
-            ${combinedSiteInit}
-            (provide 'siteinit)
-            EOF
-          ''}
-
-          # If the voices are mbrola voices they will include mbrola in extraBins
-          # mbrola.scm needs to link to it
-          ${lib.optionalString (mbrolaPackage != null) ''
-            cp --remove-destination $(realpath $out/lib/mbrola.scm) $out/lib/mbrola.scm
-            substituteInPlace $out/lib/mbrola.scm \
-              --replace-fail \
-                '"/cstr/external/mbrola/mbrola"' \
-                '"${mbrolaPackage}/bin/mbrola"'
-          ''}
-        '';
-      };
+    withSiteInitConfig = callPackage ./wrapper.nix {
+      festival = finalAttrs.finalPackage;
+      inherit withSpeechdSupport;
+    };
   };
 
   meta = {

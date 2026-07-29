@@ -3,12 +3,14 @@
   pkgs,
   mkEnableOption,
   mkOption,
+  mkExtraConfigOption,
   ...
 }:
 {
   type = lib.types.submodule {
     options = {
-      enable = mkEnableOption "Llia Phon text-to-speech output module.";
+      enable = mkEnableOption "Llia Phon text to speech output module";
+
       # TODO use mkPackageOption if Llia Phon gets packaged
       package = mkOption {
         type = lib.types.nullOr lib.types.package;
@@ -23,6 +25,7 @@
         '';
         example = "pkgs.llia-phon";
       };
+
       debug = mkOption {
         type = lib.types.bool;
         default = false;
@@ -31,12 +34,8 @@
         '';
         example = true;
       };
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
+
+      extraConfig = mkExtraConfigOption { };
     };
   };
 

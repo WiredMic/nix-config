@@ -4,12 +4,14 @@
   mkPackageOption,
   mkEnableOption,
   mkOption,
+  mkExtraConfigOption,
   ...
 }:
 {
   type = lib.types.submodule {
     options = {
-      enable = mkEnableOption "Openjtalk text-to-speech output module.";
+      enable = mkEnableOption "Open JTalk text to speech output module";
+
       # TODO use mkPackageOption when Open JTalk is packaged
       package = mkOption {
         type = lib.types.nullOr lib.types.package;
@@ -24,15 +26,13 @@
         '';
         example = "pkgs.openjtalk";
       };
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
+
+      extraConfig = mkExtraConfigOption { };
     };
   };
 
+  # TODO remove if Open JTalk is packaged in Nixpkgs
+  visible = false;
   displayName = "Open JTalk";
   binary = "sd_openjtalk";
   confFile = "openjtalk.conf";

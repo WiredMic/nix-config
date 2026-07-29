@@ -4,5 +4,7 @@
   # List your module files here
   programs-festival = import ./programs/festival.nix;
   services-festival = import ./services/festival.nix;
+  programs-piper-tts = import ./programs/piper-tts.nix;
+  services-piper-tts = import ./services/piper-tts.nix;
   services-speechd = import ./services/speechd.nix;
 }

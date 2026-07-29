@@ -1,5 +1,3 @@
-# TODO Change speechd -> speechd2
-
 {
   config,
   lib,
@@ -7,7 +5,7 @@
   ...
 }:
 let
-  cfg = config.services.speechd2;
+  cfg = config.services.speechd;
 
   # TODO: Remove this in 27.05
   legacyStringModules = lib.filterAttrs (name: value: lib.isString value) cfg.modules;
@@ -20,19 +18,49 @@ let
     mkOption
     ;
 
+  mkExtraConfigOption =
+    { }:
+    mkOption {
+      type = lib.types.lines;
+      default = "";
+      description = ''
+        Extra lines appended verbatim to this module's Speech Dispatcher
+        configuration file.
+
+        See the [Speech Dispatcher manual](https://github.com/brailcom/speechd/blob/master/doc/speech-dispatcher.texi)
+        for the general directive syntax, and the default
+        shipped in `${"$"}{cfg.package}/etc/speech-dispatcher/modules/`
+        for the directives this specific module accepts.
+      '';
+      example = "";
+    };
+
   mkSimpleGenerateEtc =
     name: confFile: modCfg:
     lib.optionalAttrs modCfg.enable {
       "speech-dispatcher/modules/${name}.conf".text =
         builtins.replaceStrings
           [ "Debug 0" "Debug 1" ]
-          [ "Debug ${lib.toString modCfg.debug}" "Debug ${lib.toString modCfg.debug}" ]
+          [
+            "Debug ${if modCfg.debug then "1" else "0"}"
+            "Debug ${if modCfg.debug then "1" else "0"}"
+          ]
           (builtins.readFile "${cfg.package}/etc/speech-dispatcher/modules/${confFile}")
         + "\n"
         + modCfg.extraConfig;
     };
 
-  mkSimpleAddModule = binary: name: ''AddModule "${name}" "${binary}" "${name}.conf"'';
+  mkDebugAssertion =
+    name: modCfg:
+    lib.optional (modCfg ? extraConfig && lib.hasInfix "Debug" modCfg.extraConfig) {
+      assertion = false;
+      message = ''
+        `services.speechd.modules.${name}.extraConfig` contains a Debug directive.
+        Use `services.speechd.modules.${name}.debug` instead.
+      '';
+    };
+
+  mkSimpleAddModule = binary: name: ''AddModule "${name}" "${binary}" "${name}.conf"'' + "\n";
 
   outputModules =
     let
@@ -42,7 +70,12 @@ let
             name: filename:
             import ./speechd-modules/${filename}.nix {
               inherit lib pkgs;
-              inherit (lib) mkPackageOption mkEnableOption mkOption;
+              inherit (lib)
+                mkPackageOption
+                mkEnableOption
+                mkOption
+                ;
+              inherit mkExtraConfigOption;
             }
           )
           {
@@ -78,25 +111,25 @@ let
         generateEtc = mod.generateEtc or (mkSimpleGenerateEtc name mod.confFile);
         generateAddModule =
           mod.generateAddModule or (modCfg: mkSimpleAddModule (binaryFor mod modCfg) name);
+        assertions = modCfg: (mkDebugAssertion name modCfg) ++ (mod.assertions or (_: [ ])) modCfg;
       }
     ) mods;
 
 in
 {
+  disabledModules = [ "services/accessibility/speechd.nix" ];
+
   imports = [
     # TODO: Remove in 27.05
-    (lib.mkRenamedOptionModule
-      [ "services" "speechd2" "config" ]
-      [ "services" "speechd2" "extraConfig" ]
-    )
+    (lib.mkRenamedOptionModule [ "services" "speechd" "config" ] [ "services" "speechd" "extraConfig" ])
     # TODO: Remove in 27.05
     (lib.mkRenamedOptionModule
-      [ "services" "speechd2" "clients" ]
-      [ "services" "speechd2" "extraClients" ]
+      [ "services" "speechd" "clients" ]
+      [ "services" "speechd" "extraClients" ]
     )
   ];
 
-  options.services.speechd2 = {
+  options.services.speechd = {
     # FIXME: figure out how to deprecate this EXTREMELY CAREFULLY
     # default guessed conservatively in ../misc/graphical-desktop.nix
     enable = mkEnableOption "speech-dispatcher speech synthesizer daemon";
@@ -183,19 +216,34 @@ in
     };
 
     audioOutputMethod = mkOption {
-      type = lib.types.enum [
+      type = lib.types.nonEmptyListOf (
+        lib.types.enum [
+          "pulse"
+          "alsa"
+          "oss"
+          # "nas"
+
+          # FIXME uncomment when pipewire is a derivation input
+          # https://github.com/NixOS/nixpkgs/pull/470797
+          # "pipewire"
+          "libao"
+        ]
+      );
+      default = [
+        "libao"
         "pulse"
         "alsa"
-        # "oss"
-        # "nas"
-        "pipewire"
-        "libao"
+        # FIXME uncomment when pipewire is a derivation input
+        # https://github.com/NixOS/nixpkgs/pull/470797
+        # "pipewire"
+        "oss"
       ];
-      default = "libao";
       description = ''
-        Audio output system used at runtime.
-        Sets {var}`AudioOutputMethod`.
-        Overrides {var}`speechd` to include the specific backend.
+        Ordered list of audio output backends to try at runtime, falling
+        back to the next one if opening a device fails.
+
+        Sets {var}`AudioOutputMethod` (as a comma-separated list).
+        Overrides {var}`speechd` to include the speciffic backend.
       '';
     };
 
@@ -283,37 +331,54 @@ in
   };
 
   config = mkIf cfg.enable {
-    services.speechd2.finalPackage = (
+    services.speechd.finalPackage = (
       cfg.package.override {
         withEspeak = cfg.modules.espeakNg.enable;
-        espeak = cfg.modules.espeakNg.package;
+        espeak = cfg.modules.espeakNg.finalPackage;
         withPico = cfg.modules.pico.enable;
         picotts = cfg.modules.pico.package;
         withFlite = cfg.modules.flite.enable;
         flite = cfg.modules.flite.package;
         # Use the defined audio output backend
-        withPulse = lib.elem cfg.audioOutputMethod [ "pulse" ];
-        withLibao = lib.elem cfg.audioOutputMethod [ "libao" ];
-        withAlsa = lib.elem cfg.audioOutputMethod [ "alsa" ];
-        withOss = lib.elem cfg.audioOutputMethod [ "oss" ];
-        withPipewire = lib.elem cfg.audioOutputMethod [ "pipewire" ];
+        withPulse = lib.elem "pulse" cfg.audioOutputMethod;
+        withLibao = lib.elem "libao" cfg.audioOutputMethod;
+        withAlsa = lib.elem "alsa" cfg.audioOutputMethod;
+        withOss = lib.elem "oss" cfg.audioOutputMethod;
+
+        # FIXME uncomment when pipewire is a derivation input
+        # https://github.com/NixOS/nixpkgs/pull/470797
+        # withPipewire = lib.elem "pipewire" cfg.audioOutputMethod;
       }
     );
 
     # TODO: Remove this in 27.05
-    services.speechd2.extraModules = legacyStringModules;
+    services.speechd.extraModules = legacyStringModules;
 
     assertions =
       # The user cannot add a module in `extraModules` that is already defined in `modules`
       lib.concatLists (
         lib.mapAttrsToList (name: mod: [
           {
-            assertion =
-              !(cfg.modules.${name}.enable && cfg.extraModules ? "${lib.removeSuffix ".conf" mod.confFile}");
+            assertion = !(cfg.extraModules ? "${lib.removeSuffix ".conf" mod.confFile}");
             message = ''
-              services.speechd.modules.${name} and services.speechd.extraModules."${lib.removeSuffix ".conf" mod.confFile}"
-              both configure speech-dispatcher/modules/${mod.confFile}.
-              Remove one of them.
+              ${name} is a predefined module in `services.speechd.modules.${name}`.
+              Use the predefined module instead of defining your own.
+            '';
+          }
+        ]) outputModules
+      )
+      # The user cannot define a module in AddModule that is already defined in `modules`
+      ++ lib.concatLists (
+        lib.mapAttrsToList (name: mod: [
+          {
+            assertion =
+              !(lib.any (line: builtins.match ''[[:space:]]*AddModule[[:space:]]+"${name}".*'' line != null) (
+                lib.splitString "\n" cfg.extraConfig
+              ));
+            message = ''
+              services.speechd.extraConfig contains an AddModule directive for "${name}",
+              which collides with the predefined module services.speechd.modules.${name}.
+              Remove the duplicate AddModule line or rename the module.
             '';
           }
         ]) outputModules
@@ -321,9 +386,15 @@ in
       # The user cannot set a variable in any `extraConfig` that has a named variable
       ++ lib.concatLists (
         lib.mapAttrsToList (
-          name: mod: lib.optionals (mod ? assertions) (mod.assertions cfg.modules.${name})
+          name: mod:
+          lib.optionals (mod ? assertions) (
+            map (a: a // { message = "[services.speechd.modules.${name}] " + a.message; }) (
+              mod.assertions cfg.modules.${name}
+            )
+          )
         ) outputModules
       )
+      # The user cannot set a module in defaultModule that is not defined in `modules` or `extraModules`
       ++ [
         {
           assertion =
@@ -331,9 +402,9 @@ in
             || (outputModules ? ${cfg.defaultModule} && cfg.modules.${cfg.defaultModule}.enable)
             || cfg.extraModules ? "${cfg.defaultModule}";
           message = ''
-            services.speechd2.defaultModule is set to "${toString cfg.defaultModule}" but it
+            services.speechd.defaultModule is set to "${toString cfg.defaultModule}" but it
             does not match the attribute name of an enabled module under
-            services.speechd2.modules, nor a key in services.speechd2.extraModules.
+            services.speechd.modules, nor a key in services.speechd.extraModules.
           '';
         }
       ]
@@ -344,7 +415,7 @@ in
             name: builtins.elem name (lib.attrNames outputModules) || lib.isString cfg.modules.${name}
           ) (lib.attrNames cfg.modules);
           message = ''
-            services.speechd2.modules contains unrecognized backend name(s): ${
+            services.speechd.modules contains unrecognized backend name(s): ${
               toString (
                 lib.filter (
                   name: !(builtins.elem name (lib.attrNames outputModules) || lib.isString cfg.modules.${name})
@@ -360,12 +431,12 @@ in
         {
           assertion = lib.all (name: !(cfg.extraModules ? ${name})) (lib.attrNames legacyStringModules);
           message = ''
-            The following `services.speechd2.modules` entries are raw configuration
-            strings that collide with a same-named `services.speechd2.extraModules`
+            The following `services.speechd.modules` entries are raw configuration
+            strings that collide with a same-named `services.speechd.extraModules`
             entry: ${
               toString (lib.filter (name: cfg.extraModules ? ${name}) (lib.attrNames legacyStringModules))
             }.
-            Move everything to `services.speechd2.extraModules.<name>`.
+            Move everything to `services.speechd.extraModules.<name>`.
           '';
         }
       ]
@@ -389,8 +460,8 @@ in
 
     # TODO: Remove in 27.05 along with freeformType on `modules`.
     warnings = lib.mapAttrsToList (name: _: ''
-      The option `services.speechd2.modules.${name}` is set as a raw configuration string.
-      Raw configurations have moved to `services.speechd2.extraModules.${name}` instead.
+      The option `services.speechd.modules.${name}` is set as a raw configuration string.
+      Raw configurations have moved to `services.speechd.extraModules.${name}` instead.
     '') legacyStringModules;
 
     environment = {
@@ -412,7 +483,7 @@ in
             SymbolsPreprocFile "${file}"
           '') cfg.symbolsPreprocFiles
           + ''
-            AudioOutputMethod "${toString cfg.audioOutputMethod}"
+            AudioOutputMethod "${lib.concatStringsSep "," cfg.audioOutputMethod}"
           ''
           + lib.concatStrings (
             lib.mapAttrsToList (

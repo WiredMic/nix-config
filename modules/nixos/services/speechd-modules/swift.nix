@@ -3,12 +3,14 @@
   pkgs,
   mkEnableOption,
   mkOption,
+  mkExtraConfigOption,
   ...
 }:
 {
   type = lib.types.submodule {
     options = {
-      enable = mkEnableOption "Swift text-to-speech output module.";
+      enable = mkEnableOption "Swift text to speech output module";
+
       debug = mkOption {
         type = lib.types.bool;
         default = false;
@@ -17,12 +19,8 @@
         '';
         example = true;
       };
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
+
+      extraConfig = mkExtraConfigOption { };
     };
   };
 

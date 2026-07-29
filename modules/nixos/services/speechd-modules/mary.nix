@@ -3,30 +3,36 @@
   pkgs,
   mkEnableOption,
   mkOption,
+  mkExtraConfigOption,
   ...
 }:
 {
   type = lib.types.submodule {
     options = {
-      enable = mkEnableOption "Mary text-to-speech output module.";
+      enable = mkEnableOption "Mary text to speech output module";
+
       port = mkOption {
         type = lib.types.port;
         default = 59125;
         description = ''
           MaryTTS server port.
+
           Set the {var}`GenericPortDependency`.
         '';
         example = 44545;
       };
+
       host = mkOption {
         type = lib.types.str;
         default = "localhost";
         description = ''
           MaryTTS server host address.
+
           Sets the host in the {var}`GenericExecuteSynth` curl command.
         '';
         example = "192.168.1.10";
       };
+
       defaultVoice = mkOption {
         type = lib.types.str;
         default = "dfki-spike";
@@ -38,6 +44,7 @@
         '';
         example = "cmu-slt";
       };
+
       debug = mkOption {
         type = lib.types.bool;
         default = false;
@@ -46,12 +53,8 @@
         '';
         example = true;
       };
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
+
+      extraConfig = mkExtraConfigOption { };
     };
   };
 
@@ -69,7 +72,7 @@
     in
     lib.optionalAttrs modCfg.enable {
       "speech-dispatcher/modules/mary.conf".text = ''
-        Debug ${lib.toString modCfg.debug}
+        Debug ${if modCfg.debug then "1" else "0"}
 
         GenericExecuteSynth "tmp=$(${mktemp} --suffix=.wav) && \
         ${curl} \"http://${modCfg.host}:${toString modCfg.port}/process?INPUT_TEXT=`printf %s \'$DATA\' | ${xxd} -plain | \
@@ -142,4 +145,18 @@
       + "\n"
       + modCfg.extraConfig;
     };
+
+  assertions =
+    modCfg:
+    lib.mapAttrsToList
+      (directive: option: {
+        assertion = !(lib.hasInfix directive modCfg.extraConfig);
+        message = ''
+          `services.speechd.modules.mary.extraConfig` contains an ${directive} directive.
+          Use `services.speechd.modules.mary.${option}` instead.
+        '';
+      })
+      {
+        GenericPortDependency = "port";
+      };
 }

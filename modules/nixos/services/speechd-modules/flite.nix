@@ -4,12 +4,13 @@
   mkPackageOption,
   mkEnableOption,
   mkOption,
+  mkExtraConfigOption,
   ...
 }:
 {
   type = lib.types.submodule {
     options = {
-      enable = mkEnableOption "Flite text-to-speech output module.";
+      enable = mkEnableOption "Flite text to speech output module";
       package = mkPackageOption pkgs "flite" { };
       debug = mkOption {
         type = lib.types.bool;
@@ -19,12 +20,7 @@
         '';
         example = true;
       };
-      extraConfig = mkOption {
-        type = with lib.types; lines;
-        default = "";
-        description = "";
-        example = "";
-      };
+      extraConfig = mkExtraConfigOption { };
     };
   };
 
