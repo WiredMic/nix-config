@@ -52,8 +52,6 @@
     ./kanata.nix
 
     ./file_browser/thunar.nix
-
-    ./cec.nix
   ];
 
   # Because this is the optional dir not everything needs to be enabled by default
@@ -99,9 +97,7 @@
   my.syncthing.enable = lib.mkDefault false;
   my.vpn.enable = lib.mkDefault false;
 
-  my.kanata.enable = lib.mkDefault userSettings.de.hyprland;
+  my.kanata.enable = lib.mkDefault true;
 
   my.thunar.enable = lib.mkDefault false;
-
-  my.cec-pulseeight.enable = lib.mkDefault false;
 }

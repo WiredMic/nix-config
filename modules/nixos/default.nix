@@ -7,4 +7,5 @@
   programs-piper-tts = import ./programs/piper-tts.nix;
   services-piper-tts = import ./services/piper-tts.nix;
   services-speechd = import ./services/speechd.nix;
+  pulse-eight = import ./services/pulse-eight.nix;
 }

@@ -48,9 +48,12 @@
     };
 
     # HDMI cec
-    # https://wiki.archlinux.org/title/HDMI-CEC
-    # SUBSYSTEM=="tty" ACTION=="add" ATTRS{manufacturer}=="Pulse-Eight" ATTRS{product}=="CEC Adapter" TAG+="systemd" ENV{SYSTEMD_WANTS}="pulse8-cec-attach@$devnode.service"
-    # Udev rules for Pulse-Eight adapter
+    services.pulse-eight = {
+      enable = true;
+      users = [ "rasmus" ];
+      osdName = "nixDesk";
+      hdmiConnector = "card1-HDMI-A-1";
+    };
 
     programs.gamemode.enable = true;
 
