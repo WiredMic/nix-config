@@ -8,7 +8,7 @@
   imports = [
     ./ssh.nix
     ./gnupg.nix
-    ./zsh/zsh.nix
+    ./env.nix
     ./git.nix
     ./mime.nix
     ./xdg.nix

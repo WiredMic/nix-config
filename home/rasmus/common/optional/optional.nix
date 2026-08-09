@@ -2,6 +2,7 @@
   pkgs,
   lib,
   config,
+  osConfig,
   userSettings,
   ...
 }:
@@ -41,9 +42,13 @@
     ./ai/claude-code.nix
     ./ai/ollama.nix
     ./ai/opencode.nix
+
+    # shell
+    ./shell/zsh.nix
+    ./shell/nushell.nix
   ];
 
-  xdg.portal.enable = lib.mkForce false;
+  xdg.portal.extraPortals = lib.mkForce osConfig.xdg.portal.extraPortals;
   my.cosmic.enable = lib.mkDefault userSettings.de.cosmic;
   my.common.hyprland.enable = lib.mkDefault userSettings.de.hyprland;
   my.kde.enable = lib.mkDefault userSettings.de.kde;
@@ -72,4 +77,8 @@
   # AI
   my.ollama.enable = lib.mkDefault false;
   my.opencode.enable = lib.mkDefault false;
+
+  # shell
+  my.zsh.enable = lib.mkDefault false;
+  my.nushell.enable = lib.mkDefault false;
 }

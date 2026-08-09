@@ -107,6 +107,9 @@
   my.opencode.enable = true;
   my.claude-code.enable = true;
 
+  # my.zsh.enable = true;
+  my.nushell.enable = true;
+
   # Enable home-manager and git
   programs.home-manager.enable = true;
 
