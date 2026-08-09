@@ -119,7 +119,14 @@
       };
 
       commonModules = [
-        { nixpkgs.overlays = [ (import ./pkgs) ]; }
+        {
+          nixpkgs.overlays = [
+            (import ./pkgs)
+            (final: _prev: {
+              pnpm_10_29_2 = final.pnpm_10;
+            })
+          ];
+        }
         nix-flatpak.nixosModules.nix-flatpak
         stylix.nixosModules.stylix
         nix-index-database.nixosModules.nix-index
@@ -140,7 +147,21 @@
           };
           overlay = import ./pkgs pkgsFor pkgsFor;
         in
-        overlay
+        # Only flat derivations are valid here - flakes require every
+        # top-level attr under `packages.<system>` to itself be a derivation.
+        nixpkgs.lib.filterAttrs (_: nixpkgs.lib.isDerivation) overlay
+      );
+
+      # Full pkgs (with our overlay applied), exposed the same way nixpkgs
+      # itself is - so nested sets like festivalVoices/piperTtsVoices work
+      # exactly as they would in plain nixpkgs, e.g.
+      #   nix build .#festivalVoices.someVoice
+      legacyPackages = forAllSystems (
+        system:
+        import nixpkgs {
+          inherit system;
+          overlays = [ (import ./pkgs) ];
+        }
       );
 
       # Your custom packages and modifications, exported as overlays
@@ -211,7 +232,6 @@
           modules = commonModules ++ [
             { nixpkgs.overlays = [ (import ./pkgs) ]; }
             home-manager.nixosModules.home-manager
-            # Our main nixos configuration file <
             ./hosts/nixDesk/configuration.nix
             {
               home-manager = {
