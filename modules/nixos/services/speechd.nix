@@ -470,32 +470,31 @@ in
       ];
 
       etc = {
-        "speech-dispatcher/speechd.conf".text =
-          cfg.extraConfig
-          + "\n"
-          + ''
-            LogLevel ${toString cfg.logLevel}
-            LogDir "${cfg.logDir}"
-            DefaultVolume ${toString cfg.defaultVolume}
-            SymbolsPreproc "${cfg.symbolsPreproc}"
-          ''
-          + lib.concatMapStrings (file: ''
-            SymbolsPreprocFile "${file}"
-          '') cfg.symbolsPreprocFiles
-          + ''
-            AudioOutputMethod "${lib.concatStringsSep "," cfg.audioOutputMethod}"
-          ''
-          + lib.concatStrings (
-            lib.mapAttrsToList (
-              name: mod: lib.optionalString cfg.modules.${name}.enable (mod.generateAddModule cfg.modules.${name})
-            ) outputModules
-          )
-          + lib.optionalString (cfg.defaultModule != null) ''
-            DefaultModule ${toString cfg.defaultModule}
-          ''
-          + ''
-            Include "clients/*.conf"
-          '';
+        "speech-dispatcher/speechd.conf".text = ''
+          LogLevel ${toString cfg.logLevel}
+          LogDir "${cfg.logDir}"
+          DefaultVolume ${toString cfg.defaultVolume}
+          SymbolsPreproc "${cfg.symbolsPreproc}"
+        ''
+        + lib.concatMapStrings (file: ''
+          SymbolsPreprocFile "${file}"
+        '') cfg.symbolsPreprocFiles
+        + ''
+          AudioOutputMethod "${lib.concatStringsSep "," cfg.audioOutputMethod}"
+        ''
+        + lib.concatStrings (
+          lib.mapAttrsToList (
+            name: mod: lib.optionalString cfg.modules.${name}.enable (mod.generateAddModule cfg.modules.${name})
+          ) outputModules
+        )
+        + lib.optionalString (cfg.defaultModule != null) ''
+          DefaultModule ${toString cfg.defaultModule}
+        ''
+        + ''
+          Include "clients/*.conf"
+        ''
+        + "\n"
+        + cfg.extraConfig;
       }
       // (mapAttrs' (name: value: {
         name = "speech-dispatcher/modules/${name}.conf";
@@ -518,6 +517,22 @@ in
     systemd.packages = [ cfg.finalPackage ];
     # have to set `wantedBy` since `systemd.packages` ignores `[Install]`
     systemd.user.sockets.speech-dispatcher.wantedBy = [ "sockets.target" ];
+
+    # Restart the (socket-activated, per-user) service whenever any of its
+    # generated configuration files change, so an already-running daemon
+    # doesn't keep using stale settings until the user logs out.
+    systemd.user.services.speech-dispatcher.restartTriggers = [
+      config.environment.etc."speech-dispatcher/speechd.conf".source
+    ]
+    ++ lib.mapAttrsToList (
+      name: _: config.environment.etc."speech-dispatcher/modules/${name}.conf".source
+    ) (lib.filterAttrs (name: mod: cfg.modules.${name}.enable or false) outputModules)
+    ++ lib.mapAttrsToList (
+      name: _: config.environment.etc."speech-dispatcher/modules/${name}.conf".source
+    ) cfg.extraModules
+    ++ lib.mapAttrsToList (
+      name: _: config.environment.etc."speech-dispatcher/clients/${name}.conf".source
+    ) cfg.extraClients;
   };
 
   meta = {
