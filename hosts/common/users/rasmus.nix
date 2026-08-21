@@ -25,13 +25,15 @@
         initialPassword = "passwd";
         isNormalUser = true;
         openssh.authorizedKeys.keys = [
-          # TODO: Add your SSH public key(s) here, if you plan on using SSH to connect
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEu1C0iL1LjGgO04d3DmQ33uB4EF70oQ7Jfpa1ccSEky rasmus@enev.dk"
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEag9yiSIgqNyI+Vo+W+vuDYJj1FMJUWPFBhz1No1bky rasmus@enev.dk"
         ];
         extraGroups = [
           "networkmanager"
           "wheel"
           "docker"
           "plugdev"
+          "uinput"
         ];
 
       };

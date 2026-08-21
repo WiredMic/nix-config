@@ -16,6 +16,7 @@
   config = lib.mkIf config.my.audiobookshelf.enable {
     services.audiobookshelf = {
       enable = true;
+      package = pkgs.audiobookshelf;
       port = 8234;
       host = "0.0 0.0";
       openFirewall = true;

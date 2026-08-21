@@ -10,60 +10,69 @@
 }:
 
 {
-  imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
+  imports = [
+    (modulesPath + "/installer/scan/not-detected.nix")
+  ];
 
   boot.initrd.availableKernelModules = [
-    "ata_piix"
-    "uhci_hcd"
-    "virtio_pci"
-    "virtio_scsi"
+    "xhci_pci"
+    "ahci"
+    "usb_storage"
     "sd_mod"
-    "sr_mod"
   ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ ];
+  boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" = {
-    device = "/dev/disk/by-uuid/8339c9b8-2395-442d-9336-da9839eb13bf";
-    fsType = "ext4";
+    device = "rpool/root";
+    fsType = "zfs";
   };
 
-  fileSystems."/mnt/share" = {
-    device = "192.168.86.101:/mnt/ZPOOL0/share/";
-    fsType = "nfs";
+  fileSystems."/nix" = {
+    device = "rpool/nix";
+    fsType = "zfs";
+  };
+
+  fileSystems."/var" = {
+    device = "rpool/var";
+    fsType = "zfs";
+  };
+
+  fileSystems."/home" = {
+    device = "rpool/home";
+    fsType = "zfs";
+  };
+
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/79C7-49BF";
+    fsType = "vfat";
     options = [
-      "x-systemd.automount"
-      "noauto"
+      "fmask=0077"
+      "dmask=0077"
     ];
   };
 
-  fileSystems."/mnt/pass" = {
-    device = "192.168.86.101:/mnt/ZPOOL0/pass/";
-    fsType = "nfs";
+  fileSystems."/boot2" = {
+    device = "/dev/disk/by-uuid/79C7-FEEB";
+    fsType = "vfat";
     options = [
-      "x-systemd.automount"
-      "noauto"
+      "fmask=0077"
+      "dmask=0077"
     ];
   };
 
-  fileSystems."/mnt/home" = {
-    device = "192.168.86.101:/mnt/ZPOOL0/home/";
-    fsType = "nfs";
-    options = [
-      "x-systemd.automount"
-      "noauto"
-    ];
-  };
-
-  swapDevices = [ ];
-
-  # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
-  # (the default) this is the recommended approach. When using systemd-networkd it's
-  # still possible to use this option, but it's recommended to use it in conjunction
-  # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
-  networking.useDHCP = lib.mkDefault true;
-  # networking.interfaces.ens18.useDHCP = lib.mkDefault true;
+  swapDevices = [
+    {
+      device = "/dev/disk/by-partuuid/974f849f-e5bc-496b-8634-c8203aca6360";
+      randomEncryption = true;
+    }
+    {
+      device = "/dev/disk/by-partuuid/195ae92d-dea5-442c-aa0c-65c063d23dfb";
+      randomEncryption = true;
+    }
+  ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

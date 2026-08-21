@@ -6,6 +6,8 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    flake-parts.url = "github:hercules-ci/flake-parts";
+
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -59,46 +61,21 @@
       url = "github:notashelf/nvf";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    deploy-rs = {
+      url = "github:serokell/deploy-rs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
-    {
-      self,
-      nixpkgs,
-      nixpkgs-unstable,
-      home-manager,
-      cosmic-manager,
-      plasma-manager,
-      nix-flatpak,
-      stylix,
-      treefmt-nix,
-      ags,
-      nixos-hardware,
-      # nix-ld,
-      nix-index-database,
-      # sops-nix,
-      # waveforms,
-      nvf,
-      ...
-    }@inputs:
+    inputs@{ self, flake-parts, ... }:
     let
       inherit (self) outputs;
-      # Supported systems for your flake packages, shell, etc.
-      systems = [
-        # "aarch64-linux"
-        "x86_64-linux"
-      ];
 
-      pkgs = nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
-      pkgs-unstable = nixpkgs-unstable.legacyPackages.x86_64-linux;
-
-      # This is a function that generates an attribute by calling a function you
-      # pass to it, with each system as an argument
-      forAllSystems = nixpkgs.lib.genAttrs systems;
+      overlayPkgs = import ./pkgs;
 
       systemSettings = {
-        system = "x86_64-linux";
-        # host = "nixLap";
         timezone = "Europe/Copenhagen";
         locale = "en_DK.UTF-8";
       };
@@ -110,223 +87,191 @@
           kde = true;
           gnome = false;
           cosmic = true;
-          console = false;
+          console = true;
         };
-        # deType = "wayland"; # x11 vs wayland
-        # editor = "emacsclient -c -a ''";
         editor = "emacs";
         style-color = "catppuccin-mocha";
       };
-
-      commonModules = [
-        {
-          nixpkgs.overlays = [
-            (import ./pkgs)
-            (final: _prev: {
-              pnpm_10_29_2 = final.pnpm_10;
-            })
-          ];
-        }
-        nix-flatpak.nixosModules.nix-flatpak
-        stylix.nixosModules.stylix
-        nix-index-database.nixosModules.nix-index
-      ]
-      ++ (builtins.attrValues self.nixosModules);
-
     in
-    {
+    flake-parts.lib.mkFlake { inherit inputs; } (
+      top@{
+        config,
+        withSystem,
+        moduleWithSystem,
+        ...
+      }:
+      {
+        imports = [
+          # Optional: use external flake logic, e.g.
+          # inputs.foo.flakeModules.default
+        ];
 
-      # Your custom packages
-      # Accessible through 'nix build', 'nix shell', etc
-      packages = forAllSystems (
-        system:
-        let
-          pkgsFor = import nixpkgs {
-            inherit system;
-            overlays = [ (import ./pkgs) ];
-          };
-          overlay = import ./pkgs pkgsFor pkgsFor;
-        in
-        # Only flat derivations are valid here - flakes require every
-        # top-level attr under `packages.<system>` to itself be a derivation.
-        nixpkgs.lib.filterAttrs (_: nixpkgs.lib.isDerivation) overlay
-      );
+        systems = [
+          # "aarch64-linux"
+          "x86_64-linux"
+        ];
 
-      # Full pkgs (with our overlay applied), exposed the same way nixpkgs
-      # itself is - so nested sets like festivalVoices/piperTtsVoices work
-      # exactly as they would in plain nixpkgs, e.g.
-      #   nix build .#festivalVoices.someVoice
-      legacyPackages = forAllSystems (
-        system:
-        import nixpkgs {
-          inherit system;
-          overlays = [ (import ./pkgs) ];
-        }
-      );
+        # Everything here is auto-namespaced per system: config.packages,
+        # config.checks, config.formatter, etc. all fan out for each entry
+        # in `systems` above without you writing forAllSystems by hand.
+        perSystem =
+          {
+            system,
+            pkgs,
+            ...
+          }:
+          let
+            pkgs-unstable = inputs.nixpkgs-unstable.legacyPackages.${system};
+          in
+          {
+            # Replaces the manual `pkgsFor` you had scattered across
+            # packages/legacyPackages/checks/formatter - one overlay
+            # application, shared by every perSystem output below.
+            _module.args.pkgs = import inputs.nixpkgs {
+              inherit system;
+              overlays = [
+                overlayPkgs
+                (final: _prev: {
+                  pnpm_10_29_2 = final.pnpm_10;
+                })
+              ];
+            };
 
-      # Your custom packages and modifications, exported as overlays
-      overlays = import ./overlays { inherit inputs; };
-      # Reusable nixos modules you might want to export
-      # These are usually stuff you would upstream into nixpkgs
-      nixosModules = import ./modules/nixos;
-      # Reusable home-manager modules you might want to export
-      # These are usually stuff you would upstream into home-manager
-      homeManagerModules = import ./modules/home-manager;
+            # Same filter you had before: only flat derivations are valid
+            # under packages.<system>.
+            packages = inputs.nixpkgs.lib.filterAttrs (_: inputs.nixpkgs.lib.isDerivation) (
+              overlayPkgs pkgs pkgs
+            );
 
-      checks = forAllSystems (
-        system:
-        let
-          pkgsFor = import nixpkgs {
-            inherit system;
-            overlays = [ (import ./pkgs) ];
-          };
-          lib = nixpkgs.lib;
+            # Full pkgs with the overlay applied, same as before - nested
+            # sets like piperTtsVoices work the same as in plain nixpkgs.
+            legacyPackages = pkgs;
 
-          testTree = import ./tests {
-            pkgs = pkgsFor;
-            inherit self;
-          };
+            formatter = (inputs.treefmt-nix.lib.evalModule pkgs ./ci/treefmt.nix).config.build.wrapper;
 
-          flattenTests =
-            prefix: tree:
-            lib.concatMapAttrs (
-              name: value:
+            checks =
               let
-                path = if prefix == "" then name else "${prefix}-${name}";
+                lib = inputs.nixpkgs.lib;
+
+                testTree = import ./tests {
+                  inherit pkgs;
+                  inherit self;
+                };
+
+                flattenTests =
+                  prefix: tree:
+                  lib.concatMapAttrs (
+                    name: value:
+                    let
+                      path = if prefix == "" then name else "${prefix}-${name}";
+                    in
+                    if lib.isDerivation value then { ${path} = value; } else flattenTests path value
+                  ) tree;
+
+                docChecks = lib.mapAttrs' (
+                  name: module:
+                  lib.nameValuePair "docs-${name}" (
+                    (pkgs.nixosOptionsDoc {
+                      options =
+                        (inputs.nixpkgs.lib.nixosSystem {
+                          inherit system;
+                          modules = [
+                            { nixpkgs.overlays = [ overlayPkgs ]; }
+                            module
+                          ];
+                        }).options;
+                    }).optionsCommonMark
+                  )
+                ) self.nixosModules;
               in
-              if lib.isDerivation value then { ${path} = value; } else flattenTests path value
-            ) tree;
+              (flattenTests "" testTree) // docChecks // inputs.deploy-rs.lib.${system}.deployChecks self.deploy;
+          };
 
-          # Build optionsCommonMark for every module in nixosModules
-          docChecks = lib.mapAttrs' (
-            name: module:
-            lib.nameValuePair "docs-${name}" (
-              (pkgsFor.nixosOptionsDoc {
-                options =
-                  (nixpkgs.lib.nixosSystem {
-                    inherit system;
-                    modules = [
-                      { nixpkgs.overlays = [ (import ./pkgs) ]; }
-                      module
+        # Attrs that are NOT per-system: nixosConfigurations, overlays,
+        # exported modules, deploy-rs nodes. These land directly on the
+        # flake's own output set, same as your old top-level `outputs`.
+        flake = {
+          overlays = import ./overlays { inherit inputs; };
+          nixosModules = import ./modules/nixos;
+          homeManagerModules = import ./modules/home-manager;
+
+          nixosConfigurations =
+            let
+              commonModules = [
+                {
+                  nixpkgs.overlays = [
+                    overlayPkgs
+                    (final: _prev: {
+                      pnpm_10_29_2 = final.pnpm_10;
+                    })
+                  ];
+                }
+                inputs.nix-flatpak.nixosModules.nix-flatpak
+                inputs.stylix.nixosModules.stylix
+                inputs.nix-index-database.nixosModules.nix-index
+              ]
+              ++ (builtins.attrValues self.nixosModules);
+
+              mkHost =
+                {
+                  hostName,
+                  extraModules ? [ ],
+                }:
+                inputs.nixpkgs.lib.nixosSystem {
+                  specialArgs = {
+                    inherit inputs outputs;
+                    pkgs-unstable = inputs.nixpkgs-unstable.legacyPackages.x86_64-linux;
+                    inherit systemSettings;
+                    inherit userSettings;
+                  };
+                  modules =
+                    commonModules
+                    ++ extraModules
+                    ++ [
+                      { nixpkgs.overlays = [ overlayPkgs ]; }
+                      inputs.home-manager.nixosModules.home-manager
+                      ./hosts/${hostName}/configuration.nix
+                      {
+                        home-manager = {
+                          useGlobalPkgs = true;
+                          useUserPackages = true;
+                          backupFileExtension = "bkp";
+                          sharedModules = [
+                            inputs.plasma-manager.homeModules.plasma-manager
+                            inputs.cosmic-manager.homeManagerModules.cosmic-manager
+                            inputs.nvf.homeManagerModules.default
+                          ];
+                          users.${userSettings.username} = import ./home/${userSettings.username}/${hostName}/home.nix;
+                          extraSpecialArgs = {
+                            inherit inputs outputs;
+                            pkgs-unstable = inputs.nixpkgs-unstable.legacyPackages.x86_64-linux;
+                            inherit systemSettings;
+                            inherit userSettings;
+                          };
+                        };
+                      }
                     ];
-                  }).options;
-              }).optionsCommonMark
-            )
-          ) self.nixosModules;
-        in
-        (flattenTests "" testTree) // docChecks
-      );
-
-      formatter = forAllSystems (
-        system:
-        (treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${system} ./ci/treefmt.nix).config.build.wrapper
-      );
-      nixosConfigurations = {
-        nixDesk = nixpkgs.lib.nixosSystem {
-          specialArgs = {
-            inherit inputs outputs;
-            inherit pkgs-unstable;
-            inherit systemSettings;
-            inherit userSettings;
-          };
-          modules = commonModules ++ [
-            { nixpkgs.overlays = [ (import ./pkgs) ]; }
-            home-manager.nixosModules.home-manager
-            ./hosts/nixDesk/configuration.nix
-            {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                backupFileExtension = "bkp";
-                sharedModules = [
-                  plasma-manager.homeModules.plasma-manager
-                  cosmic-manager.homeManagerModules.cosmic-manager
-                  nvf.homeManagerModules.default
-                ];
-                users.${userSettings.username} = import ./home/${userSettings.username}/nixDesk/home.nix;
-                extraSpecialArgs = {
-                  inherit inputs outputs;
-                  inherit pkgs-unstable;
-                  inherit systemSettings;
-                  inherit userSettings;
                 };
-              };
-            }
-          ];
-        };
-
-        nixLap = nixpkgs.lib.nixosSystem {
-          specialArgs = {
-            inherit inputs outputs;
-            inherit pkgs-unstable;
-            inherit systemSettings;
-            inherit userSettings;
-          };
-          modules = commonModules ++ [
-            { nixpkgs.overlays = [ (import ./pkgs) ]; }
-            # "${nixos-hardware}/lenovo/legion/15ich"
-
-            home-manager.nixosModules.home-manager
-
-            # Our main nixos configuration file <
-            ./hosts/nixLap/configuration.nix
+            in
             {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                backupFileExtension = "bkp";
-                sharedModules = [
-                  plasma-manager.homeModules.plasma-manager
-                  cosmic-manager.homeManagerModules.cosmic-manager
-                  nvf.homeManagerModules.default
-                ];
-                users.${userSettings.username} = import ./home/${userSettings.username}/nixLap/home.nix;
-                extraSpecialArgs = {
-                  inherit inputs outputs;
-                  inherit pkgs-unstable;
-                  inherit systemSettings;
-                  inherit userSettings;
-                };
+              nixDesk = mkHost { hostName = "nixDesk"; };
+              nixLap = mkHost {
+                hostName = "nixLap";
+                # extraModules = [ "${inputs.nixos-hardware}/lenovo/legion/15ich" ];
               };
-            }
-          ];
-        };
+              nixServer = mkHost { hostName = "nixServer"; };
+            };
 
-        nixServer = nixpkgs.lib.nixosSystem {
-          specialArgs = {
-            inherit inputs outputs;
-            inherit pkgs-unstable;
-            inherit systemSettings;
-            inherit userSettings;
+          deploy.nodes.nixServer = {
+            hostname = "nixServer"; # Tailscale MagicDNS name
+            sshUser = "rasmus";
+            interactiveSudo = true;
+            profiles.system = {
+              user = "root";
+              path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.nixServer;
+            };
           };
-          modules = commonModules ++ [
-            # Must be here for the other configs
-            { nixpkgs.overlays = [ (import ./pkgs) ]; }
-            home-manager.nixosModules.home-manager
-
-            # Our main nixos configuration file
-            ./hosts/nixServer/configuration.nix
-            {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                backupFileExtension = "bkp";
-                sharedModules = [
-                  plasma-manager.homeModules.plasma-manager
-                  cosmic-manager.homeManagerModules.cosmic-manager
-                  nvf.homeManagerModules.default
-                ];
-                users.${userSettings.username} = import ./home/${userSettings.username}/nixServer/home.nix;
-                extraSpecialArgs = {
-                  inherit inputs outputs;
-                  inherit pkgs-unstable;
-                  inherit systemSettings;
-                  inherit userSettings;
-                };
-              };
-            }
-          ];
         };
-      };
-    };
+      }
+    );
 }

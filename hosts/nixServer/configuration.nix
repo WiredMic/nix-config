@@ -1,21 +1,17 @@
-# This is your system's configuration file.
-# Use this to configure your system environment (it replaces /etc/nixos/configuration.nix)
+# Edit this configuration file to define what should be installed on
+# your system. Help is available in the configuration.nix(5) man page, on
+# https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
+
 {
-  inputs,
-  outputs,
-  systemSettings,
-  userSettings,
-  lib,
   config,
+  lib,
   pkgs,
-  pkgs-unstable,
   ...
 }:
-{
-  # You can import other NixOS modules here
-  imports = [
 
-    # Import your generated (nixos-generate-config) hardware configuration
+{
+  imports = [
+    # Include the results of the hardware scan.
     ./hardware-configuration.nix
 
     # Import users
@@ -27,46 +23,11 @@
     # Import optional common configs
     ../common/optional/optional.nix
 
+    # cloud storage
+    ./cloud/onedrive.nix
+    ./cloud/syncthing.nix
+
   ];
-
-  nixpkgs = {
-    # You can add overlays here
-    overlays = [
-      # Add overlays your own flake exports (from overlays and pkgs dir):
-      outputs.overlays.additions
-      outputs.overlays.modifications
-      outputs.overlays.unstable-packages
-
-      # You can also add overlays exported from other flakes:
-      # neovim-nightly-overlay.overlays.default
-
-      # Or define it inline, for example:
-      # (final: prev: {
-      #   hi = final.hello.overrideAttrs (oldAttrs: {
-      #     patches = [ ./change-hello-to-hi.patch ];
-      #   });
-      # })
-    ];
-    # Configure your nixpkgs instance
-    config = {
-      # Disable if you don't want unfree packages
-      allowUnfree = true;
-    };
-  };
-
-  # This will add each flake input as a registry
-  # To make nix3 commands consistent with your flake
-  nix.registry = (lib.mapAttrs (_: flake: { inherit flake; })) (
-    (lib.filterAttrs (_: lib.isType "flake")) inputs
-  );
-
-  # This will additionally add your inputs to the system's legacy channels
-  # Making legacy nix commands consistent as well, awesome!
-  nix.nixPath = [ "/etc/nix/path" ];
-  environment.etc = lib.mapAttrs' (name: value: {
-    name = "nix/path/${name}";
-    value.source = value.flake;
-  }) config.nix.registry;
 
   nix.settings = {
     # Enable flakes and new 'nix' command
@@ -86,33 +47,35 @@
     options = "--delete-older-than 30d";
   };
 
-  boot.loader.timeout = 0;
+  # ZFS
+  boot.supportedFilesystems = [ "zfs" ];
+  boot.zfs.devNodes = "/dev/disk/by-id";
+  boot.zfs.extraPools = [ "ZPOOL0" ];
+  boot.zfs.forceImportRoot = false;
 
+  # boot loader
   boot.loader.grub = {
     enable = true;
-    device = "/dev/sda";
-    useOSProber = true;
+    efiSupport = true;
+    efiInstallAsRemovable = true;
+    mirroredBoots = [
+      {
+        devices = [ "nodev" ];
+        path = "/boot";
+        efiSysMountPoint = "/boot";
+      }
+      {
+        devices = [ "nodev" ];
+        path = "/boot2";
+        efiSysMountPoint = "/boot2";
+      }
+    ];
   };
 
-  networking = {
-    # Enable networking
-    networkmanager.enable = true;
-
-    # hostname
-    hostName = "nixServer";
-
-    firewall = {
-      enable = true;
-    };
-  };
-
-  # Swap
-  swapDevices = [
-    {
-      device = "/swapfile";
-      size = 16 * 1024; # 16GB
-    }
-  ];
+  # ZFS maintenance
+  services.zfs.autoScrub.enable = true;
+  services.zfs.autoSnapshot.enable = true;
+  services.zfs.trim.enable = true;
 
   # AMD CPU
   hardware.cpu.amd.updateMicrocode = true;
@@ -121,8 +84,7 @@
   boot.initrd.kernelModules = [ "amdgpu" ];
   hardware.amdgpu = {
     initrd.enable = true;
-    legacySupport.enable = true;
-    opencl.enable = false;
+    opencl.enable = true;
   };
 
   hardware.graphics = {
@@ -131,11 +93,43 @@
     # extraPackages = with pkgs; [ rocmPackages.clr.icd ];
   };
 
+  # WatchDog
+  systemd.watchdog.runtimeTime = "30s";
+  boot.kernelParams = [ "panic=10" ];
+
+  # There was a transcoding GPU bug in the kernel
+  # https://lwn.net/Articles/1081243/
+  boot.kernelPackages = pkgs.linuxPackages_6_12;
+
   # Set your time zone.
-  time.timeZone = systemSettings.timezone;
+  time.timeZone = "Europe/Copenhagen";
+
+  networking = {
+    # Enable networking
+    networkmanager.enable = true;
+
+    # hostname
+    hostName = "nixServer";
+
+    hostId = "8def9203";
+
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [
+        2049
+        111
+        20048
+      ];
+      allowedUDPPorts = [
+        2049
+        111
+        20048
+      ];
+    };
+  };
 
   # Select internationalisation properties.
-  i18n.defaultLocale = systemSettings.locale;
+  i18n.defaultLocale = "en_DK.UTF-8";
 
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "da_DK.UTF-8";
@@ -157,39 +151,30 @@
     };
   };
 
-  # Software
-  services.cloud-init.network.enable = false;
-
+  # List packages installed in system profile.
+  # You can use https://search.nixos.org/ to find more packages (and options).
   environment.systemPackages = with pkgs; [
-    git
     neovim
+    wget
     just
-    nfs-utils
-    lsof
-    ncdu
-    pciutils
+    git
     fastfetch
     ripgrep
-    # top derivitives
-    htop # cpu
-    nvtopPackages.amd # gpu
   ];
 
-  # services.tailscale = {
-  #   enable = true;
-  #   openFirewall = true;
-  #   useRoutingFeatures = "server";
-  #   authKeyFile = "/home/rasmus/tailscale.key";
-  # };
-  networking.firewall.trustedInterfaces = [ config.services.tailscale.interfaceName ];
+  services.openssh = {
+    enable = true;
+    settings.PasswordAuthentication = false; # keys only, since you have one set
+  };
 
   # Server
-  # my.homepage.enable = true;
+  my.homepage.enable = true;
 
   my.jellyfin.enable = true;
   my.torrent.enable = true;
 
   my.calibre-web.enable = true;
+  my.calibre-server.enable = true;
   my.codex.enable = true;
   my.audiobookshelf.enable = true;
 
@@ -198,55 +183,36 @@
   # my.vaultwarden.enable = false;
   # my.nginx.enable = false;
   # my.nextcloud.enable = false;
-  # my.immich.enable = true;
+  my.immich.enable = true;
 
   # Cloud
-  my.syncthing.enable = true;
-
+  server.syncthing.enable = true;
+  my.vpn = {
+    enable = true;
+    role = "both";
+  };
   nixpkgs.config.permittedInsecurePackages = [
     "dotnet-sdk-6.0.428"
     "aspnetcore-runtime-6.0.36"
   ];
 
+  # Freenet
+  services.freenet = {
+    enable = true;
+    nice = 10;
+  };
+
   # NFS NAS share
   # https://nixos.wiki/wiki/NFS
   services.rpcbind.enable = true; # needed for NFS
 
-  # systemd.mounts = [{
-  #   type = "nfs";
-  #   mountConfig = { Options = "noatime"; };
-  #   what = "192.168.86.35:/mnt/ZPOOL0/share";
-  #   where = "/mnt/share";
-  # }];
-  #
-  # systemd.automounts = [{
-  #   wantedBy = [ "multi-user.target" ];
-  #   automountConfig = { TimeoutIdleSec = "600"; };
-  #   where = "/mnt/share";
-  # }];
-
-  # Software from optional
-
-  # Users
-  user.rasmus.enable = true;
-
-  fonts.packages = with pkgs; [
-    nerd-fonts.jetbrains-mono
-
-  ];
-
-  # This setups a SSH server. Very important if you're setting up a headless system.
-  # Feel free to remove if you don't need it.
-  services.openssh = {
+  services.nfs.server = {
     enable = true;
-    settings = {
-      # Forbid root login through SSH.
-      PermitRootLogin = "no";
-      # Use keys only. Remove if you want to SSH using password (not recommended)
-      PasswordAuthentication = true;
-    };
+    exports = ''
+      /mnt/ZPOOL0/share 100.64.0.0/10(rw,sync,no_subtree_check)
+    '';
   };
 
-  # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = "25.05";
+  system.stateVersion = "25.11"; # Did you read the comment?
+
 }

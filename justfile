@@ -22,7 +22,7 @@ home_manager_path := "/home/rasmus/Projects/nix/home-manager"
 # Rebuild against local nixpkgs/home-manager checkouts
 rebuild-local nixpkgs=nixpkgs_path home-manager=home_manager_path:
     git add -A
-    NIXPKGS_PATH={{nixpkgs}} HOME_MANAGER_PATH={{home-manager}} system-rebuild-local
+    NIXPKGS_PATH={{ nixpkgs }} HOME_MANAGER_PATH={{ home-manager }} system-rebuild-local
 
 # Requires sops to be running and you must have reboot after initial rebuild
 rebuild-trace: rebuild-pre && rebuild-post
@@ -30,13 +30,17 @@ rebuild-trace: rebuild-pre && rebuild-post
 
 # Rebuilds boot from flake
 rebuild-boot: rebuild-pre && rebuild-post
-   system-boot 
+    system-boot 
 
 update:
-    nix flake update
+    nix flake updatesabnzbd
 
 rebuild-update: update && rebuild
 
 update-nix-secrets:
     (cd ../nix-secrets && git fetch && git rebase) || true
     nix flake update nix-secrets
+
+deploy:
+    git add -A
+    system-deploy nixServer
