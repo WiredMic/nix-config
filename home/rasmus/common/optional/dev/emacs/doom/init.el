@@ -155,6 +155,7 @@
        ;;nim               ; python + lisp at the speed of c
        (nix +tree-sitter +lsp)               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
+       (openscad +lsp)
        (org +roam +pandoc)               ; organize your plain life in plain text
        (php +tree-sitter +lsp)               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more

@@ -41,6 +41,12 @@ To Tangle a document press =
 ;; sync' after modifying this file!
 #+end_src
 
+
+The path to the community modules.
+#+begin_src elisp :tangle yes
+(add-to-list 'doom-module-load-path (expand-file-name "sources/doom++/modules" doom-user-dir) t)
+#+end_src
+
 * Name & Email                    
 #+begin_src elisp :tangle yes
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
