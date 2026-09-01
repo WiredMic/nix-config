@@ -32,7 +32,6 @@
           "networkmanager"
           "wheel"
           "docker"
-          "plugdev"
           "uinput"
         ];
 

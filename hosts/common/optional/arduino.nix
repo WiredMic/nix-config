@@ -19,11 +19,17 @@
       arduino-cli
       (python3.withPackages (p: with p; [ pyserial ]))
     ];
-    # system.activationScripts.script.text = "chmod 666 /dev/ttyACM0";
 
-    # https://wiki.archlinux.org/title/Udev
-    services.udev.extraRules = ''
-      KERNEL=="ttyACM0", MODE:="666"
-    '';
+    services.udev.packages = [
+      (pkgs.writeTextFile {
+        name = "arduino-udev-rules";
+        text = ''
+          ACTION!="remove", SUBSYSTEMS=="usb", ATTRS{idVendor}=="2341", TAG+="uaccess"
+          ACTION!="remove", SUBSYSTEMS=="usb", ATTRS{idVendor}=="2a03", TAG+="uaccess"
+          ACTION!="remove", KERNEL=="ttyACM*", ATTRS{idVendor}=="2341", TAG+="uaccess"
+        '';
+        destination = "/etc/udev/rules.d/60-arduino.rules";
+      })
+    ];
   };
 }
