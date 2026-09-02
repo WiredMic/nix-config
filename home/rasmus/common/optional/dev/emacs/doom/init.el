@@ -30,7 +30,7 @@
        :ui
        ;;deft              ; notational velocity for Emacs
        doom              ; what makes DOOM look the way it does
-       doom-dashboard    ; a nifty splash screen for Emacs
+       dashboard    ; a nifty splash screen for Emacs
        ;;doom-quit         ; DOOM quit-message prompts when you quit Emacs
        (emoji +unicode)  ; 🙂
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
@@ -151,13 +151,13 @@
        ;;lean              ; for folks with too much to prove
        ;;ledger            ; be audit you can be
        ;;lua               ; one-based indices? one-based indices
-       markdown          ; writing docs for people to ignore
+       (markdown +tree-sitter)          ; writing docs for people to ignore
        ;;nim               ; python + lisp at the speed of c
        (nix +tree-sitter +lsp)               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
-       (openscad +lsp)
+       (scad +lsp +tree-sitter)
        (org +roam +pandoc)               ; organize your plain life in plain text
-       (php +tree-sitter +lsp)               ; perl's insecure younger brother
+       ;;(php +tree-sitter +lsp)               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional
        (python +lsp +pyright)             ; beautiful is better than ugly
@@ -177,7 +177,7 @@
        ;;terra             ; Earth and Moon in alignment for performance.
        (typst +tree-sitter +lsp)
        (vhdl +tree-sitter +lsp)              ; Keep it syncronized stupid
-       (web +tree-sitter)               ; the tubes
+       ;;(web +tree-sitter)               ; the tubes
        yaml              ; JSON, but readable
        ;;zig               ; C, but simpler
 
