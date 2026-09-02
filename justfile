@@ -41,6 +41,5 @@ update-nix-secrets:
     (cd ../nix-secrets && git fetch && git rebase) || true
     nix flake update nix-secrets
 
-deploy:
-    git add -A
+deploy: rebuild-pre
     system-deploy nixServer
