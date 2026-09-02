@@ -6,14 +6,10 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    flake-parts.url = "github:hercules-ci/flake-parts";
-
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    treefmt-nix.url = "github:numtide/treefmt-nix";
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
@@ -62,6 +58,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     deploy-rs = {
       url = "github:serokell/deploy-rs";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -102,8 +108,7 @@
       }:
       {
         imports = [
-          # Optional: use external flake logic, e.g.
-          # inputs.foo.flakeModules.default
+          inputs.treefmt-nix.flakeModule
         ];
 
         systems = [
@@ -124,6 +129,21 @@
             pkgs-unstable = inputs.nixpkgs-unstable.legacyPackages.${system};
           in
           {
+
+            treefmt = {
+              programs = {
+                nixfmt = {
+                  enable = true;
+                  package = pkgs.nixfmt;
+                  indent = 2;
+                };
+
+                keep-sorted = {
+                  enable = true;
+                };
+              };
+            };
+
             # Replaces the manual `pkgsFor` you had scattered across
             # packages/legacyPackages/checks/formatter - one overlay
             # application, shared by every perSystem output below.
@@ -133,6 +153,7 @@
                 overlayPkgs
                 (final: _prev: {
                   pnpm_10_29_2 = final.pnpm_10;
+                  ccextractor = pkgs-unstable.ccextractor;
                 })
               ];
             };
@@ -146,8 +167,6 @@
             # Full pkgs with the overlay applied, same as before - nested
             # sets like piperTtsVoices work the same as in plain nixpkgs.
             legacyPackages = pkgs;
-
-            formatter = (inputs.treefmt-nix.lib.evalModule pkgs ./ci/treefmt.nix).config.build.wrapper;
 
             checks =
               let
