@@ -1,5 +1,6 @@
 {
   pkgs,
+  pkgs-unstable,
   lib,
   config,
   inputs,
@@ -9,7 +10,6 @@
 let
   treesitterGrammars = pkgs.emacsPackages.treesit-grammars.with-grammars (
     grammars: with grammars; [
-      tree-sitter-typst
       tree-sitter-nix
       tree-sitter-rust
       tree-sitter-cpp
@@ -17,6 +17,9 @@ let
 
       tree-sitter-toml
       tree-sitter-yaml
+
+      tree-sitter-typst
+      tree-sitter-markdown
     ]
   );
 in
@@ -30,7 +33,7 @@ in
 
     programs.emacs = {
       enable = true;
-      package = pkgs.emacs.override {
+      package = pkgs-unstable.emacs.override {
         withPgtk = true;
         withTreeSitter = true;
         withNativeCompilation = true;
@@ -70,21 +73,31 @@ in
       # Format https://docs.doomemacs.org/latest/modules/editor/format/
       prettier # YAML, Markdown
       dockfmt # Dockerfile
-      nixfmt # nix
       # rPackages.lintr # R
 
       # lsp
-      nixd # nix
       shfmt # sh
-      clang-tools # c/cpp/objc
-      ccls
-      pyright # Python
       # rPackages.languageserver # R
-      openscad-lsp # openSCAD
       nodejs_24
       matlab-language-server
-      vhdl-ls # vhdl
       emacs-lsp-booster # speed up lsp
+      cmake-language-server
+
+      # C/C++
+      clang-tools # c/cpp/objc
+      ccls
+      clang # c format
+
+      # Nix
+      nixd # lsp
+      nixfmt # fmt
+
+      # OpenSCAD
+      openscad-lsp # lsp
+
+      # VHDL
+      vhdl-ls # lsp
+      ghdl
 
       # Typst
       # tree-sitter-grammars.tree-sitter-typst # tree-sitter
@@ -100,8 +113,8 @@ in
       isort
       pipenv
       python3Packages.pytest
+      pyright # lsp
 
-      ghdl
       # Programming languages
       # R
 
@@ -123,9 +136,9 @@ in
       ispell
       pandoc
       graphviz
-      clang # c format
       glslang
       gnumake
+      python3Packages.editorconfig
     ];
 
     programs.anki = {
