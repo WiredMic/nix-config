@@ -69,6 +69,14 @@ let
         nh os boot . --hostname "$HOST" -- --impure --keep-going
     '';
   };
+  systemDeploy = pkgs.writeShellApplication {
+    name = "system-deploy";
+    runtimeInputs = [ pkgs.deploy-rs ];
+    text = ''
+      HOST=''${1:?usage: system-deploy <host>}
+      deploy ".#$HOST"
+    '';
+  };
 in
 {
   environment.systemPackages = [
@@ -76,5 +84,6 @@ in
     systemflakerebuildlocal
     systemFlakeRebuildTrace
     systemFlakeRebuildBoot
+    systemDeploy
   ];
 }
