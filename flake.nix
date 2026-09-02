@@ -58,20 +58,30 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix-matlab = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      # url = "gitlab:doronbehar/nix-matlab";
+      url = "/home/rasmus/Downloads/nix-matlab";
+    };
+
+    # Flake parts
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    treefmt-nix = {
-      url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     deploy-rs = {
       url = "github:serokell/deploy-rs";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    git-hooks-nix = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
   outputs =
@@ -109,6 +119,7 @@
       {
         imports = [
           inputs.treefmt-nix.flakeModule
+          inputs.git-hooks-nix.flakeModule
         ];
 
         systems = [
@@ -123,6 +134,7 @@
           {
             system,
             pkgs,
+            lib,
             ...
           }:
           let
@@ -140,6 +152,18 @@
 
                 keep-sorted = {
                   enable = true;
+                };
+              };
+            };
+
+            pre-commit = {
+              check.enable = true;
+              settings = {
+                enable = true;
+                hooks = {
+                  treefmt = {
+                    enable = true;
+                  };
                 };
               };
             };
@@ -220,8 +244,10 @@
                 {
                   nixpkgs.overlays = [
                     overlayPkgs
+                    inputs.nix-matlab.overlay
                     (final: _prev: {
                       pnpm_10_29_2 = final.pnpm_10;
+                      ccextractor = inputs.nixpkgs-unstable.legacyPackages.${final.system}.ccextractor;
                     })
                   ];
                 }
