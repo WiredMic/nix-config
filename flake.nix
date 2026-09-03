@@ -52,16 +52,15 @@
       };
     };
 
+    nix-matlab = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "gitlab:wiredmic/nix-matlab";
+    };
+
     # Neovim
     nvf = {
       url = "github:notashelf/nvf";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    nix-matlab = {
-      inputs.nixpkgs.follows = "nixpkgs";
-      # url = "gitlab:doronbehar/nix-matlab";
-      url = "/home/rasmus/Downloads/nix-matlab";
     };
 
     # Flake parts
@@ -174,6 +173,7 @@
             _module.args.pkgs = import inputs.nixpkgs {
               inherit system;
               overlays = [
+                inputs.nix-matlab.overlay
                 overlayPkgs
                 (final: _prev: {
                   pnpm_10_29_2 = final.pnpm_10;

@@ -205,11 +205,11 @@
     "flake-compat_3": {
       "flake": false,
       "locked": {
-        "lastModified": 1747046372,
-        "narHash": "sha256-CIVLLkVgvHYbgI2UpXvIIBJ12HWgX+fjA8Xf8PUmqCY=",
+        "lastModified": 1767039857,
+        "narHash": "sha256-vNpUSpF5Nuw8xvDLj2KCwwksIbjua2LZCqhV1LNRDns=",
         "owner": "edolstra",
         "repo": "flake-compat",
-        "rev": "9100a0f413b0c601e0533d1d94ffd501ce2e7885",
+        "rev": "5edf11c44bc78a0d334f6334cdaf7d60d732daab",
         "type": "github"
       },
       "original": {
@@ -427,14 +427,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1787825732,
-        "narHash": "sha256-y2S1zPtOI8dye7T2iGGKVpv1wfqGjAX3aBMz/MlnGvs=",
-        "path": "/home/rasmus/Downloads/nix-matlab",
-        "type": "path"
+        "lastModified": 1788429381,
+        "narHash": "sha256-RF/xN72B0XLw8XRSsxi2CKMSdE1dg+u5fLaBB5s3EQg=",
+        "owner": "wiredmic",
+        "repo": "nix-matlab",
+        "rev": "4f799d8888a9f375a35d9698e503363ad8996554",
+        "type": "gitlab"
       },
       "original": {
-        "path": "/home/rasmus/Downloads/nix-matlab",
-        "type": "path"
+        "owner": "wiredmic",
+        "repo": "nix-matlab",
+        "type": "gitlab"
       }
     },
     "nixos-hardware": {
