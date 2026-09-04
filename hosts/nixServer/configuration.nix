@@ -94,7 +94,7 @@
   };
 
   # WatchDog
-  systemd.watchdog.runtimeTime = "30s";
+  systemd.settings.Manager.RuntimeWatchdogSec = "30s";
   boot.kernelParams = [ "panic=10" ];
 
   # There was a transcoding GPU bug in the kernel

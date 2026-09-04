@@ -42,6 +42,9 @@
           "jonas_laptop_windows" = {
             id = "A35QQGT-PEQV4CJ-UP2BR7N-XAKE65U-QEGHER5-YNHZAGF-64J6DFQ-FL673QO";
           };
+          jonas_server = {
+            id = "37S4X4B-MMNMQZG-KYPDAEW-IP6S7NY-FBU5HWQ-VAVIDF5-MABLBZS-XEGFYQS";
+          };
           "lasse_laptop_windows" = {
             id = "72WYRQK-A7JECU4-XZUX6SJ-FTHVHFU-KLBVP7V-TAKTU73-OFXAUR2-DDACEQ5";
           };
@@ -95,6 +98,18 @@
               "lasse_laptop_windows"
             ];
             id = "ertml-eytca";
+          };
+          "project-5-shared" = {
+            path = "/mnt/ZPOOL0/share/Syncthing/Rasmus/project-5-shared";
+            devices = [
+              "nixLap"
+              "nixDesk"
+              "jonas_laptop_linux"
+              "jonas_laptop_windows"
+              "magnus_laptop_windows"
+              "jonas_server"
+            ];
+            id = "ezyyr-irqtd";
           };
           "rasmus_phone_dcim" = {
             path = "/mnt/ZPOOL0/share/Media/Photos/Rasmus/DCIM";
