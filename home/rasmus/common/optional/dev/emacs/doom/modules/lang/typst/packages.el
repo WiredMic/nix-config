@@ -6,4 +6,6 @@
   :recipe (:pre-build
            (("sed" "-i"
              "s/;;;###autoload$/;;;###autoload (autoload 'typst-ts-compilation-mode \"typst-ts-compile\" nil t)/"
-             "typst-ts-compile.el"))))
+             "typst-ts-compile.el"))));; https://github.com/havarddj/typst-preview.el
+;; (package! typst-preview
+;;   :recipe (:host github :repo "havarddj/typst-preview.el"))
