@@ -105,6 +105,12 @@
   };
 
   my.boot.efi.enable = true;
+  boot = {
+    tmp = {
+      useTmpfs = true;
+      cleanOnBoot = true;
+    };
+  };
 
   networking = {
     # Enable networking
@@ -237,12 +243,19 @@
     samba
     home-manager
 
+    pciutils
+    nvme-cli
+    usbutils
+    dmidecode
+
     wtype # does not work on kde or gnome
     wev
     just
-    fastfetch
     nmap
     file
+    jq
+
+    fastfetch
     gnome-system-monitor
 
     # icons
@@ -255,7 +268,17 @@
 
     sshfs
 
+    nh
+    nix-index
+    freenet
+    lightburn
+
+    sshfs
     kdePackages.okular
+
+    drawy
+
+    element-desktop
   ];
 
   # https://github.com/gmodena/nix-flatpak
@@ -267,10 +290,6 @@
   # }];
 
   services.flatpak.packages = [
-    {
-      appId = "org.mozilla.Thunderbird";
-      origin = "flathub";
-    }
     {
       appId = "com.spotify.Client";
       origin = "flathub";
@@ -324,6 +343,68 @@
   programs.kdeconnect.enable = true;
 
   virtualisation.waydroid.enable = true;
+
+  hardware.opentabletdriver = {
+    enable = true;
+    daemon.enable = true;
+  };
+
+  hardware.uinput.enable = true;
+  boot.kernelModules = [ "uinput" ];
+
+  my.arduino.enable = true;
+
+  services.freenet = {
+    enable = true;
+    nice = 10;
+  };
+
+  services.tailscale.enable = true;
+
+  # # NFS NAS share
+  # # https://nixos.wiki/wiki/NFS
+  boot.supportedFilesystems = [ "nfs" ];
+  services.rpcbind.enable = true; # needed for NFS
+
+  systemd.services.tailscale-online = {
+    description = "Wait for tailscale to have a working connection";
+    after = [
+      "tailscaled.service"
+      "network-online.target"
+    ];
+    wants = [ "network-online.target" ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      for i in $(seq 1 30); do
+        ${pkgs.tailscale}/bin/tailscale status --json | ${pkgs.jq}/bin/jq -e '.BackendState=="Running"' && exit 0
+        sleep 1
+      done
+      exit 1
+    '';
+  };
+
+  systemd.mounts = [
+    {
+      type = "nfs";
+      mountConfig = {
+        Options = "noatime";
+      };
+      what = "100.98.3.121:/mnt/ZPOOL0/share/";
+      where = "/mnt/share";
+      after = [ "tailscale-online.service" ];
+      requires = [ "tailscale-online.service" ];
+    }
+  ];
+
+  systemd.automounts = [
+    {
+      wantedBy = [ "multi-user.target" ];
+      automountConfig = {
+        TimeoutIdleSec = "600";
+      };
+      where = "/mnt/share";
+    }
+  ];
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "25.11";
