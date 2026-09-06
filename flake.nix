@@ -299,10 +299,17 @@
                 };
             in
             {
-              nixDesk = mkHost { hostName = "nixDesk"; };
+              nixDesk = mkHost {
+                hostName = "nixDesk";
+                extraModules = [
+                  inputs.nixos-hardware.nixosModules.gigabyte-b550
+                ];
+              };
               nixLap = mkHost {
                 hostName = "nixLap";
-                # extraModules = [ "${inputs.nixos-hardware}/lenovo/legion/15ich" ];
+                extraModules = [
+                  inputs.nixos-hardware.nixosModules.lenovo-legion-y530-15ich
+                ];
               };
               nixServer = mkHost { hostName = "nixServer"; };
             };
