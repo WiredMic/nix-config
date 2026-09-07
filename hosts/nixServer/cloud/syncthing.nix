@@ -42,7 +42,7 @@
           "jonas_laptop_windows" = {
             id = "A35QQGT-PEQV4CJ-UP2BR7N-XAKE65U-QEGHER5-YNHZAGF-64J6DFQ-FL673QO";
           };
-          jonas_server = {
+          "jonas_server" = {
             id = "37S4X4B-MMNMQZG-KYPDAEW-IP6S7NY-FBU5HWQ-VAVIDF5-MABLBZS-XEGFYQS";
           };
           "lasse_laptop_windows" = {
@@ -53,6 +53,12 @@
           };
           "rasmus_phone" = {
             id = "CP6EXAO-7ZAW2JJ-ZNOJ2EI-Y4BSGUC-U5ZIZF4-O5XX5PA-GCCHG2T-YHADQA4";
+          };
+          "christofer_laptop" = {
+            id = "7ZZUEVD-4DQ3B3F-CYUBJZX-7GPL43C-G64RIQS-YJZVVAW-4QCA2G2-ZDY6HQ6";
+          };
+          "sebastian_laptop" = {
+            id = "VSPEVMA-AASHO64-7FQ5YW3-2CQSHPF-E37ZGDK-SW5G55J-C2EFPJ6-KPCJTAF";
           };
         };
         folders = {
@@ -108,6 +114,8 @@
               "jonas_laptop_windows"
               "magnus_laptop_windows"
               "jonas_server"
+              "christofer_laptop"
+              "sebastian_laptop"
             ];
             id = "ezyyr-irqtd";
           };
