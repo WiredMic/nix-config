@@ -20,6 +20,7 @@
     ./homepage.nix
     ./codex.nix
     ./immich.nix
+    ./home-assistant.nix
   ];
 
   my.jellyfin.enable = lib.mkDefault false;
@@ -34,5 +35,6 @@
   my.homepage.enable = lib.mkDefault false;
   my.codex.enable = lib.mkDefault false;
   my.immich.enable = lib.mkDefault false;
+  my.home-assistant.enable = lib.mkDefault false;
 
 }

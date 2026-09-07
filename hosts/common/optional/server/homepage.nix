@@ -16,6 +16,8 @@ let
   radarr-url = "${nixserver-url}:${toString config.services.radarr.settings.server.port}";
   tdarr-url = "${nixserver-url}:${toString config.services.tdarr.server.webUIPort}";
 
+  home-Assistant-url = "${nixserver-url}:${toString config.services.home-assistant.config.http.server_port}";
+
   jellyfin-url = "${nixserver-url}:8096";
   calibre-web-url = "${nixserver-url}:${toString config.services.calibre-web.listen.port}";
   audiobookshelf-url = "${nixserver-url}:${toString config.services.audiobookshelf.port}";
@@ -141,24 +143,33 @@ in
                 };
               };
             }
-          ];
+
+          ]
+          ++ lib.optional config.my.home-assistant.enable {
+            "Home Assistance" = {
+              icon = "home-assistant.svg";
+              description = "Home Assistance";
+              href = "http://${home-Assistant-url}/";
+              widget = {
+                type = "homeassistant";
+                url = "http://${home-Assistant-url}";
+                key = "access_token";
+                # custom:
+                #   - state: sensor.total_power
+                #   - state: sensor.total_energy_today
+                #     label: energy today
+                #   - template: "{{ states.switch|selectattr('state','equalto','on')|list|length }}"
+                #     label: switches on
+                #   - state: weather.forecast_home
+                #     label: wind speed
+                #     value: "{attributes.wind_speed} {attributes.wind_speed_unit}"
+              };
+            };
+          };
         }
 
         {
           "Libraries" = [
-            {
-              "Audiobookshelf" = {
-                icon = "audiobookshelf.png";
-                description = "Audiobooks and ebooks";
-                href = "http://${audiobookshelf-url}/audiobookshelf/";
-                widget = {
-                  type = "audiobookshelf";
-                  url = "http://${audiobookshelf-url}";
-                  fields = ''["books", "booksDuration"]''; # cannot use this right now https://discourse.nixos.org/t/cannot-ecape-quotes-correctly-in-yaml-out-of-pkgs-formats-yaml/51021
-                  key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlJZCI6IjVhZWQzOTVkLWJiZTEtNDJiNy1hNTMxLTQ1MzFmZjMzNTQ1MyIsIm5hbWUiOiJob21lcGFnZSIsInR5cGUiOiJhcGkiLCJpYXQiOjE3NzgzMjUxNTV9.xOhUEKQCpQJ7t5zkwgxTqGm7S7MSabgBqa4cAyhAAUk";
-                };
-              };
-            }
 
             {
               "Jellyfin" = {
@@ -177,6 +188,19 @@ in
             }
 
           ]
+          ++ lib.optional config.my.audiobookshelf.enable {
+            "Audiobookshelf" = {
+              icon = "audiobookshelf.png";
+              description = "Audiobooks and ebooks";
+              href = "http://${audiobookshelf-url}/audiobookshelf/";
+              widget = {
+                type = "audiobookshelf";
+                url = "http://${audiobookshelf-url}";
+                fields = ''["books", "booksDuration"]''; # cannot use this right now https://discourse.nixos.org/t/cannot-ecape-quotes-correctly-in-yaml-out-of-pkgs-formats-yaml/51021
+                key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlJZCI6IjVhZWQzOTVkLWJiZTEtNDJiNy1hNTMxLTQ1MzFmZjMzNTQ1MyIsIm5hbWUiOiJob21lcGFnZSIsInR5cGUiOiJhcGkiLCJpYXQiOjE3NzgzMjUxNTV9.xOhUEKQCpQJ7t5zkwgxTqGm7S7MSabgBqa4cAyhAAUk";
+              };
+            };
+          }
           ++ lib.optional config.services.immich.enable {
             "Immich" = {
               icon = "immich.png";
@@ -192,6 +216,7 @@ in
             };
           };
         }
+
         {
           "Monitoring" = [
             {

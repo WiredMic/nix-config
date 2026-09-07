@@ -33,7 +33,7 @@ rebuild-boot: rebuild-pre && rebuild-post
     system-boot 
 
 update:
-    nix flake updatesabnzbd
+    nix flake update
 
 rebuild-update: update && rebuild
 

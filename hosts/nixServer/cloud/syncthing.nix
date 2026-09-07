@@ -19,9 +19,6 @@
       systemService = true;
       # guiAddress = "127.0.0.1:8384";
       openDefaultPorts = true; # TCP/UDP 22000 for transfers and UDP 21027 for discovery
-      # nix-shell -p syncthing --run "syncthing generate --config myconfig/"
-      # key = "${/home/rasmus/secrets/syncthing/key.pem}";
-      # cert = "${/home/rasmus/secrets/syncthing/cert.pem}";
       settings = {
         devices = {
           "nixLap" = {
@@ -124,12 +121,6 @@
             devices = [ "rasmus_phone" ];
             id = "rasmus_phone_dcim";
           };
-          # "Example" = {
-          #   path = "/home/myusername/Example";
-          #   devices = [ "device1" ];
-          #   ignorePerms =
-          #     false; # By default, Syncthing doesn't sync file permissions. This line enables it for this folder.
-          # };
         };
       };
     };
@@ -146,6 +137,5 @@
       22000
       21027
     ];
-    # environment.systemPackages = [ pkgs.syncthing ];
   };
 }
