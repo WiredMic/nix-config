@@ -143,9 +143,6 @@
   };
   my.aau-wifi-cert.enable = true;
 
-  # INTEL CPU
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault true;
-
   # NVIDIA GPU
   nixpkgs.config = {
     # cudaSupport = true;
@@ -154,25 +151,6 @@
   };
 
   services.xserver.videoDrivers = [ "nvidia" ];
-
-  hardware.nvidia = {
-    modesetting.enable = true;
-    open = false; # set true only for RTX 30xx+ with open kernel modules
-    nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.legacy_535;
-
-    # Hybrid Intel + NVIDIA (Optimus)
-    prime = {
-      # Use offload unless you want NVIDIA always-on (sync)
-      offload = {
-        enable = true;
-        enableOffloadCmd = true;
-      };
-      # Replace with your actual bus IDs from lspci (format: PCI:bus:device:function)
-      intelBusId = "PCI:0:2:0";
-      nvidiaBusId = "PCI:1:0:0";
-    };
-  };
 
   hardware.graphics = {
     enable = true;
@@ -340,8 +318,7 @@
   my.emulation.enable = true;
 
   # Help to use the PC
-  my.tts.enable = true; # TODO piper
-  programs.ydotool.enable = true; # TODO get it to work
+  my.tts.enable = true;
   # TODO Spellcheck
 
   # theme gtk
