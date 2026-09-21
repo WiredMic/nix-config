@@ -329,6 +329,7 @@
   my.distrobox.enable = true;
 
   my.arduino.enable = true;
+  my.platformio.enable = true;
   my.ollama.enable = true;
 
   my.vpn = {

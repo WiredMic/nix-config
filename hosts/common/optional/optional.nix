@@ -43,8 +43,9 @@
     ./server/server.nix
 
     # Programming
-    ./arduino.nix
     ./llm.nix
+    ./embedded/arduino.nix
+    ./embedded/platformio.nix
 
     # wifi certs
     ./aau-wifi-cert/aau-wifi-cert.nix
@@ -88,6 +89,7 @@
   my.distrobox.enable = lib.mkDefault false;
 
   my.arduino.enable = lib.mkDefault false;
+  my.platformio.enable = lib.mkDefault true;
   my.ollama.enable = lib.mkDefault false;
 
   my.aau-wifi-cert.enable = lib.mkDefault false;
