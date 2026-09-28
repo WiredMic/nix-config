@@ -16,4 +16,6 @@ final: prev: {
   upc_ca_base = final.callPackage ./upc_ca_base/package.nix { };
 
   sound-icons = final.callPackage ./sound-icons/package.nix { };
+
+  quiver-launcher = final.callPackage ./quiver-launcher/package.nix { };
 }
